@@ -4,7 +4,7 @@ import { createTheme } from "@mui/material/styles";
 
 import ProtectedRouter from "./components/secure/ProtectedRoute";
 
-import Cadastro from "./pages/Cadastro";
+import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 
@@ -31,10 +31,10 @@ function App() {
             }
           />
           <Route
-            path="/cadastro"
+            path="/register"
             element={
               <DefaultLayout>
-                <Cadastro />
+                <Register />
               </DefaultLayout>
             }
           />

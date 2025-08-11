@@ -75,7 +75,7 @@ function Register() {
         console.log(error);
         setModalInfo({
           title: "Erro!",
-          message: error.response?.data?.error || "Erro ao cadastrar usuário",
+          message: error.response?.data?.error,
           isSuccess: false,
           type: "error",
         });

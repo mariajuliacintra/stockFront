@@ -34,12 +34,12 @@ function Login() {
 
   const onChange = (event) => {
     const { name, value } = event.target;
-    setUsuario({ ...usuario, [name]: value });
+    setUser({ ...user, [name]: value });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    LoginUsuario();
+    LoginUser();
   };
 
   const handleCloseModal = () => {
@@ -49,7 +49,7 @@ function Login() {
     }
   };
 
-  async function LoginUsuario() {
+  async function LoginUser() {
     await api.postLogin(user).then(
       (response) => {
         setModalInfo({
@@ -148,7 +148,7 @@ function Login() {
         </Typography>
         <Button
           component={Link}
-          to="/cadastro"
+          to="/register"
           sx={styles.buttonCadastro}
           variant="text"
         >

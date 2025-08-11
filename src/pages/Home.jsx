@@ -13,7 +13,7 @@ function Home() {
           <img src={logo} alt="Logo" style={styles.logo} />
           <Button
             component={Link}
-            to="/cadastro"
+            to="/register"
             sx={styles.buttonToCadastro}
             variant="text"
           >
