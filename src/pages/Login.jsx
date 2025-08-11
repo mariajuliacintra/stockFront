@@ -21,7 +21,7 @@ function Login() {
   useEffect(() => {
     document.title = "Login | SENAI";
   }, []);
-  const [usuario, setUsuario] = useState({ email: "", senha: "" });
+  const [user, setUser] = useState({ email: "", password: "" });
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,7 +50,7 @@ function Login() {
   };
 
   async function LoginUsuario() {
-    await api.postLogin(usuario).then(
+    await api.postLogin(user).then(
       (response) => {
         setModalInfo({
           title: "Sucesso!",
@@ -93,7 +93,7 @@ function Login() {
           name="email"
           autoComplete="email"
           autoFocus
-          value={usuario.email}
+          value={user.email}
           onChange={onChange}
           sx={styles.textField}
           InputProps={{
@@ -108,12 +108,12 @@ function Login() {
           margin="normal"
           required
           fullWidth
-          name="senha"
+          name="password"
           label="senha"
           type={mostrarSenha ? "text" : "password"}
-          id="senha"
+          id="password"
           autoComplete="current-password"
-          value={usuario.senha}
+          value={user.password}
           onChange={onChange}
           sx={styles.textField}
           InputProps={{

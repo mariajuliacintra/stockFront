@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://192.168.12.225:5000/reservas/v1/",
+  baseURL: "http://10.89.240.86:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -19,8 +19,8 @@ api.interceptors.request.use(
 );
 
 const sheets = {
-  postLogin: (usuario) => api.post(`/user/login`, usuario),
-  postCadastro: (usuario) => api.post(`/user/register`, usuario),
+  postLogin: (user) => api.post(`user/login/`, user),
+  postRegister: (user) => api.post(`user/register/`, user),
 };
 
 export default sheets;

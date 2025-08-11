@@ -16,18 +16,17 @@ import { Visibility, VisibilityOff, PersonOutline, Email, Article, Lock } from "
 
 import CustomModal from "../components/mod/CustomModal";
 
-function Cadastro() {
+function Register() {
   const styles = getStyles();
   useEffect(() => {
     document.title = "Cadastro | SENAI";
   }, []);
 
-  const [usuario, setUsuario] = useState({
-    nome: "",
+  const [user, setUser] = useState({
+    name: "",
     email: "",
-    NIF: "",
-    senha: "",
-    confirmarSenha: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -45,12 +44,12 @@ function Cadastro() {
 
   const onChange = (event) => {
     const { name, value } = event.target;
-    setUsuario({ ...usuario, [name]: value });
+    setUser({ ...user, [name]: value });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    CadastroUsuario();
+    RegisterUser();
   };
 
   const handleCloseModal = () => {
@@ -60,8 +59,8 @@ function Cadastro() {
     }
   };
 
-  async function CadastroUsuario() {
-    await api.postCadastro(usuario).then(
+  async function RegisterUser() {
+    await api.postRegister(user).then(
       (response) => {
         setModalInfo({
           title: "Sucesso!",
@@ -98,12 +97,12 @@ function Cadastro() {
           margin="normal"
           required
           fullWidth
-          id="nome"
+          id="name"
           label="nome"
-          name="nome"
+          name="name"
           autoComplete="name"
           autoFocus
-          value={usuario.nome}
+          value={user.name}
           onChange={onChange}
           sx={styles.textField}
           InputProps={{
@@ -122,7 +121,7 @@ function Cadastro() {
           label="e-mail"
           name="email"
           autoComplete="email"
-          value={usuario.email}
+          value={user.email}
           onChange={onChange}
           sx={styles.textField}
           InputProps={{
@@ -137,32 +136,12 @@ function Cadastro() {
           margin="normal"
           required
           fullWidth
-          id="CPF"
-          label="CPF"
-          type="number"
-          name="CPF"
-          autoComplete="off"
-          value={user.CPF}
-          onChange={onChange}
-          sx={styles.textField}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Article sx={{ color: 'gray' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="senha"
+          name="password"
           label="senha"
           type={mostrarSenha ? "text" : "password"}
           id="senha"
           autoComplete="new-password"
-          value={usuario.senha}
+          value={user.password}
           onChange={onChange}
           sx={styles.textField}
           InputProps={{
@@ -189,12 +168,12 @@ function Cadastro() {
           margin="normal"
           required
           fullWidth
-          name="confirmarSenha"
+          name="confirmPassword"
           label="confirmar senha"
           type={mostrarConfirmarSenha ? "text" : "password"}
           id="confirmarSenha"
           autoComplete="new-password"
-          value={usuario.confirmarSenha}
+          value={user.confirmPassword}
           onChange={onChange}
           sx={styles.textField}
           InputProps={{
@@ -362,4 +341,4 @@ function getStyles() {
   };
 }
 
-export default Cadastro;
+export default Register;
