@@ -11,13 +11,7 @@ import {
   Typography,
   Modal,
 } from "@mui/material";
-import {
-  Visibility,
-  VisibilityOff,
-  PersonOutline,
-  Email,
-  Lock,
-} from "@mui/icons-material";
+import { PersonOutline, Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 
 import CustomModal from "../components/mod/CustomModal";
 import SecuryCode from "../components/mod/SecuryCode";
@@ -43,7 +37,7 @@ function Register() {
     type: "info",
   });
 
-  const [verifyModalOpen, setVerifyModalOpen] = useState(false); // modal do VerificationForm
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Cadastro | SENAI";
@@ -68,20 +62,20 @@ function Register() {
 
   async function RegisterUser() {
     try {
-      const response = await api.postRegister(user);
+      await api.postRegister(user);
       setVerifyModalOpen(true);
     } catch (error) {
       setModalCustom({
         open: true,
         title: "Erro!",
-        message: error.response?.data?.error,
+        message: error.response?.data?.error || "Erro desconhecido",
         type: "error",
       });
     }
   }
 
   return (
-    <Container component="main" sx={styles.container}>
+    <Container component="main" maxWidth={false} sx={styles.container}>
       {/* Formulário de Cadastro */}
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.cadastroIconBox}>
@@ -96,7 +90,7 @@ function Register() {
           required
           fullWidth
           id="name"
-          label="nome"
+          label="Nome"
           name="name"
           autoComplete="name"
           autoFocus
@@ -117,7 +111,7 @@ function Register() {
           required
           fullWidth
           id="email"
-          label="e-mail"
+          label="E-mail"
           name="email"
           autoComplete="email"
           value={user.email}
@@ -137,7 +131,7 @@ function Register() {
           required
           fullWidth
           name="password"
-          label="senha"
+          label="Senha"
           type={mostrarSenha ? "text" : "password"}
           id="senha"
           autoComplete="new-password"
@@ -169,7 +163,7 @@ function Register() {
           required
           fullWidth
           name="confirmPassword"
-          label="confirmar senha"
+          label="Confirmar senha"
           type={mostrarConfirmarSenha ? "text" : "password"}
           id="confirmarSenha"
           autoComplete="new-password"
@@ -210,15 +204,17 @@ function Register() {
 
       {/* Modal de Verificação */}
       <Modal open={verifyModalOpen} onClose={() => setVerifyModalOpen(false)}>
-        <Box sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          borderRadius: 2,
-        }}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            borderRadius: 2,
+          }}
+        >
           <SecuryCode
             email={user.email}
             onResult={(success, message) => {
@@ -255,50 +251,49 @@ function getStyles() {
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
-      height: "auto",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      minHeight: "80.5vh",
-      minWidth: "100%",
       justifyContent: "center",
+      minHeight: "100vh",
+      minWidth: "100%",
+      padding: "10px",
     },
     form: {
-      mt: 0,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       backgroundColor: "white",
-      padding: "40px 30px",
-      borderRadius: "20px",
-      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+      padding: "20px 15px",
+      borderRadius: "15px",
+      boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)",
       width: "100%",
-      maxWidth: "400px",
+      maxWidth: "320px",
     },
     cadastroIconBox: {
       backgroundColor: "rgba(255, 0, 0, 1)",
       borderRadius: "50%",
-      width: "80px",
-      height: "80px",
+      width: "50px",
+      height: "50px",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      mb: 2,
+      mb: 1.5,
     },
     cadastroIcon: {
       color: "white",
-      fontSize: "40px",
+      fontSize: "28px",
     },
     cadastroTitle: {
-      fontSize: "24px",
+      fontSize: "20px",
       fontWeight: "bold",
-      mb: 3,
+      mb: 1.5,
       color: "#333",
     },
     textField: {
-      mb: 2,
+      mb: 1,
       "& .MuiOutlinedInput-root": {
-        borderRadius: "10px",
+        borderRadius: "8px",
         backgroundColor: "#f5f5f5",
         "& fieldset": {
           borderColor: "transparent",
@@ -312,11 +307,12 @@ function getStyles() {
         },
       },
       "& .MuiInputBase-input": {
-        padding: "12px 14px",
-        fontSize: "16px",
+        padding: "8px 10px",
+        fontSize: "14px",
         color: "#333",
       },
       "& .MuiInputLabel-root": {
+        fontSize: "14px",
         color: "gray",
         "&.Mui-focused": {
           color: "rgba(255, 0, 0, 1)",
@@ -331,27 +327,28 @@ function getStyles() {
           backgroundColor: "rgba(200, 0, 0, 1)",
         },
       },
-      mt: 3,
+      mt: 2,
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
       width: "100%",
-      height: 50,
+      height: 40,
       fontWeight: 600,
-      fontSize: 16,
-      borderRadius: 10,
+      fontSize: 14,
+      borderRadius: 8,
       textTransform: "none",
     },
     jaTemContaText: {
-      mt: 2,
+      mt: 1.5,
       color: "gray",
+      fontSize: 13,
     },
     buttonToLogin: {
       color: "rgba(255, 0, 0, 1)",
       backgroundColor: "transparent",
       fontWeight: "bold",
-      fontSize: 15.5,
+      fontSize: 13,
       textDecoration: "none",
-      mt: 1,
+      mt: 0.5,
       textTransform: "none",
       "&:hover": {
         backgroundColor: "transparent",

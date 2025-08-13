@@ -22,6 +22,9 @@ const sheets = {
   postLogin: (user) => api.post(`user/login/`, user),
   postRegister: (user) => api.post(`user/register/`, user),
   securyCodeApi: (code, email) => api.post(`user/verify-register`, {code, email}),
+  postVerifyRecoveryPassword: (email) => api.post("user/verify-recovery-password", email),
+  postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
+  postRecoveryPassword: (data) => api.post("user/recovery-password", data),
 };
 
 export default sheets;
