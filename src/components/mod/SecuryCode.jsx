@@ -11,15 +11,14 @@ export default function SecuryCode({ email, onResult, onClose }) {
     setLoading(true);
     try {
       const response = await sheets.securyCodeApi(code, email);
-      const mensagem = response.data?.message || "Código inválido";
-
-      if (response.data?.success) {
+      const mensagem = response.data?.message 
+      if (response.data?.message) {
         onResult(true, mensagem);
       } else {
         onResult(false, mensagem);
       }
     } catch (error) {
-      const mensagemErro = error.response?.data?.message || error.response?.data?.error || "Erro desconhecido";
+      const mensagemErro = error.response?.data?.message || error.response?.data?.error 
       onResult(false, mensagemErro);
     } finally {
       setLoading(false);
@@ -31,7 +30,7 @@ export default function SecuryCode({ email, onResult, onClose }) {
       sx={{
         width: 400,
         bgcolor: "white",
-        borderRadius: 2.5, // arredondado como na imagem
+        borderRadius: 2.5, 
         p: 4,
         position: "relative",
         textAlign: "center",
