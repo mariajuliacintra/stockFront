@@ -1,14 +1,24 @@
-
 import Footer from "./Footer";
 import Header from "./Header";
+import { Box } from "@mui/material";
 
 const DefaultLayout = ({ children }) => {
   return (
-    <div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw' }}>
       <Header />
-      {children}
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+        }}
+      >
+        {children}
+      </Box>
       <Footer />
-    </div>
+    </Box>
   );
 };
 
