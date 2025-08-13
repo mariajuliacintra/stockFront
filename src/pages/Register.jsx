@@ -68,7 +68,7 @@ function Register() {
       setModalCustom({
         open: true,
         title: "Erro!",
-        message: error.response?.data?.error || "Erro desconhecido",
+        message: error.response?.data?.error,
         type: "error",
       });
     }
