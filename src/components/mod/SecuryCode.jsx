@@ -6,13 +6,6 @@ export default function SecuryCode({ email, onResult }) {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [modalCustom, setModalCustom] = useState({
-    open: false,
-    title: "",
-    message: "",
-    type: "info",
-  });
-
   const handleVerify = async () => {
     setLoading(true);
     try {
@@ -55,15 +48,6 @@ export default function SecuryCode({ email, onResult }) {
       >
         {loading ? <CircularProgress size={24} color="inherit" /> : "Verificar"}
       </Button>
-
-      <CustomModal
-        open={modalCustom.open}
-        onClose={handleCloseCustomModal}
-        title={modalCustom.title}
-        message={modalCustom.message}
-        type={modalCustom.type}
-        buttonText="Fechar"
-      />
     </Box>
   );
 }

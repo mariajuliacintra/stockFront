@@ -70,7 +70,6 @@ function Register() {
     try {
       const response = await api.postRegister(user);
       setVerifyModalOpen(true);
-
     } catch (error) {
       setModalCustom({
         open: true,
