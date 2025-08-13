@@ -82,7 +82,7 @@ function Login() {
   }
 
   return (
-    <Container component="main" sx={styles.container}>
+    <Container component="main" maxWidth={false} sx={styles.container}>
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.loginIconBox}>
           <ArrowForward sx={styles.loginIcon} />
@@ -161,8 +161,8 @@ function Login() {
 
         <Button
           component={Link}
-          to="/register"
-          sx={styles.buttonCadastro}
+          to="/recsenha"
+          sx={styles.buttonEsqueciSenha}
           variant="text"
         >
           Esqueci Minha Senha
@@ -187,50 +187,49 @@ function getStyles() {
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
-      height: "auto",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      minHeight: "80.5vh",
+      justifyContent: "center", // Agora com a mesma lógica do Register.jsx
+      minHeight: "100vh", // Usando 100vh para ocupar a tela inteira
       minWidth: "100%",
-      justifyContent: "center",
+      padding: "10px",
     },
     form: {
-      mt: 0,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       backgroundColor: "white",
-      padding: "40px 30px",
-      borderRadius: "20px",
-      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+      padding: "20px 15px",
+      borderRadius: "15px",
+      boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)",
       width: "100%",
-      maxWidth: "400px",
+      maxWidth: "320px",
     },
     loginIconBox: {
       backgroundColor: "rgba(255, 0, 0, 1)",
       borderRadius: "50%",
-      width: "80px",
-      height: "80px",
+      width: "50px",
+      height: "50px",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      mb: 2,
+      mb: 1.5,
     },
     loginIcon: {
       color: "white",
-      fontSize: "40px",
+      fontSize: "28px",
     },
     loginTitle: {
-      fontSize: "24px",
+      fontSize: "20px",
       fontWeight: "bold",
-      mb: 3,
+      mb: 1.5,
       color: "#333",
     },
     textField: {
-      mb: 2,
+      mb: 1,
       "& .MuiOutlinedInput-root": {
-        borderRadius: "10px",
+        borderRadius: "8px",
         backgroundColor: "#f5f5f5",
         "& fieldset": {
           borderColor: "transparent",
@@ -244,11 +243,12 @@ function getStyles() {
         },
       },
       "& .MuiInputBase-input": {
-        padding: "12px 14px",
-        fontSize: "16px",
+        padding: "8px 10px",
+        fontSize: "14px",
         color: "#333",
       },
       "& .MuiInputLabel-root": {
+        fontSize: "14px",
         color: "gray",
         "&.Mui-focused": {
           color: "rgba(255, 0, 0, 1)",
@@ -263,25 +263,40 @@ function getStyles() {
           backgroundColor: "rgba(200, 0, 0, 1)",
         },
       },
-      mt: 3,
+      mt: 2,
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
       width: "100%",
-      height: 50,
+      height: 40,
       fontWeight: 600,
-      fontSize: 16,
-      borderRadius: 10,
+      fontSize: 14,
+      borderRadius: 8,
       textTransform: "none",
     },
     naoTemContaText: {
-      mt: 2,
+      mt: 1.5,
       color: "gray",
+      fontSize: 13,
     },
     buttonCadastro: {
       color: "rgba(255, 0, 0, 1)",
       backgroundColor: "transparent",
       fontWeight: "bold",
-      fontSize: 15.5,
+      fontSize: 13,
+      textDecoration: "none",
+      mt: 0.5,
+      textTransform: "none",
+      "&:hover": {
+        backgroundColor: "transparent",
+        color: "rgba(200, 0, 0, 1)",
+        textDecoration: "underline",
+      },
+    },
+    buttonEsqueciSenha: {
+      color: "rgba(255, 0, 0, 1)",
+      backgroundColor: "transparent",
+      fontWeight: "bold",
+      fontSize: 13,
       textDecoration: "none",
       mt: 0.5,
       textTransform: "none",

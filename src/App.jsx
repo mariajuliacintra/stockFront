@@ -7,6 +7,7 @@ import ProtectedRouter from "./components/secure/ProtectedRoute";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import RecSenha from "./pages/RecSenha";
 
 import DefaultLayout from "./components/layout/DefaultLayout";
 
@@ -35,6 +36,14 @@ function App() {
             element={
               <DefaultLayout>
                 <Register />
+              </DefaultLayout>
+            }
+          />
+          <Route
+            path="/recsenha"
+            element={
+              <DefaultLayout>
+                <RecSenha />
               </DefaultLayout>
             }
           />
