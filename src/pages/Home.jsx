@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import logo from "../../img/logo.png";
 import { Box, Button, Container, Typography } from "@mui/material";
-import Footer from "../components/layout/Footer";
 
 function Home() {
   const styles = getStyles();
@@ -32,7 +31,13 @@ function Home() {
         </Box>
         <Box sx={styles.body}>
           <Typography sx={styles.bodyText}>
-            Seja Bem-vindo ao site de estoque do SENAI
+            Seja Bem-
+            <br />
+            vindo ao site
+            <br />
+            de estoque do
+            <br />
+            SENAI
           </Typography>
         </Box>
         <Box sx={styles.footer}>
@@ -57,7 +62,7 @@ function getStyles() {
       backgroundRepeat: "no-repeat",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
+      alignItems: "flex-start",
       justifyContent: "space-between",
       minHeight: "100vh",
       width: "100%",
@@ -67,7 +72,7 @@ function getStyles() {
     header: {
       backgroundColor: "rgba(177, 16, 16, 1)",
       width: "100%",
-      height: "11vh",
+      height: "2vh",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
@@ -75,14 +80,16 @@ function getStyles() {
       p: { xs: 2, sm: 3 },
     },
     logo: {
-      width: { xs: "150px", sm: "230px" },
-      height: "auto",
+      height: "35px",
       border: "4.5px solid white",
       borderRadius: 15,
+      marginLeft: 2,
     },
     buttonsContainer: {
       display: "flex",
       alignItems: "center",
+      ml: { xs: 0, sm: "auto" },
+      mr: { xs: 1, sm: 5 },
     },
     buttonToCadastro: {
       "&.MuiButton-root": {
@@ -94,10 +101,10 @@ function getStyles() {
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: { xs: 120, sm: 140 },
-      height: 55,
+      width: { xs: 85, sm: 100 },
+      height: 35,
       fontWeight: 600,
-      fontSize: { xs: 14, sm: 17 },
+      fontSize: { xs: 10, sm: 13 },
       borderRadius: 15,
       textTransform: "none",
       ml: { xs: 1, sm: 2 },
@@ -112,25 +119,26 @@ function getStyles() {
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: { xs: 80, sm: 90 },
-      height: 55,
+      width: { xs: 60, sm: 80 },
+      height: 35,
       fontWeight: 600,
-      fontSize: { xs: 14, sm: 17 },
+      fontSize: { xs: 10, sm: 13 },
       borderRadius: 15,
       textTransform: "none",
       ml: { xs: 1, sm: 3 },
     },
     body: {
       display: "flex",
-      alignItems: "center",
+      flexDirection: "column",
       justifyContent: "center",
       flex: 1,
-      textAlign: "center",
-      p: 2,
+      textAlign: "left",
+      paddingLeft: { xs: "20px", sm: "40px", md: "80px", lg: "35px" },
+      marginRight: "auto",
     },
     bodyText: {
       color: "white",
-      fontSize: { xs: 40, sm: 60, md: 80, lg: 100 },
+      fontSize: { xs: 35, sm: 50, md: 60, lg: 70 },
       fontWeight: "bold",
     },
     footer: {
