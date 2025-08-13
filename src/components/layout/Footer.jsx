@@ -31,7 +31,7 @@ function getStyles() {
     },
     footerContent: {
       flexGrow: 1, // Permite que o conteúdo do footer preencha o espaço restante
-      minHeight: '63px', // Altura mínima para o conteúdo
+      minHeight: '45px', // Altura mínima para o conteúdo
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
