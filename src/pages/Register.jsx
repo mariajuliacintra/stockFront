@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/axios";
-
 import {
   Box,
   Button,
@@ -10,17 +9,16 @@ import {
   InputAdornment,
   TextField,
   Typography,
+  Modal,
 } from "@mui/material";
-
-import { Visibility, VisibilityOff, PersonOutline, Email, Lock } from "@mui/icons-material";
+import { PersonOutline, Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 
 import CustomModal from "../components/mod/CustomModal";
+import SecuryCode from "../components/mod/SecuryCode";
 
 function Register() {
   const styles = getStyles();
-  useEffect(() => {
-    document.title = "Cadastro | SENAI";
-  }, []);
+  const navigate = useNavigate();
 
   const [user, setUser] = useState({
     name: "",
@@ -32,15 +30,18 @@ function Register() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
-  const navigate = useNavigate();
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalInfo, setModalInfo] = useState({
+  const [modalCustom, setModalCustom] = useState({
+    open: false,
     title: "",
     message: "",
-    isSuccess: false,
-    type: "",
+    type: "info",
   });
+
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+
+  useEffect(() => {
+    document.title = "Cadastro | SENAI";
+  }, []);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -52,40 +53,30 @@ function Register() {
     RegisterUser();
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    if (modalInfo.isSuccess) {
+  const handleCloseCustomModal = () => {
+    setModalCustom((prev) => ({ ...prev, open: false }));
+    if (modalCustom.type === "success") {
       navigate("/principal");
     }
   };
 
   async function RegisterUser() {
-    await api.postRegister(user).then(
-      (response) => {
-        setModalInfo({
-          title: "Sucesso!",
-          message: response.data.message,
-          isSuccess: true,
-          type: "success",
-        });
-        setModalOpen(true);
-        localStorage.setItem("tokenUsuario", response.data.token);
-      },
-      (error) => {
-        console.log(error);
-        setModalInfo({
-          title: "Erro!",
-          message: error.response?.data?.error,
-          isSuccess: false,
-          type: "error",
-        });
-        setModalOpen(true);
-      }
-    );
+    try {
+      await api.postRegister(user);
+      setVerifyModalOpen(true);
+    } catch (error) {
+      setModalCustom({
+        open: true,
+        title: "Erro!",
+        message: error.response?.data?.error || "Erro desconhecido",
+        type: "error",
+      });
+    }
   }
 
   return (
     <Container component="main" maxWidth={false} sx={styles.container}>
+      {/* Formulário de Cadastro */}
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.cadastroIconBox}>
           <PersonOutline sx={styles.cadastroIcon} />
@@ -93,12 +84,13 @@ function Register() {
         <Typography component="h1" variant="h5" sx={styles.cadastroTitle}>
           Cadastre-se
         </Typography>
+
         <TextField
           margin="normal"
           required
           fullWidth
           id="name"
-          label="nome"
+          label="Nome"
           name="name"
           autoComplete="name"
           autoFocus
@@ -108,17 +100,18 @@ function Register() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <PersonOutline sx={{ color: 'gray' }} />
+                <PersonOutline sx={{ color: "gray" }} />
               </InputAdornment>
             ),
           }}
         />
+
         <TextField
           margin="normal"
           required
           fullWidth
           id="email"
-          label="e-mail"
+          label="E-mail"
           name="email"
           autoComplete="email"
           value={user.email}
@@ -127,17 +120,18 @@ function Register() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Email sx={{ color: 'gray' }} />
+                <Email sx={{ color: "gray" }} />
               </InputAdornment>
             ),
           }}
         />
+
         <TextField
           margin="normal"
           required
           fullWidth
           name="password"
-          label="senha"
+          label="Senha"
           type={mostrarSenha ? "text" : "password"}
           id="senha"
           autoComplete="new-password"
@@ -147,16 +141,15 @@ function Register() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Lock sx={{ color: 'gray' }} />
+                <Lock sx={{ color: "gray" }} />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setMostrarSenha((previousState) => !previousState)}
+                  onClick={() => setMostrarSenha((prev) => !prev)}
                   edge="end"
-                  sx={{ color: "gray", mr: 0 }}
+                  sx={{ color: "gray" }}
                 >
                   {mostrarSenha ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -164,12 +157,13 @@ function Register() {
             ),
           }}
         />
+
         <TextField
           margin="normal"
           required
           fullWidth
           name="confirmPassword"
-          label="confirmar senha"
+          label="Confirmar senha"
           type={mostrarConfirmarSenha ? "text" : "password"}
           id="confirmarSenha"
           autoComplete="new-password"
@@ -179,16 +173,15 @@ function Register() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Lock sx={{ color: 'gray' }} />
+                <Lock sx={{ color: "gray" }} />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle confirm password visibility"
-                  onClick={() => setMostrarConfirmarSenha((previousState) => !previousState)}
+                  onClick={() => setMostrarConfirmarSenha((prev) => !prev)}
                   edge="end"
-                  sx={{ color: "gray", mr: 0 }}
+                  sx={{ color: "gray" }}
                 >
                   {mostrarConfirmarSenha ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -196,31 +189,55 @@ function Register() {
             ),
           }}
         />
-        <Button
-          type="submit"
-          variant="contained"
-          sx={styles.buttonCadastro}
-        >
+
+        <Button type="submit" variant="contained" sx={styles.buttonCadastro}>
           Cadastrar-se
         </Button>
+
         <Typography variant="body2" sx={styles.jaTemContaText}>
           Já tem uma conta?
         </Typography>
-        <Button
-          component={Link}
-          to="/login"
-          variant="text"
-          sx={styles.buttonToLogin}
-        >
+        <Button component={Link} to="/login" variant="text" sx={styles.buttonToLogin}>
           Login
         </Button>
       </Box>
+
+      {/* Modal de Verificação */}
+      <Modal open={verifyModalOpen} onClose={() => setVerifyModalOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            borderRadius: 2,
+          }}
+        >
+          <SecuryCode
+            email={user.email}
+            onResult={(success, message) => {
+              setModalCustom({
+                open: true,
+                title: success ? "Sucesso!" : "Erro!",
+                message,
+                type: success ? "success" : "error",
+              });
+              setVerifyModalOpen(false);
+            }}
+            onClose={() => setVerifyModalOpen(false)}
+          />
+        </Box>
+      </Modal>
+
+      {/* Modal Custom */}
       <CustomModal
-        open={modalOpen}
-        onClose={handleCloseModal}
-        title={modalInfo.title}
-        message={modalInfo.message}
-        type={modalInfo.type}
+        open={modalCustom.open}
+        onClose={handleCloseCustomModal}
+        title={modalCustom.title}
+        message={modalCustom.message}
+        type={modalCustom.type}
         buttonText="Fechar"
       />
     </Container>
@@ -240,65 +257,65 @@ function getStyles() {
       justifyContent: "center",
       minHeight: "100vh",
       minWidth: "100%",
-        padding: '10px',
+      padding: "10px",
     },
     form: {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       backgroundColor: "white",
-      padding: '20px 15px',
-      borderRadius: '15px',
-      boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
-      width: '100%',
-      maxWidth: '320px', // Largura máxima reduzida
+      padding: "20px 15px",
+      borderRadius: "15px",
+      boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)",
+      width: "100%",
+      maxWidth: "320px",
     },
     cadastroIconBox: {
-      backgroundColor: 'rgba(255, 0, 0, 1)',
-      borderRadius: '50%',
-      width: '50px', // Tamanho do ícone reduzido
-      height: '50px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: "rgba(255, 0, 0, 1)",
+      borderRadius: "50%",
+      width: "50px",
+      height: "50px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
       mb: 1.5,
     },
     cadastroIcon: {
-      color: 'white',
-      fontSize: '28px', // Tamanho da fonte do ícone reduzido
+      color: "white",
+      fontSize: "28px",
     },
     cadastroTitle: {
-      fontSize: '20px',
-      fontWeight: 'bold',
+      fontSize: "20px",
+      fontWeight: "bold",
       mb: 1.5,
-      color: '#333',
+      color: "#333",
     },
     textField: {
-      mb: 1, // Margem entre os campos reduzida
-      '& .MuiOutlinedInput-root': {
-        borderRadius: '8px',
-        backgroundColor: '#f5f5f5',
-        '& fieldset': {
-          borderColor: 'transparent',
+      mb: 1,
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "8px",
+        backgroundColor: "#f5f5f5",
+        "& fieldset": {
+          borderColor: "transparent",
         },
-        '&:hover fieldset': {
-          borderColor: 'transparent',
+        "&:hover fieldset": {
+          borderColor: "transparent",
         },
-        '&.Mui-focused fieldset': {
-          borderColor: 'rgba(255, 0, 0, 0.5)',
-          borderWidth: '1px',
+        "&.Mui-focused fieldset": {
+          borderColor: "rgba(255, 0, 0, 0.5)",
+          borderWidth: "1px",
         },
       },
-      '& .MuiInputBase-input': {
-        padding: '8px 10px', // Padding interno dos inputs reduzido
-        fontSize: '14px',
-        color: '#333',
+      "& .MuiInputBase-input": {
+        padding: "8px 10px",
+        fontSize: "14px",
+        color: "#333",
       },
-      '& .MuiInputLabel-root': {
-        fontSize: '14px',
-        color: 'gray',
-        '&.Mui-focused': {
-          color: 'rgba(255, 0, 0, 1)',
+      "& .MuiInputLabel-root": {
+        fontSize: "14px",
+        color: "gray",
+        "&.Mui-focused": {
+          color: "rgba(255, 0, 0, 1)",
         },
       },
     },
@@ -313,8 +330,8 @@ function getStyles() {
       mt: 2,
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: '100%',
-      height: 40, // Altura do botão reduzida
+      width: "100%",
+      height: 40,
       fontWeight: 600,
       fontSize: 14,
       borderRadius: 8,
@@ -322,7 +339,7 @@ function getStyles() {
     },
     jaTemContaText: {
       mt: 1.5,
-      color: 'gray',
+      color: "gray",
       fontSize: 13,
     },
     buttonToLogin: {
