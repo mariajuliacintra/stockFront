@@ -82,7 +82,7 @@ function Login() {
   }
 
   return (
-    <Container component="main" maxWidth={false} sx={styles.container}>
+    <Container component="main" sx={styles.container}>
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.loginIconBox}>
           <ArrowForward sx={styles.loginIcon} />
@@ -191,7 +191,7 @@ function getStyles() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center", // Agora com a mesma lógica do Register.jsx
-      minHeight: "100vh", // Usando 100vh para ocupar a tela inteira
+      minHeight: "80vh",
       minWidth: "100%",
       padding: "10px",
     },

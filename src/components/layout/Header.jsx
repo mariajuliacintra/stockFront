@@ -18,7 +18,7 @@ function getStyles() {
     header: {
       backgroundColor: "rgba(177, 16, 16, 1)",
       width: "100%",
-      height: "65px",
+      height: "60px",
       display: "flex",
       alignItems: "center",
       justifyContent: "flex-end",

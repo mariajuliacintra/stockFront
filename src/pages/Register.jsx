@@ -75,7 +75,7 @@ function Register() {
   }
 
   return (
-    <Container component="main" maxWidth={false} sx={styles.container}>
+    <Container component="main" sx={styles.container}>
       {/* Formulário de Cadastro */}
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.cadastroIconBox}>
@@ -255,16 +255,16 @@ function getStyles() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      minHeight: "100vh",
+      minHeight: "80vh",
       minWidth: "100%",
-      padding: "10px",
+      padding:"5px"
     },
     form: {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       backgroundColor: "white",
-      padding: "20px 15px",
+      padding: "10px 15px",
       borderRadius: "15px",
       boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)",
       width: "100%",
@@ -278,7 +278,7 @@ function getStyles() {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      mb: 1.5,
+      mb: 1,
     },
     cadastroIcon: {
       color: "white",
@@ -287,7 +287,6 @@ function getStyles() {
     cadastroTitle: {
       fontSize: "20px",
       fontWeight: "bold",
-      mb: 1.5,
       color: "#333",
     },
     textField: {
@@ -327,18 +326,18 @@ function getStyles() {
           backgroundColor: "rgba(200, 0, 0, 1)",
         },
       },
-      mt: 2,
+      mt: 0.5,
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
       width: "100%",
-      height: 40,
+      height: 30,
       fontWeight: 600,
       fontSize: 14,
       borderRadius: 8,
       textTransform: "none",
     },
     jaTemContaText: {
-      mt: 1.5,
+      mt: 1,
       color: "gray",
       fontSize: 13,
     },
@@ -348,7 +347,6 @@ function getStyles() {
       fontWeight: "bold",
       fontSize: 13,
       textDecoration: "none",
-      mt: 0.5,
       textTransform: "none",
       "&:hover": {
         backgroundColor: "transparent",
