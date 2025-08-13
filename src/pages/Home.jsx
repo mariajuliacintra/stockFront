@@ -7,26 +7,28 @@ function Home() {
   const styles = getStyles();
 
   return (
-    <div>
-      <Container sx={styles.container}>
+    <Box sx={styles.pageContainer}>
+      <Container maxWidth={false} sx={styles.container}>
         <Box sx={styles.header}>
           <img src={logo} alt="Logo" style={styles.logo} />
-          <Button
-            component={Link}
-            to="/register"
-            sx={styles.buttonToCadastro}
-            variant="text"
-          >
-            Cadastre-se
-          </Button>
-          <Button
-            component={Link}
-            to="/login"
-            sx={styles.buttonToLogin}
-            variant="text"
-          >
-            Login
-          </Button>
+          <Box sx={styles.buttonsContainer}>
+            <Button
+              component={Link}
+              to="/register"
+              sx={styles.buttonToCadastro}
+              variant="text"
+            >
+              Cadastre-se
+            </Button>
+            <Button
+              component={Link}
+              to="/login"
+              sx={styles.buttonToLogin}
+              variant="text"
+            >
+              Login
+            </Button>
+          </Box>
         </Box>
         <Box sx={styles.body}>
           <Typography sx={styles.bodyText}>
@@ -37,42 +39,50 @@ function Home() {
           <Typography sx={styles.footerText}>&copy;CSSTORAGE</Typography>
         </Box>
       </Container>
-    </div>
+    </Box>
   );
 }
 
 function getStyles() {
   return {
+    pageContainer: {
+      display: "flex",
+      flexDirection: "column",
+      minHeight: "100vh",
+    },
     container: {
       backgroundImage: `url(../../img/fundoinicial.png)`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
-      height: "100vh",
-      minWidth: "100%",
       display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
       flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "space-between",
+      minHeight: "100vh",
+      width: "100%",
       pl: { sm: 0 },
       pr: { sm: 0 },
     },
     header: {
       backgroundColor: "rgba(177, 16, 16, 1)",
       width: "100%",
-      minWidth: "100%",
       height: "11vh",
       display: "flex",
       alignItems: "center",
-      justifyContent: "end",
+      justifyContent: "space-between",
       borderBottom: "7px solid white",
+      p: { xs: 2, sm: 3 },
     },
     logo: {
-      width: "230px",
+      width: { xs: "150px", sm: "230px" },
       height: "auto",
-      marginRight: "1370px",
       border: "4.5px solid white",
       borderRadius: 15,
+    },
+    buttonsContainer: {
+      display: "flex",
+      alignItems: "center",
     },
     buttonToCadastro: {
       "&.MuiButton-root": {
@@ -84,12 +94,13 @@ function getStyles() {
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: 140,
+      width: { xs: 120, sm: 140 },
       height: 55,
       fontWeight: 600,
-      fontSize: 17,
+      fontSize: { xs: 14, sm: 17 },
       borderRadius: 15,
       textTransform: "none",
+      ml: { xs: 1, sm: 2 },
     },
     buttonToLogin: {
       "&.MuiButton-root": {
@@ -99,26 +110,27 @@ function getStyles() {
           backgroundColor: "rgba(255, 0, 0, 0.55)",
         },
       },
-      mr: 3,
-      ml: 3,
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: 90,
+      width: { xs: 80, sm: 90 },
       height: 55,
       fontWeight: 600,
-      fontSize: 17,
+      fontSize: { xs: 14, sm: 17 },
       borderRadius: 15,
       textTransform: "none",
+      ml: { xs: 1, sm: 3 },
     },
     body: {
-      mt: 8,
-      mr: 110,
-      width: "75vh",
-      height: "74.1vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flex: 1,
+      textAlign: "center",
+      p: 2,
     },
     bodyText: {
       color: "white",
-      fontSize: 100,
+      fontSize: { xs: 40, sm: 60, md: 80, lg: 100 },
       fontWeight: "bold",
     },
     footer: {
@@ -129,7 +141,6 @@ function getStyles() {
       alignItems: "center",
       justifyContent: "center",
       borderTop: "7px solid white",
-      marginTop: "auto",
     },
     footerText: {
       color: "white",
