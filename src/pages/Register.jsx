@@ -230,6 +230,7 @@ function Register() {
               });
               setVerifyModalOpen(false);
             }}
+            onClose={() => setVerifyModalOpen(false)}
           />
         </Box>
       </Modal>
