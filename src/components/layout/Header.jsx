@@ -1,11 +1,5 @@
-
 import { Link } from "react-router-dom";
-
-import {
-  Box,
-  Button,
-} from "@mui/material";
-
+import { Box, Button } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 
 const Header = ({}) => {
@@ -16,7 +10,6 @@ const Header = ({}) => {
         <HomeIcon sx={styles.HomeIcon} />
       </Button>
     </Box>
-    
   );
 };
 
@@ -25,18 +18,18 @@ function getStyles() {
     header: {
       backgroundColor: "rgba(177, 16, 16, 1)",
       width: "100%",
-      height: "11vh",
+      height: "65px",
       display: "flex",
       alignItems: "center",
-      justifyContent: "end",
-      borderBottom: "7px solid white",
+      justifyContent: "flex-end",
+      borderBottom: "7px solid white", // Já estava em px, o que é correto
     },
     buttonHome: {
-      mr: 3,
+      mr: { xs: 0.5, sm: 1.5 },
     },
     HomeIcon: {
-      width: 50,
-      height: 50,
+      width: { xs: 20, sm: 30 },
+      height: { xs: 20, sm: 30 },
       borderRadius: "50%",
       backgroundColor: "darkred",
       display: "flex",

@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { Visibility, VisibilityOff, PersonOutline, Email, Article, Lock } from "@mui/icons-material";
+import { Visibility, VisibilityOff, PersonOutline, Email, Lock } from "@mui/icons-material";
 
 import CustomModal from "../components/mod/CustomModal";
 
@@ -85,7 +85,7 @@ function Register() {
   }
 
   return (
-    <Container component="main" sx={styles.container}>
+    <Container component="main" maxWidth={false} sx={styles.container}>
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.cadastroIconBox}>
           <PersonOutline sx={styles.cadastroIcon} />
@@ -234,73 +234,73 @@ function getStyles() {
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
-      height: "auto",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      minHeight: "80.5vh",
+      justifyContent: "center",
+      minHeight: "100vh",
       minWidth: "100%",
-      justifyContent: 'center',
+        padding: '10px',
     },
     form: {
-      mt: 0,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       backgroundColor: "white",
-      padding: '40px 30px',
-      borderRadius: '20px',
-      boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+      padding: '20px 15px',
+      borderRadius: '15px',
+      boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
       width: '100%',
-      maxWidth: '400px',
+      maxWidth: '320px', // Largura máxima reduzida
     },
     cadastroIconBox: {
-        backgroundColor: 'rgba(255, 0, 0, 1)',
-        borderRadius: '50%',
-        width: '80px',
-        height: '80px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        mb: 2,
+      backgroundColor: 'rgba(255, 0, 0, 1)',
+      borderRadius: '50%',
+      width: '50px', // Tamanho do ícone reduzido
+      height: '50px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      mb: 1.5,
     },
     cadastroIcon: {
-        color: 'white',
-        fontSize: '40px',
+      color: 'white',
+      fontSize: '28px', // Tamanho da fonte do ícone reduzido
     },
     cadastroTitle: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        mb: 3,
-        color: '#333',
+      fontSize: '20px',
+      fontWeight: 'bold',
+      mb: 1.5,
+      color: '#333',
     },
     textField: {
-        mb: 2,
-        '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            backgroundColor: '#f5f5f5',
-            '& fieldset': {
-                borderColor: 'transparent',
-            },
-            '&:hover fieldset': {
-                borderColor: 'transparent',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: 'rgba(255, 0, 0, 0.5)',
-                borderWidth: '1px',
-            },
+      mb: 1, // Margem entre os campos reduzida
+      '& .MuiOutlinedInput-root': {
+        borderRadius: '8px',
+        backgroundColor: '#f5f5f5',
+        '& fieldset': {
+          borderColor: 'transparent',
         },
-        '& .MuiInputBase-input': {
-            padding: '12px 14px',
-            fontSize: '16px',
-            color: '#333',
+        '&:hover fieldset': {
+          borderColor: 'transparent',
         },
-        '& .MuiInputLabel-root': {
-            color: 'gray',
-            '&.Mui-focused': {
-                color: 'rgba(255, 0, 0, 1)',
-            },
+        '&.Mui-focused fieldset': {
+          borderColor: 'rgba(255, 0, 0, 0.5)',
+          borderWidth: '1px',
         },
+      },
+      '& .MuiInputBase-input': {
+        padding: '8px 10px', // Padding interno dos inputs reduzido
+        fontSize: '14px',
+        color: '#333',
+      },
+      '& .MuiInputLabel-root': {
+        fontSize: '14px',
+        color: 'gray',
+        '&.Mui-focused': {
+          color: 'rgba(255, 0, 0, 1)',
+        },
+      },
     },
     buttonCadastro: {
       "&.MuiButton-root": {
@@ -310,27 +310,28 @@ function getStyles() {
           backgroundColor: "rgba(200, 0, 0, 1)",
         },
       },
-      mt: 3,
+      mt: 2,
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
       width: '100%',
-      height: 50,
+      height: 40, // Altura do botão reduzida
       fontWeight: 600,
-      fontSize: 16,
-      borderRadius: 10,
+      fontSize: 14,
+      borderRadius: 8,
       textTransform: "none",
     },
     jaTemContaText: {
-        mt: 2,
-        color: 'gray',
+      mt: 1.5,
+      color: 'gray',
+      fontSize: 13,
     },
     buttonToLogin: {
       color: "rgba(255, 0, 0, 1)",
       backgroundColor: "transparent",
       fontWeight: "bold",
-      fontSize: 15.5,
+      fontSize: 13,
       textDecoration: "none",
-      mt: 1,
+      mt: 0.5,
       textTransform: "none",
       "&:hover": {
         backgroundColor: "transparent",
