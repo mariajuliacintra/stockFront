@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/axios";
-
 import {
   Box,
   Button,
@@ -10,17 +9,22 @@ import {
   InputAdornment,
   TextField,
   Typography,
+  Modal,
 } from "@mui/material";
-
-import { Visibility, VisibilityOff, PersonOutline, Email, Article, Lock } from "@mui/icons-material";
+import {
+  Visibility,
+  VisibilityOff,
+  PersonOutline,
+  Email,
+  Lock,
+} from "@mui/icons-material";
 
 import CustomModal from "../components/mod/CustomModal";
+import SecuryCode from "../components/mod/SecuryCode";
 
 function Register() {
   const styles = getStyles();
-  useEffect(() => {
-    document.title = "Cadastro | SENAI";
-  }, []);
+  const navigate = useNavigate();
 
   const [user, setUser] = useState({
     name: "",
@@ -32,15 +36,18 @@ function Register() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
-  const navigate = useNavigate();
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalInfo, setModalInfo] = useState({
+  const [modalCustom, setModalCustom] = useState({
+    open: false,
     title: "",
     message: "",
-    isSuccess: false,
-    type: "",
+    type: "info",
   });
+
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false); // modal do VerificationForm
+
+  useEffect(() => {
+    document.title = "Cadastro | SENAI";
+  }, []);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -52,40 +59,31 @@ function Register() {
     RegisterUser();
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    if (modalInfo.isSuccess) {
+  const handleCloseCustomModal = () => {
+    setModalCustom((prev) => ({ ...prev, open: false }));
+    if (modalCustom.type === "success") {
       navigate("/principal");
     }
   };
 
   async function RegisterUser() {
-    await api.postRegister(user).then(
-      (response) => {
-        setModalInfo({
-          title: "Sucesso!",
-          message: response.data.message,
-          isSuccess: true,
-          type: "success",
-        });
-        setModalOpen(true);
-        localStorage.setItem("tokenUsuario", response.data.token);
-      },
-      (error) => {
-        console.log(error);
-        setModalInfo({
-          title: "Erro!",
-          message: error.response?.data?.error,
-          isSuccess: false,
-          type: "error",
-        });
-        setModalOpen(true);
-      }
-    );
+    try {
+      const response = await api.postRegister(user);
+      setVerifyModalOpen(true);
+
+    } catch (error) {
+      setModalCustom({
+        open: true,
+        title: "Erro!",
+        message: error.response?.data?.error,
+        type: "error",
+      });
+    }
   }
 
   return (
     <Container component="main" sx={styles.container}>
+      {/* Formulário de Cadastro */}
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.cadastroIconBox}>
           <PersonOutline sx={styles.cadastroIcon} />
@@ -93,6 +91,7 @@ function Register() {
         <Typography component="h1" variant="h5" sx={styles.cadastroTitle}>
           Cadastre-se
         </Typography>
+
         <TextField
           margin="normal"
           required
@@ -108,11 +107,12 @@ function Register() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <PersonOutline sx={{ color: 'gray' }} />
+                <PersonOutline sx={{ color: "gray" }} />
               </InputAdornment>
             ),
           }}
         />
+
         <TextField
           margin="normal"
           required
@@ -127,11 +127,12 @@ function Register() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Email sx={{ color: 'gray' }} />
+                <Email sx={{ color: "gray" }} />
               </InputAdornment>
             ),
           }}
         />
+
         <TextField
           margin="normal"
           required
@@ -147,16 +148,15 @@ function Register() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Lock sx={{ color: 'gray' }} />
+                <Lock sx={{ color: "gray" }} />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setMostrarSenha((previousState) => !previousState)}
+                  onClick={() => setMostrarSenha((prev) => !prev)}
                   edge="end"
-                  sx={{ color: "gray", mr: 0 }}
+                  sx={{ color: "gray" }}
                 >
                   {mostrarSenha ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -164,6 +164,7 @@ function Register() {
             ),
           }}
         />
+
         <TextField
           margin="normal"
           required
@@ -179,16 +180,15 @@ function Register() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Lock sx={{ color: 'gray' }} />
+                <Lock sx={{ color: "gray" }} />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle confirm password visibility"
-                  onClick={() => setMostrarConfirmarSenha((previousState) => !previousState)}
+                  onClick={() => setMostrarConfirmarSenha((prev) => !prev)}
                   edge="end"
-                  sx={{ color: "gray", mr: 0 }}
+                  sx={{ color: "gray" }}
                 >
                   {mostrarConfirmarSenha ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -196,31 +196,52 @@ function Register() {
             ),
           }}
         />
-        <Button
-          type="submit"
-          variant="contained"
-          sx={styles.buttonCadastro}
-        >
+
+        <Button type="submit" variant="contained" sx={styles.buttonCadastro}>
           Cadastrar-se
         </Button>
+
         <Typography variant="body2" sx={styles.jaTemContaText}>
           Já tem uma conta?
         </Typography>
-        <Button
-          component={Link}
-          to="/login"
-          variant="text"
-          sx={styles.buttonToLogin}
-        >
+        <Button component={Link} to="/login" variant="text" sx={styles.buttonToLogin}>
           Login
         </Button>
       </Box>
+
+      {/* Modal de Verificação */}
+      <Modal open={verifyModalOpen} onClose={() => setVerifyModalOpen(false)}>
+        <Box sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          bgcolor: "background.paper",
+          boxShadow: 24,
+          borderRadius: 2,
+        }}>
+          <SecuryCode
+            email={user.email}
+            onResult={(success, message) => {
+              setModalCustom({
+                open: true,
+                title: success ? "Sucesso!" : "Erro!",
+                message,
+                type: success ? "success" : "error",
+              });
+              setVerifyModalOpen(false);
+            }}
+          />
+        </Box>
+      </Modal>
+
+      {/* Modal Custom */}
       <CustomModal
-        open={modalOpen}
-        onClose={handleCloseModal}
-        title={modalInfo.title}
-        message={modalInfo.message}
-        type={modalInfo.type}
+        open={modalCustom.open}
+        onClose={handleCloseCustomModal}
+        title={modalCustom.title}
+        message={modalCustom.message}
+        type={modalCustom.type}
         buttonText="Fechar"
       />
     </Container>
@@ -240,7 +261,7 @@ function getStyles() {
       alignItems: "center",
       minHeight: "80.5vh",
       minWidth: "100%",
-      justifyContent: 'center',
+      justifyContent: "center",
     },
     form: {
       mt: 0,
@@ -248,59 +269,59 @@ function getStyles() {
       flexDirection: "column",
       alignItems: "center",
       backgroundColor: "white",
-      padding: '40px 30px',
-      borderRadius: '20px',
-      boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-      width: '100%',
-      maxWidth: '400px',
+      padding: "40px 30px",
+      borderRadius: "20px",
+      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+      width: "100%",
+      maxWidth: "400px",
     },
     cadastroIconBox: {
-        backgroundColor: 'rgba(255, 0, 0, 1)',
-        borderRadius: '50%',
-        width: '80px',
-        height: '80px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        mb: 2,
+      backgroundColor: "rgba(255, 0, 0, 1)",
+      borderRadius: "50%",
+      width: "80px",
+      height: "80px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      mb: 2,
     },
     cadastroIcon: {
-        color: 'white',
-        fontSize: '40px',
+      color: "white",
+      fontSize: "40px",
     },
     cadastroTitle: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        mb: 3,
-        color: '#333',
+      fontSize: "24px",
+      fontWeight: "bold",
+      mb: 3,
+      color: "#333",
     },
     textField: {
-        mb: 2,
-        '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            backgroundColor: '#f5f5f5',
-            '& fieldset': {
-                borderColor: 'transparent',
-            },
-            '&:hover fieldset': {
-                borderColor: 'transparent',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: 'rgba(255, 0, 0, 0.5)',
-                borderWidth: '1px',
-            },
+      mb: 2,
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "10px",
+        backgroundColor: "#f5f5f5",
+        "& fieldset": {
+          borderColor: "transparent",
         },
-        '& .MuiInputBase-input': {
-            padding: '12px 14px',
-            fontSize: '16px',
-            color: '#333',
+        "&:hover fieldset": {
+          borderColor: "transparent",
         },
-        '& .MuiInputLabel-root': {
-            color: 'gray',
-            '&.Mui-focused': {
-                color: 'rgba(255, 0, 0, 1)',
-            },
+        "&.Mui-focused fieldset": {
+          borderColor: "rgba(255, 0, 0, 0.5)",
+          borderWidth: "1px",
         },
+      },
+      "& .MuiInputBase-input": {
+        padding: "12px 14px",
+        fontSize: "16px",
+        color: "#333",
+      },
+      "& .MuiInputLabel-root": {
+        color: "gray",
+        "&.Mui-focused": {
+          color: "rgba(255, 0, 0, 1)",
+        },
+      },
     },
     buttonCadastro: {
       "&.MuiButton-root": {
@@ -313,7 +334,7 @@ function getStyles() {
       mt: 3,
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: '100%',
+      width: "100%",
       height: 50,
       fontWeight: 600,
       fontSize: 16,
@@ -321,8 +342,8 @@ function getStyles() {
       textTransform: "none",
     },
     jaTemContaText: {
-        mt: 2,
-        color: 'gray',
+      mt: 2,
+      color: "gray",
     },
     buttonToLogin: {
       color: "rgba(255, 0, 0, 1)",

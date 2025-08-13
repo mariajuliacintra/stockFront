@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.86:5001/stock/",
+  baseURL: "http://10.89.240.91:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -21,6 +21,7 @@ api.interceptors.request.use(
 const sheets = {
   postLogin: (user) => api.post(`user/login/`, user),
   postRegister: (user) => api.post(`user/register/`, user),
+  securyCodeApi: (code, email) => api.post(`user/verify-register`, {code, email}),
 };
 
 export default sheets;
