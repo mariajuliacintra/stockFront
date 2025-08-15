@@ -190,10 +190,11 @@ function getStyles() {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      justifyContent: "center", // Agora com a mesma lógica do Register.jsx
-      minHeight: "80vh",
+      justifyContent: "center",
+      minHeight: "81.1vh",
       minWidth: "100%",
       padding: "10px",
+      flex:1
     },
     form: {
       display: "flex",

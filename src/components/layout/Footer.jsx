@@ -26,12 +26,12 @@ function getStyles() {
     },
     footerBorder: {
       width: "100%",
-      height: "7px", // Altura da barra branca fixa em pixels
+      height: "1vh", // Altura da barra branca fixa em pixels
       backgroundColor: "white",
     },
     footerContent: {
       flexGrow: 1, // Permite que o conteúdo do footer preencha o espaço restante
-      minHeight: '45px', // Altura mínima para o conteúdo
+      minHeight: '7vh', // Altura mínima para o conteúdo
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
