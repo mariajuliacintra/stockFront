@@ -18,11 +18,11 @@ function getStyles() {
     header: {
       backgroundColor: "rgba(177, 16, 16, 1)",
       width: "100%",
-      height: "60px",
+      height: "10vh",
       display: "flex",
       alignItems: "center",
       justifyContent: "flex-end",
-      borderBottom: "7px solid white", // Já estava em px, o que é correto
+      borderBottom: "1vh solid white",
     },
     buttonHome: {
       mr: { xs: 0.5, sm: 1.5 },

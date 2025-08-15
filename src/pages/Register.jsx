@@ -255,7 +255,7 @@ function getStyles() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      minHeight: "80vh",
+      minHeight: "81.1vh",
       minWidth: "100%",
       padding:"5px"
     },
