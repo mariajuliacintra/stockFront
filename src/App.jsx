@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import RecSenha from "./pages/RecSenha";
+import PageCards from "./pages/PageCards";
 
 import DefaultLayout from "./components/layout/DefaultLayout";
 
@@ -45,6 +46,14 @@ function App() {
               <DefaultLayout>
                 <RecSenha />
               </DefaultLayout>
+            }
+          />
+          <Route
+            path="/principal"
+            element={
+
+                <PageCards />
+
             }
           />
         </Routes>
