@@ -7,14 +7,19 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 const HeaderCards = ({}) => {
   const styles = getStyles();
+  function logout() {
+    localStorage.removeItem("authenticated");
+    navigate("/");
+  }
+
   return (
     <Box sx={styles.header}>
       <img src={logo} alt="Logo" style={styles.logo} />
       <Box>
-        <Button component={Link} to="/">
+        <Button component={Link} to="/perfil" >
           <PersonIcon sx={styles.PersonIcon} />
         </Button>
-        <Button component={Link} to="/" sx={styles.buttonHome}>
+        <Button component={Link} to="/" onClick={logout} sx={styles.buttonHome}>
           <LogoutIcon sx={styles.HomeIcon} />
         </Button>
       </Box>
