@@ -10,6 +10,8 @@ import {
   InputAdornment,
   IconButton,
   Typography,
+  Alert,
+  Snackbar
 } from "@mui/material";
 
 import {
@@ -26,6 +28,10 @@ function Login() {
   const styles = getStyles();
   useEffect(() => {
     document.title = "Login | SENAI";
+    const refreshToken = localStorage.getItem("refresh_token");
+    if (refreshToken) {
+      showAlert("warning", "Sua sessão expirou, Faça login novamente");
+    }
   }, []);
   const [user, setUser] = useState({ email: "", password: "" });
   const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -37,6 +43,24 @@ function Login() {
     isSuccess: false,
     type: "",
   });
+
+  const [alert, setAlert] = useState({
+    //Visibilidade (false=oculta; true = visivel)
+    open: false,
+    //Nivel do alerta (sucess, error , warning, etc)
+    severity: "",
+    //Mensagem que será exibida
+    message: "",
+  });
+  //Função para exibir o alerta
+  const showAlert = (severity, message) => {
+    setAlert({ open: true, severity: severity, message: message });
+    localStorage.removeItem("refresh_token");
+  };
+  //Função para fechar o alerta
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -67,12 +91,13 @@ function Login() {
         setModalOpen(true);
         const tokenUsuario = response.data.token;
         localStorage.setItem("tokenUsuario", tokenUsuario);
+        localStorage.setItem("authenticated", true);
       },
       (error) => {
         console.log(error);
         setModalInfo({
           title: "Erro!",
-          message: error.response?.data?.error || "Erro ao fazer Login",
+          message: error.response?.data?.error,
           isSuccess: false,
           type: "error",
         });
@@ -83,6 +108,20 @@ function Login() {
 
   return (
     <Container component="main" sx={styles.container}>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={3000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity={alert.severity}
+          sx={{ width: "100%" }}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.loginIconBox}>
           <ArrowForward sx={styles.loginIcon} />
@@ -194,7 +233,7 @@ function getStyles() {
       minHeight: "81.1vh",
       minWidth: "100%",
       padding: "10px",
-      flex:1
+      flex: 1,
     },
     form: {
       display: "flex",

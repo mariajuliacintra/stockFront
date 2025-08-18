@@ -57,9 +57,9 @@ function App() {
           <Route
             path="/principal"
             element={
-
+              <ProtectedRouter>
                 <PageCards />
-
+              </ProtectedRouter>
             }
           />
 
