@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://192.168.1.69:5000/stock/",
+  baseURL: "http://10.89.240.86:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -14,6 +14,26 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      if (error.response.status === 401 && error.response.data.auth === false) {
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("tokenUsuario");
+        localStorage.removeItem("authenticated");
+        window.location.href = "/";
+      }
+      if (error.response.status === 403 && error.response.data.auth === false) {
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("token");
+        localStorage.removeItem("authenticated");
+        window.location.href = "/";
+      }
+    }
     return Promise.reject(error);
   }
 );
