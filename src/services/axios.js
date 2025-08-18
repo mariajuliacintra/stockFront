@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.86:5000/stock/",
+  baseURL: "http://10.89.240.91:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -45,6 +45,7 @@ const sheets = {
   postVerifyRecoveryPassword: (email) => api.post("user/verify-recovery-password", email),
   postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
+  getItens: (category, params) => api.get(`stock/${category}/`, { params }),
 };
 
 export default sheets;
