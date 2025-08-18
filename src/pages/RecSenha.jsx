@@ -125,7 +125,7 @@ function RecSenha() {
 }
 
 function getStyles() {
-  // ... (o restante dos seus estilos permanece o mesmo)
+  
   return {
     container: {
       backgroundImage: `url(../../img/fundo.png)`,

@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { createTheme } from "@mui/material/styles";
-
 import ProtectedRouter from "./components/secure/ProtectedRoute";
-
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import RecSenha from "./pages/RecSenha";
+import Perfil from "./pages/Perfil"; 
 
 import DefaultLayout from "./components/layout/DefaultLayout";
+
 
 const theme = createTheme({
   typography: {
@@ -22,7 +22,10 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* Rota da página inicial */}
+          <Route path="/" element={<Perfil />} />
+
+          {/* Rotas de autenticação (com o layout padrão) */}
           <Route
             path="/login"
             element={
@@ -44,6 +47,15 @@ function App() {
             element={
               <DefaultLayout>
                 <RecSenha />
+              </DefaultLayout>
+            }
+          />
+
+          <Route
+            path="/perfil"
+            element={
+              <DefaultLayout>
+                <Perfil />
               </DefaultLayout>
             }
           />
