@@ -56,7 +56,7 @@ function Register() {
   const handleCloseCustomModal = () => {
     setModalCustom((prev) => ({ ...prev, open: false }));
     if (modalCustom.type === "success") {
-      navigate("/principal");
+      navigate("/login");
     }
   };
 
