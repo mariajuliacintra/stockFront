@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 
 const DefaultLayout = ({ children }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
       <Header />
       <Box 
         component="main" 

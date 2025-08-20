@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import logo from "../../img/logo.png";
 import { Box, Button, Container, Typography } from "@mui/material";
 
 function Home() {
   const styles = getStyles();
+    useEffect(() => {
+      document.title = "Home | SENAI";
+    }, []);
 
   return (
     <Box sx={styles.pageContainer}>
@@ -72,18 +76,17 @@ function getStyles() {
     header: {
       backgroundColor: "rgba(177, 16, 16, 1)",
       width: "100%",
-      height: "2vh",
+      height: "10vh",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
       borderBottom: "7px solid white",
-      p: { xs: 2, sm: 3 },
     },
     logo: {
       height: "35px",
       border: "4.5px solid white",
       borderRadius: 15,
-      marginLeft: 2,
+      marginLeft: 30,
     },
     buttonsContainer: {
       display: "flex",

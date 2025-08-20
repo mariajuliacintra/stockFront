@@ -47,8 +47,6 @@ function RecSenha() {
         message: "Código de recuperação enviado para o seu e-mail.",
         isSuccess: true,
         type: "success",
-        // A chave aqui é esta função onClose:
-        // Ao fechar o CustomModal, ele abre o RecoveryModal.
         onClose: () => {
           setModalOpen(false);
           setRecoveryModalOpen(true);
@@ -70,7 +68,7 @@ function RecSenha() {
   };
 
   return (
-    <Container component="main" maxWidth={false} sx={styles.container}>
+    <Container component="main" sx={styles.container}>
       <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
         <Box sx={styles.senaiLogo}></Box> 
 
@@ -136,7 +134,7 @@ function getStyles() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent:"center",
-      minHeight: "100vh",
+      minHeight: "81.1vh",
       minWidth: "100%",
     },
     form: {
@@ -148,7 +146,7 @@ function getStyles() {
       borderRadius: '15px',
       boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
       width: '100%',
-      maxWidth: '320px',
+      maxWidth: '300px',
     },
     senaiLogo: {
       backgroundImage: `url(${senaiLogo})`,
@@ -157,7 +155,7 @@ function getStyles() {
       backgroundPosition: "center",
       width: "150px",
       height: "50px",
-      mb: 1.5,
+      mb: 2,
     },
     recuperarSenhaTitle: {
       fontSize: "16px",

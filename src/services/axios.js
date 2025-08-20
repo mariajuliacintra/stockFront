@@ -17,6 +17,26 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      if (error.response.status === 401 && error.response.data.auth === false) {
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("tokenUsuario");
+        localStorage.removeItem("authenticated");
+        window.location.href = "/";
+      }
+      if (error.response.status === 403 && error.response.data.auth === false) {
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("token");
+        localStorage.removeItem("authenticated");
+        window.location.href = "/";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 const sheets = {
   postLogin: (user) => api.post(`user/login/`, user),
@@ -25,6 +45,7 @@ const sheets = {
   postVerifyRecoveryPassword: (email) => api.post("user/verify-recovery-password", email),
   postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
+  getItens: (category, params) => api.get(`stock/${category}/`, { params }),
 };
 
 export default sheets;
