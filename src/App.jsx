@@ -8,12 +8,12 @@ import Login from "./pages/Login";
 import RecSenha from "./pages/RecSenha";
 import Perfil from "./pages/Perfil"; 
 import PageCards from "./pages/PageCards";
-import Equipments from "./pages/Equipments";
-import Material from "./pages/Material";
-import Others from "./pages/Others";
-import Products from "./pages/Products";
-import Raw_material from "./pages/raw_material";
-import Tools from "./pages/Tools";
+import Equipments from "./pages/Equipments/Equipments";
+import Material from "./pages/Equipments/Material";
+import Others from "./pages/Equipments/Others";
+import Products from "./pages/Equipments/Products";
+import Raw_material from "./pages/Equipments/Raw_material";
+import Tools from "./pages/Equipments/Tools";
 
 import DefaultLayout from "./components/layout/DefaultLayout";
 
@@ -29,10 +29,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          {/* Rota da página inicial */}
-          <Route path="/" element={<Perfil />} />
-
-          {/* Rotas de autenticação (com o layout padrão) */}
+          <Route path="/" element={<Home />} />
           <Route
             path="/login"
             element={
