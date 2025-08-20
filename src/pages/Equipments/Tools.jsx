@@ -1,12 +1,12 @@
 // pages/EquipamentosPage.jsx
 import { useEffect, useState } from "react";
 import { Box, Paper, TextField, Button } from "@mui/material";
-import HeaderCards from "../components/layout/HeaderCards";
-import Footer from "../components/layout/Footer";
+import HeaderCards from "../../components/layout/HeaderCards";
+import Footer from "../../components/layout/Footer";
 
-function Others() {
+function Tools() {
   useEffect(() => {
-    document.title = "Diversos | SENAI";
+    document.title = "Ferramentas | SENAI";
   }, []);
 
   const [search, setSearch] = useState("");
@@ -71,4 +71,4 @@ function Others() {
   );
 }
 
-export default Others;
+export default Tools;
