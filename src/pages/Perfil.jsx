@@ -7,8 +7,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Footer from "../components/layout/Footer";
-import Header from "../components/layout/Header";
+import FooterPerfil from "../components/layout/Footer";
+import HeaderPerfil from "../components/layout/Header";
 import senaiLogo from '../../img/logo.png';
 
 function Perfil() {
@@ -32,7 +32,7 @@ function Perfil() {
 
   return (
     <Box sx={styles.pageLayout}>
-      <Header />
+      <HeaderPerfil />
       
       <Container component="main" maxWidth={false} sx={styles.container}>
         <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
@@ -55,6 +55,9 @@ function Perfil() {
             value={userProfile.name}
             onChange={onChange}
             sx={styles.textField}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           
           <TextField
@@ -68,6 +71,9 @@ function Perfil() {
             value={userProfile.email}
             onChange={onChange}
             sx={styles.textField}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           
           <Button type="submit" variant="contained" sx={styles.button}>
@@ -80,7 +86,7 @@ function Perfil() {
         </Box>
       </Container>
       
-      <Footer/>
+      <FooterPerfil/>
     </Box>
   );
 }
@@ -154,7 +160,7 @@ function getStyles() {
         color: "#333",
       },
       "& .MuiInputLabel-root": {
-        fontSize: "14px",
+        fontSize: "15px",
         color: "gray",
         "&.Mui-focused": {
           color: "rgba(255, 0, 0, 1)",

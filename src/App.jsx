@@ -30,7 +30,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Rota da página inicial */}
-          <Route path="/" element={<Perfil />} />
+          <Route path="/" element={<Home />} />
 
           {/* Rotas de autenticação (com o layout padrão) */}
           <Route
@@ -60,9 +60,9 @@ function App() {
           <Route
             path="/perfil"
             element={
-              <DefaultLayout>
+              
                 <Perfil />
-              </DefaultLayout>
+              
             }
           />
           <Route
