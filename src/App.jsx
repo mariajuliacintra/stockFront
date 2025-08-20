@@ -8,7 +8,7 @@ import Login from "./pages/Login";
 import RecSenha from "./pages/RecSenha";
 import Perfil from "./pages/Perfil"; 
 import PageCards from "./pages/PageCards";
-import Equipments from "./pages/Equipments/Equipments";
+import Equipments from "./pages/Equipments/Itens";
 import Material from "./pages/Equipments/Material";
 import Others from "./pages/Equipments/Others";
 import Products from "./pages/Equipments/Products";
