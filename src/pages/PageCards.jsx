@@ -20,16 +20,24 @@ function PageCards() {
     document.title = "Cards | SENAI";
   }, []);
 
+  // O componente Card agora passa a categoria no objeto 'state' do React Router
   const Card = ({ title, icon, to }) => (
     <Box sx={styles.card}>
       <Box sx={styles.iconContainer}>{icon}</Box>
       <Typography sx={styles.cardTitle}>{title}</Typography>
-      <Button component={Link} to={to} variant="contained" sx={styles.cardButton}>
+      <Button
+        component={Link}
+        to={{
+          pathname: to,
+          state: { category: title }
+        }}
+        variant="contained"
+        sx={styles.cardButton}
+      >
         Entrar
       </Button>
     </Box>
   );
-
 
   return (
     <Box sx={styles.pageContainer}>
