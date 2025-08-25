@@ -14,36 +14,48 @@ import senaiLogo from '../../img/logo.png';
 function Perfil() {
   const styles = getStyles();
 
-  useEffect(() => {
-    document.title = "Perfil | SENAI";
-  }, []);
-
+  // O estado agora é apenas para exibir os dados do usuário
   const [userProfile, setUserProfile] = useState({ name: "", email: "" });
 
-  const onChange = (event) => {
-    const { name, value } = event.target;
-    setUserProfile({ ...userProfile, [name]: value });
-  };
+  useEffect(() => {
+    document.title = "Perfil | SENAI";
 
+    // Pega os dados do usuário do localStorage
+    const storedUserData = localStorage.getItem('user');
+
+    if (storedUserData) {
+      try {
+        const userData = JSON.parse(storedUserData);
+        // Atualiza o estado com os dados do usuário
+        setUserProfile({
+          name: userData.name || "",
+          email: userData.email || ""
+        });
+      } catch (error) {
+        console.error("Falha ao parsear os dados do usuário do localStorage:", error);
+      }
+    }
+  }, []);
+
+  // As funções de alteração e envio do formulário foram removidas
+  // pois não há mais funcionalidade de edição.
+  const onChange = () => {};
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Perfil editado:", userProfile);
   };
 
   return (
     <Box sx={styles.pageLayout}>
       <HeaderPerfil />
-      
+        
       <Container component="main" maxWidth={false} sx={styles.container}>
         <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
-          {/* Logo do Senai */}
-          <Box sx={styles.senaiLogo}></Box> 
-          
-          {/* Título da tela, agora como na tela de Recuperar Senha */}
+          <Box sx={styles.senaiLogo}></Box>
+            
           <Typography component="h1" variant="h5" sx={styles.profileTitle}>
             Meu Perfil
           </Typography>
-          
+            
           <TextField
             margin="normal"
             required
@@ -54,12 +66,13 @@ function Perfil() {
             autoFocus
             value={userProfile.name}
             onChange={onChange}
+            disabled // O campo de nome é sempre desabilitado
             sx={styles.textField}
             InputLabelProps={{
               shrink: true,
             }}
           />
-          
+            
           <TextField
             margin="normal"
             required
@@ -70,13 +83,19 @@ function Perfil() {
             autoComplete="email"
             value={userProfile.email}
             onChange={onChange}
+            disabled // O campo de e-mail é sempre desabilitado
             sx={styles.textField}
             InputLabelProps={{
               shrink: true,
             }}
           />
-          
-          <Button type="submit" variant="contained" sx={styles.button}>
+            
+          {/* Botão "Editar Perfil" sem funcionalidade */}
+          <Button 
+            type="button" 
+            variant="contained" 
+            sx={styles.button}
+          >
             Editar Perfil
           </Button>
           
@@ -85,7 +104,7 @@ function Perfil() {
           </Button>
         </Box>
       </Container>
-      
+        
       <FooterPerfil/>
     </Box>
   );
