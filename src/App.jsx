@@ -6,17 +6,10 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import RecSenha from "./pages/RecSenha";
-import Perfil from "./pages/Perfil"; 
+import Perfil from "./pages/Perfil";
 import PageCards from "./pages/PageCards";
-import Equipments from "./pages/Equipments/Itens";
-import Material from "./pages/Equipments/Material";
-import Others from "./pages/Equipments/Others";
-import Products from "./pages/Equipments/Products";
-import Raw_material from "./pages/Equipments/Raw_material";
-import Tools from "./pages/Equipments/Tools";
-
+import Itens from "./pages/Itens";
 import DefaultLayout from "./components/layout/DefaultLayout";
-
 
 const theme = createTheme({
   typography: {
@@ -71,44 +64,11 @@ function App() {
             }
           />
           <Route
-            path="/equipamentos"
+            path="/:category"
             element={
-                <Equipments />
-            }
-          />
-
-          <Route
-            path="/Material"
-            element={
-                <Material />
-            }
-          />
-
-          <Route
-            path="/Diversos"
-            element={
-                <Others />
-            }
-          />
-
-          <Route
-            path="/Produtos"
-            element={
-                <Products />
-            }
-          />
-
-          <Route
-            path="/materia-prima"
-            element={
-                <Raw_material />
-            }
-          />
-
-          <Route
-            path="/Ferramenta"
-            element={
-                <Tools />
+              <ProtectedRouter>
+                <Itens />
+              </ProtectedRouter>
             }
           />
         </Routes>
