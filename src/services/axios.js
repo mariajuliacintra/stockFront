@@ -45,7 +45,7 @@ const sheets = {
   postVerifyRecoveryPassword: (email) => api.post("user/verify-recovery-password", email),
   postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
-  getItens: (category, params) => api.get(`stock/${category}/`, { params }),
+  getItens: (category, params) => api.get(`${category}/`, { params }),
 };
 
 export default sheets;

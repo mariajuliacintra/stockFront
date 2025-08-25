@@ -10,7 +10,7 @@ import {
   Construction,
   Folder,
   Add,
-  Park
+  Park,
 } from "@mui/icons-material";
 
 function PageCards() {
@@ -21,16 +21,13 @@ function PageCards() {
   }, []);
 
   // O componente Card agora passa a categoria no objeto 'state' do React Router
-  const Card = ({ title, icon, to }) => (
+  const Card = ({ title, icon }) => (
     <Box sx={styles.card}>
       <Box sx={styles.iconContainer}>{icon}</Box>
       <Typography sx={styles.cardTitle}>{title}</Typography>
       <Button
         component={Link}
-        to={{
-          pathname: to,
-          state: { category: title }
-        }}
+        to={`/${categoryMap[title]}`}
         variant="contained"
         sx={styles.cardButton}
       >
@@ -39,41 +36,26 @@ function PageCards() {
     </Box>
   );
 
+  const categoryMap = {
+    Ferramentas: "tools",
+    Materiais: "materials",
+    Produtos: "products",
+    Equipamentos: "equipments",
+    "Matéria-prima": "rawMaterials",
+    Diversos: "diverses",
+  };
+
   return (
     <Box sx={styles.pageContainer}>
       <HeaderCards />
       <Container maxWidth={false} sx={styles.mainContent}>
         <Box sx={styles.cardsGrid}>
-          <Card
-            title="Equipamentos"
-            icon={<Settings sx={styles.icon} />}
-            to="/equipamentos"
-          />
-          <Card
-            title="Produtos"
-            icon={<Archive sx={styles.icon} />}
-            to="/produtos"
-          />
-          <Card
-            title="Matéria-prima"
-            icon={<Park sx={styles.icon} />}
-            to="/materia-prima"
-          />
-          <Card
-            title="Material"
-            icon={<Extension sx={styles.icon} />}
-            to="/material"
-          />
-          <Card
-            title="Ferramenta"
-            icon={<Construction sx={styles.icon} />}
-            to="/ferramenta"
-          />
-          <Card
-            title="Diversos"
-            icon={<Folder sx={styles.icon} />}
-            to="/diversos"
-          />
+          <Card title="Equipamentos" icon={<Settings sx={styles.icon} />} />
+          <Card title="Produtos" icon={<Archive sx={styles.icon} />} />
+          <Card title="Matéria-prima" icon={<Park sx={styles.icon} />} />
+          <Card title="Materiais" icon={<Extension sx={styles.icon} />} />
+          <Card title="Ferramentas" icon={<Construction sx={styles.icon} />} />
+          <Card title="Diversos" icon={<Folder sx={styles.icon} />} />
           <Card
             title="Adicionar Item"
             icon={<Add sx={styles.icon} />}
