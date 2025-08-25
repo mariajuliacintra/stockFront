@@ -1,35 +1,28 @@
 // pages/EquipamentosPage.jsx
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Box, TextField, Button } from "@mui/material";
-import HeaderCards from "../components/layout/HeaderCards";
-import Footer from "../components/layout/Footer";
-import sheets from "../services/axios";
+import { Box, Paper, TextField, Button } from "@mui/material";
+import HeaderCards from "../../components/layout/HeaderCards";
+import Footer from "../../components/layout/Footer";
 
-function Itens() {
-  const { category } = useParams(); // pega a categoria da rota
-  const [search, setSearch] = useState("");
-  const [itens, setItens] = useState([]);
-
+function Products() {
   useEffect(() => {
-    document.title = `${category} | SENAI`;
-  }, [category]);
+    document.title = "Produtos | SENAI";
+  }, []);
 
-  const handleFilter = async () => {
-    try {
-      const response = await sheets.getItens(category, { nome: search });
-      setItens(response.data);
-      console.log("Itens filtrados:", response.data);
-    } catch (error) {
-      console.error("Erro ao buscar itens:", error);
-    }
+  const [search, setSearch] = useState("");
+
+  const handleFilter = () => {
+    console.log("Filtro enviado:", search);
+    // Aqui você vai chamar a API com o search
+    // ex: axios.get(`/equipamentos?nome=${search}`)
   };
 
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <HeaderCards />
+
       <Box sx={{ flex: 1, p: { xs: 2, md: 3 } }}>
-        {/* Filtro */}
+        {/* Campo + Botão */}
         <Box
           sx={{
             display: "flex",
@@ -43,13 +36,13 @@ function Itens() {
         >
           <TextField
             fullWidth
-            placeholder={`Filtrar ${category}...`}
+            placeholder="Filtro de produto ex: chave"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             variant="outlined"
             size="small"
             sx={{
-              backgroundColor: "#fff",
+              backgroundColor: "#0000",
               borderRadius: "20px",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "20px",
@@ -71,23 +64,11 @@ function Itens() {
             FILTRAR
           </Button>
         </Box>
-
-        {/* Lista de itens */}
-        <Box sx={{ mt: 2 }}>
-          {itens.length > 0 ? (
-            itens.map((item) => (
-              <div key={item.id}>{item.nome}</div>
-            ))
-          ) : (
-            <p style={{ textAlign: "center", marginTop: "20px" }}>
-              Nenhum item encontrado.
-            </p>
-          )}
-        </Box>
       </Box>
+
       <Footer />
     </Box>
   );
 }
 
-export default Itens;
+export default Products;

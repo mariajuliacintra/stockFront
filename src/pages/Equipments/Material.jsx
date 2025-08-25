@@ -1,12 +1,12 @@
 // pages/EquipamentosPage.jsx
 import { useEffect, useState } from "react";
 import { Box, Paper, TextField, Button } from "@mui/material";
-import HeaderCards from "../components/layout/HeaderCards";
-import Footer from "../components/layout/Footer";
+import HeaderCards from "../../components/layout/HeaderCards";
+import Footer from "../../components/layout/Footer";
 
-function Raw_material() {
+function Material() {
   useEffect(() => {
-    document.title = "Matéria-prima | SENAI";
+    document.title = "Material | SENAI";
   }, []);
 
   const [search, setSearch] = useState("");
@@ -71,4 +71,4 @@ function Raw_material() {
   );
 }
 
-export default Raw_material;
+export default Material;
