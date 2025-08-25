@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.83:5000/stock/",
-  headers: { accept: "application/json" },
+  baseURL: "http://10.89.240.83:5000/stock/",
+  headers: { accept: "application/json" },
 });
 
 api.interceptors.request.use(
