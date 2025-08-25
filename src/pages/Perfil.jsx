@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import FooterPerfil from "../components/layout/Footer";
-import HeaderPerfil from "../components/layout/Header";
+import HeaderPerfil from "../components/layout/HeaderPerfil";
 import senaiLogo from '../../img/logo.png';
 
 function Perfil() {
