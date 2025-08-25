@@ -93,6 +93,6 @@ Os requisitos necessários para funcionamento pleno do projeto estão em outro r
 
 ## Autores
 
-- [@fogazzaa](https://github.com/Fogazzaa)
-- [@mariafernandacintra](https://github.com/MariaFernandaCintra)
+- [@MateusC2](https://github.com/MateusC2)
+- [@HyagoGabriel](https://github.com/HyagoGabriel)
 - [@mariajuliacintra](https://github.com/mariajuliacintra)
