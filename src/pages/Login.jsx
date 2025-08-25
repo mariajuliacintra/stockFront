@@ -82,6 +82,13 @@ function Login() {
   async function LoginUser() {
     await api.postLogin(user).then(
       (response) => {
+        // --- INÍCIO DA MUDANÇA CRUCIAL ---
+        // Aqui salvamos os dados do usuário no localStorage
+        localStorage.setItem("tokenUsuario", response.data.token);
+        localStorage.setItem("authenticated", true);
+        localStorage.setItem("user", JSON.stringify(response.data.user)); // <<< Adicionado esta linha
+        // --- FIM DA MUDANÇA CRUCIAL ---
+
         setModalInfo({
           title: "Sucesso!",
           message: response.data.message,
@@ -89,9 +96,6 @@ function Login() {
           type: "success",
         });
         setModalOpen(true);
-        const tokenUsuario = response.data.token;
-        localStorage.setItem("tokenUsuario", tokenUsuario);
-        localStorage.setItem("authenticated", true);
       },
       (error) => {
         console.log(error);
