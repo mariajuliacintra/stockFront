@@ -23,11 +23,14 @@ import {
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
 import api from "../services/axios";
+import ModalDescription from "../components/mod/ModalDescription";
 
 function Itens() {
   const { category } = useParams();
   const [search, setSearch] = useState("");
   const [itens, setItens] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const categoryDisplay = {
     tools: "Ferramentas",
@@ -55,11 +58,15 @@ function Itens() {
       const response = await api.getItens(category, config);
       // resposta esperada: array no response.data
       setItens(Array.isArray(response.data) ? response.data : []);
-      console.log("Itens recebidos:", response.data);
     } catch (error) {
       console.error("Erro ao buscar itens:", error);
       setItens([]);
     }
+  };
+
+  const handleOpenModal = (item) => {
+    setSelectedItem(item);
+    setModalOpen(true);
   };
 
   useEffect(() => {
@@ -75,7 +82,7 @@ function Itens() {
   const getTitle = (item) => item.name;
   const getSpecs = (item) => item.technicalSpecs;
 
-  const CardItem = ({ item, index }) => {
+  const CardItem = ({ item, index, onOpenModal }) => {
     const title = getTitle(item) || `Item ${index + 1}`;
     const specsRaw = getSpecs(item);
     const specs = specsRaw ? specsRaw : null;
@@ -120,7 +127,7 @@ function Itens() {
           <Button
             size="small"
             sx={styles.verMaisButton}
-            onClick={() => console.log("ver mais", id)}
+            onClick={() => onOpenModal(item)}
           >
             Ver mais
           </Button>
@@ -166,7 +173,12 @@ function Itens() {
         <Box sx={styles.cardsGrid}>
           {itens.length > 0 ? (
             itens.map((item, idx) => (
-              <CardItem item={item} key={idx} index={idx} />
+              <CardItem
+                item={item}
+                key={idx}
+                index={idx}
+                onOpenModal={handleOpenModal}
+              />
             ))
           ) : (
             <Typography sx={{ textAlign: "center", width: "100%", mt: 4 }}>
@@ -177,6 +189,12 @@ function Itens() {
       </Box>
 
       <Footer />
+
+      <ModalDescription
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        item={selectedItem}
+      />
     </Box>
   );
 }
