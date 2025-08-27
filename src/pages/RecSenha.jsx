@@ -13,7 +13,6 @@ import {
 
 import { Email } from "@mui/icons-material";
 
-// Importe o CustomModal e o RecoveryModal
 import CustomModal from "../components/mod/CustomModal";
 import RecoveryModal from "../components/mod/RecoveryModal";
 
@@ -110,7 +109,6 @@ function RecSenha() {
         message={modalInfo.message}
         type={modalInfo.type}
       />
-      {/* O novo modal de recuperação de senha */}
       <RecoveryModal
         open={recoveryModalOpen}
         onClose={() => setRecoveryModalOpen(false)}
