@@ -22,7 +22,7 @@ import {
 } from "@mui/icons-material";
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
-import sheets from "../services/axios";
+import api from "../services/axios";
 
 function Itens() {
   const { category } = useParams();
@@ -52,7 +52,7 @@ function Itens() {
     if (!category) return;
     try {
       const config = filter ? { params: { nome: filter } } : {};
-      const response = await sheets.getItens(category, config);
+      const response = await api.getItens(category, config);
       // resposta esperada: array no response.data
       setItens(Array.isArray(response.data) ? response.data : []);
       console.log("Itens recebidos:", response.data);
@@ -244,7 +244,7 @@ const styles = {
     fontWeight: 700,
     color: "#222",
     mt: 0.5,
-    ml: 5, 
+    ml: 5,
   },
   specs: {
     fontSize: "0.95rem",
