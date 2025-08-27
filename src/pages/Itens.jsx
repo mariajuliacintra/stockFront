@@ -203,18 +203,14 @@ const styles = {
   },
   cardsGrid: {
     display: "grid",
-    gridTemplateColumns: {
-      xs: "1fr",
-      sm: "repeat(2, 1fr)",
-      md: "repeat(3, 1fr)",
-      lg: "repeat(4, 1fr)",
-    },
-    gap: "60px",
-    maxWidth: "85vw",
-    width: "100%",
-    justifyItems: "center",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "60px 50px", // Espaçamento vertical e horizontal entre os cards
+    paddingLeft: "50px",
+    paddingRight: "50px",
     marginTop: "24px",
-    mx: "auto",
+    width: "100%",
+    boxSizing: "border-box",
+    justifyItems: "center",
   },
   card: {
     width: "100%",
