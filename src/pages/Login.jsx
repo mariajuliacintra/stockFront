@@ -45,19 +45,16 @@ function Login() {
   });
 
   const [alert, setAlert] = useState({
-    //Visibilidade (false=oculta; true = visivel)
     open: false,
-    //Nivel do alerta (sucess, error , warning, etc)
     severity: "",
-    //Mensagem que será exibida
     message: "",
   });
-  //Função para exibir o alerta
+
   const showAlert = (severity, message) => {
     setAlert({ open: true, severity: severity, message: message });
     localStorage.removeItem("refresh_token");
   };
-  //Função para fechar o alerta
+
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
   };
@@ -82,12 +79,9 @@ function Login() {
   async function LoginUser() {
     await api.postLogin(user).then(
       (response) => {
-        // --- INÍCIO DA MUDANÇA CRUCIAL ---
-        // Aqui salvamos os dados do usuário no localStorage
         localStorage.setItem("tokenUsuario", response.data.token);
         localStorage.setItem("authenticated", true);
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // <<< Adicionado esta linha
-        // --- FIM DA MUDANÇA CRUCIAL ---
+        localStorage.setItem("user", JSON.stringify(response.data.user));
 
         setModalInfo({
           title: "Sucesso!",
