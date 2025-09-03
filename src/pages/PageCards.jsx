@@ -39,14 +39,16 @@ function PageCards() {
     </Box>
   );
 
-  const categoryMap = {
-    "Ferramentas": "tools",
-    "Materiais": "materials",
-    "Produtos": "products",
-    "Equipamentos": "equipments",
-    "Matéria-prima": "rawMaterials",
-    "Diversos": "diverses",
-  };
+
+  const categoryMap = {
+    Ferramentas: "tool",
+    Materiais: "material",
+    Produtos: "product",
+    Equipamentos: "equipment",
+    "Matéria-prima": "rawMaterial",
+    Diversos: "diverses",
+  };
+
 
   const handleOpenModal = () => {
     setIsModalOpen(true);

@@ -23,18 +23,23 @@ import {
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
 import api from "../services/axios";
+import ModalDescription from "../components/mod/ModalDescription";
 
 function Itens() {
   const { category } = useParams();
   const [search, setSearch] = useState("");
+  const [allItens, setAllItens] = useState([]);
   const [itens, setItens] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [errorMessage, setErrorMessage] = useState();
 
   const categoryDisplay = {
-    tools: "Ferramentas",
-    materials: "Materiais",
-    products: "Produtos",
-    equipments: "Equipamentos",
-    rawMaterials: "Matéria-prima",
+    tool: "Ferramentas",
+    material: "Materiais",
+    product: "Produtos",
+    equipment: "Equipamentos",
+    rawMaterial: "Matéria-prima",
     diverses: "Diversos",
   };
 
@@ -48,34 +53,55 @@ function Itens() {
   };
 
   // Busca itens (usa params para query string)
-  const fetchItens = async (filter = "") => {
+  const fetchItens = async () => {
     if (!category) return;
     try {
-      const config = filter ? { params: { nome: filter } } : {};
-      const response = await api.getItens(category, config);
-      // resposta esperada: array no response.data
-      setItens(Array.isArray(response.data) ? response.data : []);
-      console.log("Itens recebidos:", response.data);
+      const response = await api.getItens(category);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setAllItens(data);
+      setItens(data);
     } catch (error) {
-      console.error("Erro ao buscar itens:", error);
+      setErrorMessage(error.response?.data?.message);
       setItens([]);
     }
   };
+
+  const handleOpenModal = (item) => {
+    setSelectedItem(item);
+    setModalOpen(true);
+  };
+
+  const handleFilter = () => {
+    if (!search.trim()) {
+      setItens(allItens);
+      setErrorMessage("");
+      return;
+    }
+    const filtered = allItens.filter((item) => {
+      const nome = item.name || "";
+      return nome.toLowerCase().includes(search.toLowerCase());
+    });
+    setItens(filtered);
+    if (filtered.length === 0) {
+      setErrorMessage("Nenhum item encontrado.");
+    } else {
+      setErrorMessage("");
+    }
+  };
+  
 
   useEffect(() => {
     if (!category) return;
     document.title = `${categoryDisplay[category] || category} | SENAI`;
     fetchItens();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
-  const handleFilter = () => fetchItens(search);
 
   // Extrai título e especificação de forma robusta (vários nomes de campo possíveis)
   const getTitle = (item) => item.name;
   const getSpecs = (item) => item.technicalSpecs;
 
-  const CardItem = ({ item, index }) => {
+  const CardItem = ({ item, index, onOpenModal }) => {
     const title = getTitle(item) || `Item ${index + 1}`;
     const specsRaw = getSpecs(item);
     const specs = specsRaw ? specsRaw : null;
@@ -120,7 +146,7 @@ function Itens() {
           <Button
             size="small"
             sx={styles.verMaisButton}
-            onClick={() => console.log("ver mais", id)}
+            onClick={() => onOpenModal(item)}
           >
             Ver mais
           </Button>
@@ -138,7 +164,7 @@ function Itens() {
         </Typography>
 
         <Box sx={styles.filterRow}>
-          <TextField
+        <TextField
             fullWidth
             variant="outlined"
             placeholder={`Filtro de ${
@@ -148,6 +174,9 @@ function Itens() {
             onChange={(e) => setSearch(e.target.value)}
             size="small"
             sx={{ borderRadius: 50, backgroundColor: "#fff" }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleFilter();
+            }}
           />
           <Button
             variant="contained"
@@ -166,17 +195,28 @@ function Itens() {
         <Box sx={styles.cardsGrid}>
           {itens.length > 0 ? (
             itens.map((item, idx) => (
-              <CardItem item={item} key={idx} index={idx} />
+              <CardItem
+                item={item}
+                key={idx}
+                index={idx}
+                onOpenModal={handleOpenModal}
+              />
             ))
           ) : (
             <Typography sx={{ textAlign: "center", width: "100%", mt: 4 }}>
-              Nenhum item encontrado.
+              {errorMessage}
             </Typography>
           )}
         </Box>
       </Box>
 
       <Footer />
+
+      <ModalDescription
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        item={selectedItem}
+      />
     </Box>
   );
 }
@@ -203,22 +243,19 @@ const styles = {
   },
   cardsGrid: {
     display: "grid",
-    gridTemplateColumns: {
-      xs: "1fr",
-      sm: "repeat(2, 1fr)",
-      md: "repeat(3, 1fr)",
-      lg: "repeat(4, 1fr)",
-    },
-    gap: "60px",
-    maxWidth: "85vw",
-    width: "100%",
-    justifyItems: "center",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "16px 12px",// Reduz o espaçamento entre os cards
+    paddingLeft: "50px",
+    paddingRight: "50px",
     marginTop: "24px",
-    mx: "auto",
+    width: "100%",
+    boxSizing: "border-box",
+    justifyItems: "center",
   },
   card: {
     width: "100%",
-    minHeight: 170,
+    minHeight: 150,
+    maxWidth: "30vw",
     borderRadius: "10px",
     boxShadow: "0 6px 10px rgba(0,0,0,0.12)",
     display: "flex",
