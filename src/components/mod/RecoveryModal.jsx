@@ -51,7 +51,6 @@ const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
             setStep(2);
         }
       });
-      // setStep(2); // Removido daqui, pois será chamado no onClose do CustomModal
     } catch (error) {
       setModalInfo({
         open: true, // Adicionado para abrir o CustomModal
