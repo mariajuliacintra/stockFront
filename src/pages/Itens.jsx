@@ -28,16 +28,18 @@ import ModalDescription from "../components/mod/ModalDescription";
 function Itens() {
   const { category } = useParams();
   const [search, setSearch] = useState("");
+  const [allItens, setAllItens] = useState([]);
   const [itens, setItens] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [errorMessage, setErrorMessage] = useState();
 
   const categoryDisplay = {
-    tools: "Ferramentas",
-    materials: "Materiais",
-    products: "Produtos",
-    equipments: "Equipamentos",
-    rawMaterials: "Matéria-prima",
+    tool: "Ferramentas",
+    material: "Materiais",
+    product: "Produtos",
+    equipment: "Equipamentos",
+    rawMaterial: "Matéria-prima",
     diverses: "Diversos",
   };
 
@@ -51,15 +53,15 @@ function Itens() {
   };
 
   // Busca itens (usa params para query string)
-  const fetchItens = async (filter = "") => {
+  const fetchItens = async () => {
     if (!category) return;
     try {
-      const config = filter ? { params: { nome: filter } } : {};
-      const response = await api.getItens(category, config);
-      // resposta esperada: array no response.data
-      setItens(Array.isArray(response.data) ? response.data : []);
+      const response = await api.getItens(category);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setAllItens(data);
+      setItens(data);
     } catch (error) {
-      console.error("Erro ao buscar itens:", error);
+      setErrorMessage(error.response?.data?.message);
       setItens([]);
     }
   };
@@ -69,14 +71,31 @@ function Itens() {
     setModalOpen(true);
   };
 
+  const handleFilter = () => {
+    if (!search.trim()) {
+      setItens(allItens);
+      setErrorMessage("");
+      return;
+    }
+    const filtered = allItens.filter((item) => {
+      const nome = item.name || "";
+      return nome.toLowerCase().includes(search.toLowerCase());
+    });
+    setItens(filtered);
+    if (filtered.length === 0) {
+      setErrorMessage("Nenhum item encontrado.");
+    } else {
+      setErrorMessage("");
+    }
+  };
+  
+
   useEffect(() => {
     if (!category) return;
     document.title = `${categoryDisplay[category] || category} | SENAI`;
     fetchItens();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
-  const handleFilter = () => fetchItens(search);
 
   // Extrai título e especificação de forma robusta (vários nomes de campo possíveis)
   const getTitle = (item) => item.name;
@@ -145,7 +164,7 @@ function Itens() {
         </Typography>
 
         <Box sx={styles.filterRow}>
-          <TextField
+        <TextField
             fullWidth
             variant="outlined"
             placeholder={`Filtro de ${
@@ -155,6 +174,9 @@ function Itens() {
             onChange={(e) => setSearch(e.target.value)}
             size="small"
             sx={{ borderRadius: 50, backgroundColor: "#fff" }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleFilter();
+            }}
           />
           <Button
             variant="contained"
@@ -182,7 +204,7 @@ function Itens() {
             ))
           ) : (
             <Typography sx={{ textAlign: "center", width: "100%", mt: 4 }}>
-              Nenhum item encontrado.
+              {errorMessage}
             </Typography>
           )}
         </Box>
@@ -222,7 +244,7 @@ const styles = {
   cardsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "60px 50px", // Espaçamento vertical e horizontal entre os cards
+    gap: "16px 12px",// Reduz o espaçamento entre os cards
     paddingLeft: "50px",
     paddingRight: "50px",
     marginTop: "24px",
@@ -232,7 +254,8 @@ const styles = {
   },
   card: {
     width: "100%",
-    minHeight: 170,
+    minHeight: 150,
+    maxWidth: "30vw",
     borderRadius: "10px",
     boxShadow: "0 6px 10px rgba(0,0,0,0.12)",
     display: "flex",

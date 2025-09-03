@@ -37,11 +37,11 @@ function PageCards() {
   );
 
   const categoryMap = {
-    Ferramentas: "tools",
-    Materiais: "materials",
-    Produtos: "products",
-    Equipamentos: "equipments",
-    "Matéria-prima": "rawMaterials",
+    Ferramentas: "tool",
+    Materiais: "material",
+    Produtos: "product",
+    Equipamentos: "equipment",
+    "Matéria-prima": "rawMaterial",
     Diversos: "diverses",
   };
 
