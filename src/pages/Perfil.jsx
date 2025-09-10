@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import FooterPerfil from "../components/layout/Footer";
-import HeaderPerfil from "../components/layout/Header";
+import HeaderPerfil from "../components/layout/HeaderPerfil";
 import senaiLogo from '../../img/logo.png';
 
 // Endpoint da API (baseado na documentação fornecida)

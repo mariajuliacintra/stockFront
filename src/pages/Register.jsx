@@ -10,8 +10,15 @@ import {
   TextField,
   Typography,
   Modal,
+  CircularProgress,
 } from "@mui/material";
-import { PersonOutline, Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  PersonOutline,
+  Email,
+  Lock,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 
 import CustomModal from "../components/mod/CustomModal";
 import SecuryCode from "../components/mod/SecuryCode";
@@ -19,6 +26,7 @@ import SecuryCode from "../components/mod/SecuryCode";
 function Register() {
   const styles = getStyles();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState({
     name: "",
@@ -62,6 +70,7 @@ function Register() {
 
   async function RegisterUser() {
     try {
+      setLoading(true);
       await api.postRegister(user);
       setVerifyModalOpen(true);
     } catch (error) {
@@ -71,6 +80,8 @@ function Register() {
         message: error.response?.data?.error,
         type: "error",
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -190,14 +201,28 @@ function Register() {
           }}
         />
 
-        <Button type="submit" variant="contained" sx={styles.buttonCadastro}>
-          Cadastrar-se
+        <Button
+          type="submit"
+          variant="contained"
+          sx={styles.buttonCadastro}
+          disabled={loading} // desabilita enquanto carrega
+        >
+          {loading ? (
+            <CircularProgress size={20} sx={{ color: "white" }} />
+          ) : (
+            "Cadastrar-se"
+          )}
         </Button>
 
         <Typography variant="body2" sx={styles.jaTemContaText}>
           Já tem uma conta?
         </Typography>
-        <Button component={Link} to="/login" variant="text" sx={styles.buttonToLogin}>
+        <Button
+          component={Link}
+          to="/login"
+          variant="text"
+          sx={styles.buttonToLogin}
+        >
           Login
         </Button>
       </Box>
@@ -257,7 +282,7 @@ function getStyles() {
       justifyContent: "center",
       minHeight: "81.1vh",
       minWidth: "100%",
-      padding:"5px"
+      padding: "5px",
     },
     form: {
       display: "flex",

@@ -18,24 +18,25 @@ api.interceptors.request.use(
   }
 );
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      if (error.response.status === 401 && error.response.data.auth === false) {
-        localStorage.setItem("refresh_token", true);
-        localStorage.removeItem("tokenUsuario");
-        localStorage.removeItem("authenticated");
-        window.location.href = "/";
-      }
-      if (error.response.status === 403 && error.response.data.auth === false) {
-        localStorage.setItem("refresh_token", true);
-        localStorage.removeItem("token");
-        localStorage.removeItem("authenticated");
-        window.location.href = "/";
-      }
-    }
-    return Promise.reject(error);
-  }
+  
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      const isLoginRequest = error.config.url.includes("user/login");
+      // Se for um erro 401 ou 403 E NÃO for a requisição de login, redireciona.
+      if (
+        (error.response.status === 401 || error.response.status === 403) &&
+        error.response.data.auth === false &&
+        !isLoginRequest
+      ) {
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("tokenUsuario");
+        localStorage.removeItem("authenticated");
+        window.location.href = "/";
+      }
+    }
+    return Promise.reject(error);
+  }
 );
 
 const sheets = {
@@ -45,7 +46,9 @@ const sheets = {
   postVerifyRecoveryPassword: (email) => api.post("user/verify-recovery-password", email),
   postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
-  getItens: (category, params) => api.get(`stock/${category}/`, { params }),
+  getItens: (category, params) => api.get(`item/${category}`, { params }),
+  getLocations: () => api.get("locations"),
+  postAddItem: (category, itemData) => api.post(`${category}`, itemData),
 };
 
 export default sheets;
