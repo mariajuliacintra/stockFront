@@ -168,7 +168,7 @@ function Perfil() {
             Deletar Conta
           </Button>
           <Button component={Link} to="/meuspedidos" sx={styles.linkButton} variant="text">
-            Meus Pedidos
+            Minhas Transação
           </Button>
         </Box>
       </Container>

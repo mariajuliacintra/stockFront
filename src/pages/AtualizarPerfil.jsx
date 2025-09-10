@@ -8,7 +8,7 @@ import {
   Typography,
   IconButton,
   InputAdornment,
-  Modal, // Importação do Modal
+  Modal,
 } from "@mui/material";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -24,53 +24,66 @@ function AtualizarPerfil() {
   const [form, setForm] = useState({
     nome: "",
     email: "",
+  });
+  const [passwordForm, setPasswordForm] = useState({
     novaSenha: "",
     confirmarSenha: ""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Novo estado para o modal de exclusão
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // Novo estado para o modal de senha
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm((prevForm) => ({ ...prevForm, [name]: value }));
+  };
+
   const handleUpdate = (e) => {
     e.preventDefault();
-    // LÓGICA DE VALIDAÇÃO E ATUALIZAÇÃO DO PERFIL
-    // A SENHA E AS ALTERAÇÕES DEVEM SER ENVIADAS PARA O SERVIDOR
+    // LÓGICA DE VALIDAÇÃO E ATUALIZAÇÃO DO PERFIL (SEM SENHA)
     console.log("Perfil atualizado:", form);
-
-    // Redireciona para a página de perfil após a atualização
     navigate('/perfil');
+  };
+
+  const handlePasswordUpdate = (e) => {
+    e.preventDefault();
+    // LÓGICA DE VALIDAÇÃO E ATUALIZAÇÃO DA SENHA
+    console.log("Senha atualizada:", passwordForm);
+    // Feche o modal de senha após a atualização
+    setIsPasswordModalOpen(false);
   };
 
   const handleDelete = () => {
-    setIsDeleteModalOpen(true); // Abre o modal de confirmação
+    setIsDeleteModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
-    // Lógica real de exclusão do perfil aqui
     console.log("Perfil confirmado para exclusão.");
-    // Exemplo: Chamar uma API para deletar o usuário
-    // api.delete('/user/delete', { headers: { Authorization: token } });
-
-    // Após a exclusão, feche o modal e redirecione o usuário
     setIsDeleteModalOpen(false);
-    // Exemplo: Remover dados do localStorage e redirecionar para a página de login
-    // localStorage.removeItem('user');
-    // localStorage.removeItem('token');
-    // navigate('/login');
+    // LÓGICA DE EXCLUSÃO
   };
 
   const handleCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false); // Fecha o modal de confirmação
+    setIsDeleteModalOpen(false);
   };
 
   const handleClose = () => {
-    // Redireciona de volta para a página de perfil
     navigate('/perfil');
+  };
+
+  const handleOpenPasswordModal = () => {
+    setIsPasswordModalOpen(true);
+  };
+
+  const handleClosePasswordModal = () => {
+    setIsPasswordModalOpen(false);
+    setPasswordForm({ novaSenha: "", confirmarSenha: "" }); // Limpa o formulário ao fechar
   };
 
   return (
@@ -114,58 +127,15 @@ function AtualizarPerfil() {
               sx={styles.modalTextField}
               InputLabelProps={{ shrink: true }}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="novaSenha"
-              label="Nova Senha"
-              name="novaSenha"
-              type={showPassword ? 'text' : 'password'}
-              value={form.novaSenha}
-              onChange={handleChange}
-              sx={styles.modalTextField}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="confirmarSenha"
-              label="Confirmar Nova Senha"
-              name="confirmarSenha"
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={form.confirmarSenha}
-              onChange={handleChange}
-              sx={styles.modalTextField}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle confirm password visibility"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      edge="end"
-                    >
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+
+            <Button
+              type="button"
+              variant="text"
+              onClick={handleOpenPasswordModal}
+              sx={styles.passwordButton}
+            >
+              Deseja mudar a senha?
+            </Button>
 
             <Box sx={styles.buttonContainer}>
               <Button
@@ -178,7 +148,7 @@ function AtualizarPerfil() {
               <Button
                 type="button"
                 variant="contained"
-                sx={{...styles.modalButton, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
+                sx={{ ...styles.modalButton, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
                 onClick={handleDelete}
               >
                 Deletar Perfil
@@ -223,6 +193,87 @@ function AtualizarPerfil() {
         </Box>
       </Modal>
 
+      {/* Novo Modal de Alteração de Senha */}
+      <Modal
+        open={isPasswordModalOpen}
+        onClose={handleClosePasswordModal}
+        aria-labelledby="change-password-modal-title"
+        aria-describedby="change-password-modal-description"
+      >
+        <Box sx={styles.confirmModal}> {/* Reutilizando o estilo do modal de confirmação */}
+          <IconButton
+            aria-label="close"
+            onClick={handleClosePasswordModal}
+            sx={styles.closeButton}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography id="change-password-modal-title" variant="h6" component="h2" sx={styles.confirmModalTitle}>
+            Alterar Senha
+          </Typography>
+          <Box component="form" onSubmit={handlePasswordUpdate} sx={styles.formContent}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="novaSenha"
+              label="Nova Senha"
+              name="novaSenha"
+              type={showPassword ? 'text' : 'password'}
+              value={passwordForm.novaSenha}
+              onChange={handlePasswordChange}
+              sx={styles.modalTextField}
+              InputLabelProps={{ shrink: true }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="confirmarSenha"
+              label="Confirmar Nova Senha"
+              name="confirmarSenha"
+              type={showConfirmPassword ? 'text' : 'password'}
+              value={passwordForm.confirmarSenha}
+              onChange={handlePasswordChange}
+              sx={styles.modalTextField}
+              InputLabelProps={{ shrink: true }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle confirm password visibility"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              sx={styles.modalButton}
+            >
+              Confirmar Alteração
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 }
@@ -326,13 +377,23 @@ function getStyles() {
         },
       },
     },
+    passwordButton: {
+      width: "100%",
+      textTransform: "none",
+      fontSize: "14px",
+      color: "rgba(255, 0, 0, 1)",
+      "&:hover": {
+        backgroundColor: "transparent",
+        textDecoration: "underline",
+      },
+    },
     closeButton: {
       position: 'absolute',
       right: 8,
       top: 8,
       color: 'rgba(255, 0, 0, 0.8)',
     },
-    // Estilos para o Modal de Confirmação de Exclusão
+    // Estilos para o Modal de Confirmação de Exclusão e Alteração de Senha
     confirmModal: {
       position: 'absolute',
       top: '50%',
@@ -344,11 +405,16 @@ function getStyles() {
       p: 4,
       borderRadius: '15px',
       border: '1px solid #c0c0c0',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      position: 'relative'
     },
     confirmModalTitle: {
       fontWeight: 'bold',
       color: '#333',
       textAlign: 'center',
+      mb: 2,
     },
     confirmModalButtonContainer: {
       display: 'flex',
@@ -371,7 +437,7 @@ function getStyles() {
       "&:hover": {
         backgroundColor: '#c82333',
       },
-    }
+    },
   };
 }
 
