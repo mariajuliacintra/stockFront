@@ -48,7 +48,7 @@ const sheets = {
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
-  getItens: (category, params) => api.get(`item/${category}`, { params }),
+  getItens: (itens) => api.get(`items/`, itens),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
 };

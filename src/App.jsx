@@ -7,7 +7,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import RecSenha from "./pages/RecSenha";
 import Perfil from "./pages/Perfil";
-import PageCards from "./pages/PageCards";
 import Itens from "./pages/Itens";
 import DefaultLayout from "./components/layout/DefaultLayout";
 
@@ -58,14 +57,6 @@ function App() {
           />
           <Route
             path="/principal"
-            element={
-              <ProtectedRouter>
-                <PageCards />
-              </ProtectedRouter>
-            }
-          />
-          <Route
-            path="/:category"
             element={
               <ProtectedRouter>
                 <Itens />
