@@ -159,14 +159,6 @@ function Perfil() {
           >
             Editar Perfil
           </Button>
-          <Button
-            type="button"
-            variant="contained"
-            sx={{...styles.button, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
-            onClick={() => console.log("Deletar Conta Clicado")}
-          >
-            Deletar Conta
-          </Button>
           <Button component={Link} to="/meuspedidos" sx={styles.linkButton} variant="text">
             Minhas Transação
           </Button>
