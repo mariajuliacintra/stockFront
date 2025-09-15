@@ -243,13 +243,15 @@ function Register() {
           <SecuryCode
             email={user.email}
             onResult={(success, message) => {
+              const finalMessage =
+                message || (success ? "Cadastro confirmado com sucesso!" : "Código inválido ou não autorizado. Tente novamente.");
               setModalCustom({
                 open: true,
                 title: success ? "Sucesso!" : "Erro!",
-                message,
+                message: finalMessage,
                 type: success ? "success" : "error",
               });
-              setVerifyModalOpen(false);
+              if (success) setVerifyModalOpen(false);
             }}
             onClose={() => setVerifyModalOpen(false)}
           />
