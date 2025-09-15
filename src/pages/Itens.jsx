@@ -25,12 +25,14 @@ function Itens() {
   // Busca todos os itens
   const fetchItens = async () => {
     try {
-      const response = await api.getItens(itens); 
+      const response = await api.getItens();
       const data = Array.isArray(response.data) ? response.data : [];
       setAllItens(data);
       setItens(data);
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "Erro ao carregar itens.");
+      setErrorMessage(
+        error.response?.data?.message || "Erro ao carregar itens."
+      );
       setItens([]);
     }
   };
@@ -62,16 +64,38 @@ function Itens() {
   }, []);
 
   // Extrai título e especificação
-  const getTitle = (item) => item.name;
-  const getSpecs = (item) => item.technicalSpecs;
+  const getTitle = (item) => {
+    if (!item.name) return "";
+    return typeof item.name === "object"
+      ? JSON.stringify(item.name)
+      : item.name;
+  };
+
+  const getSpecs = (item) => {
+  if (!item.technicalSpecs || item.technicalSpecs.length === 0) return "";
+
+  // Pega só os valores, ex: ["500g", "Madeira e Aço"]
+  const values = item.technicalSpecs.map(spec => spec.technicalSpecValue);
+
+  // Junta tudo em uma string
+  return values.join(", ");
+};
 
   const CardItem = ({ item, index, onOpenModal }) => {
     const title = getTitle(item) || `Item ${index + 1}`;
     const specsRaw = getSpecs(item);
     const specsPreview =
-      specsRaw && specsRaw.length > 140 ? specsRaw.slice(0, 140) + "..." : specsRaw;
+      specsRaw && specsRaw.length > 140
+        ? specsRaw.slice(0, 140) + "..."
+        : specsRaw;
 
-    const id = item.idTool || item.idMaterial || item.idRawMaterial || item.idEquipment || item.idProduct || item.idDiverses;
+    const id =
+      item.idTool ||
+      item.idMaterial ||
+      item.idRawMaterial ||
+      item.idEquipment ||
+      item.idProduct ||
+      item.idDiverses;
 
     return (
       <Card key={id} sx={styles.card} elevation={2}>
@@ -89,14 +113,20 @@ function Itens() {
           {specsPreview ? (
             <Typography sx={styles.specs}>{specsPreview}</Typography>
           ) : (
-            <Typography sx={{ ...styles.specs, fontStyle: "italic", color: "#777" }}>
+            <Typography
+              sx={{ ...styles.specs, fontStyle: "italic", color: "#777" }}
+            >
               — Nenhuma descrição cadastrada.
             </Typography>
           )}
         </CardContent>
 
         <CardActions sx={{ justifyContent: "flex-start", mt: 1, p: 0 }}>
-          <Button size="small" sx={styles.verMaisButton} onClick={() => onOpenModal(item)}>
+          <Button
+            size="small"
+            sx={styles.verMaisButton}
+            onClick={() => onOpenModal(item)}
+          >
             Ver mais
           </Button>
         </CardActions>
@@ -142,7 +172,12 @@ function Itens() {
         <Box sx={styles.cardsGrid}>
           {itens.length > 0 ? (
             itens.map((item, idx) => (
-              <CardItem item={item} key={idx} index={idx} onOpenModal={handleOpenModal} />
+              <CardItem
+                item={item}
+                key={idx}
+                index={idx}
+                onOpenModal={handleOpenModal}
+              />
             ))
           ) : (
             <Typography sx={{ textAlign: "center", width: "100%", mt: 4 }}>
@@ -154,7 +189,11 @@ function Itens() {
 
       <Footer />
 
-      <ModalDescription open={modalOpen} onClose={() => setModalOpen(false)} item={selectedItem} />
+      <ModalDescription
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        item={selectedItem}
+      />
     </Box>
   );
 }
@@ -182,7 +221,7 @@ const styles = {
   cardsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "16px 12px",
+    gap: "28px 32px",
     paddingLeft: "50px",
     paddingRight: "50px",
     marginTop: "24px",
@@ -194,6 +233,7 @@ const styles = {
     width: "100%",
     minHeight: 150,
     maxWidth: "30vw",
+    padding: "16px",
     borderRadius: "10px",
     boxShadow: "0 6px 10px rgba(0,0,0,0.12)",
     display: "flex",

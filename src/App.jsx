@@ -21,7 +21,6 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          {/* Rota da página inicial */}
           <Route path="/" element={<Home />} />
           <Route
             path="/login"
