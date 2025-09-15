@@ -1,32 +1,47 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Importe useNavigate
 import {
   Box,
   Button,
   Container,
   TextField,
   Typography,
+  Modal,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import FooterPerfil from "../components/layout/Footer";
 import HeaderPerfil from "../components/layout/HeaderPerfil";
 import senaiLogo from '../../img/logo.png';
 
+// Endpoint da API (baseado na documentação fornecida)
+const API_BASE_URL = "http://10.89.240.82:5000/stock/user";
+
 function Perfil() {
+  const navigate = useNavigate(); // Hook para navegação
   const styles = getStyles();
 
-  // O estado agora é apenas para exibir os dados do usuário
+  // Estado para exibir os dados do usuário
   const [userProfile, setUserProfile] = useState({ name: "", email: "" });
+
+  // Estado para controlar a abertura/fechamento do modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Estado para a senha digitada no modal
+  const [currentPassword, setCurrentPassword] = useState("");
+
+  // Estado para as mensagens de erro ou sucesso
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     document.title = "Perfil | SENAI";
 
-    // Pega os dados do usuário do localStorage
     const storedUserData = localStorage.getItem('user');
 
     if (storedUserData) {
       try {
         const userData = JSON.parse(storedUserData);
-        // Atualiza o estado com os dados do usuário
         setUserProfile({
           name: userData.name || "",
           email: userData.email || ""
@@ -37,8 +52,59 @@ function Perfil() {
     }
   }, []);
 
-  // As funções de alteração e envio do formulário foram removidas
-  // pois não há mais funcionalidade de edição.
+  const handleOpenModal = () => {
+    setMessage("");
+    setError("");
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setCurrentPassword("");
+  };
+
+  const handlePasswordChange = (event) => {
+    setCurrentPassword(event.target.value);
+  };
+
+  const handleConfirmPassword = async () => {
+    setError("");
+    setMessage("");
+
+    try {
+      const storedUserData = localStorage.getItem('user');
+      const userData = storedUserData ? JSON.parse(storedUserData) : null;
+
+      if (!userData || !userData.email) {
+        setError("Não foi possível encontrar o e-mail do usuário.");
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userData.email,
+          password: currentPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.auth) {
+        // Se a senha estiver correta, navegue para a tela de AtualizarPerfil
+        navigate('/atualizarperfil');
+      } else {
+        setError(data.error || "Senha incorreta. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Erro ao confirmar senha:", error);
+      setError("Ocorreu um erro ao tentar confirmar a senha. Tente novamente mais tarde.");
+    }
+  };
+
   const onChange = () => {};
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -47,15 +113,12 @@ function Perfil() {
   return (
     <Box sx={styles.pageLayout}>
       <HeaderPerfil />
-        
       <Container component="main" maxWidth={false} sx={styles.container}>
         <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
           <Box sx={styles.senaiLogo}></Box>
-            
           <Typography component="h1" variant="h5" sx={styles.profileTitle}>
             Meu Perfil
           </Typography>
-            
           <TextField
             margin="normal"
             required
@@ -66,13 +129,12 @@ function Perfil() {
             autoFocus
             value={userProfile.name}
             onChange={onChange}
-            disabled // O campo de nome é sempre desabilitado
+            disabled
             sx={styles.textField}
             InputLabelProps={{
               shrink: true,
             }}
           />
-            
           <TextField
             margin="normal"
             required
@@ -83,29 +145,84 @@ function Perfil() {
             autoComplete="email"
             value={userProfile.email}
             onChange={onChange}
-            disabled // O campo de e-mail é sempre desabilitado
+            disabled
             sx={styles.textField}
             InputLabelProps={{
               shrink: true,
             }}
           />
-            
-          {/* Botão "Editar Perfil" sem funcionalidade */}
-          <Button 
-            type="button" 
-            variant="contained" 
+          <Button
+            type="button"
+            variant="contained"
             sx={styles.button}
+            onClick={handleOpenModal}
           >
             Editar Perfil
           </Button>
-          
+          <Button
+            type="button"
+            variant="contained"
+            sx={{...styles.button, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
+            onClick={() => console.log("Deletar Conta Clicado")}
+          >
+            Deletar Conta
+          </Button>
           <Button component={Link} to="/meuspedidos" sx={styles.linkButton} variant="text">
             Meus Pedidos
           </Button>
         </Box>
       </Container>
-        
       <FooterPerfil/>
+      <Modal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="confirm-password-modal"
+        aria-describedby="confirm-password-description"
+      >
+        <Box sx={styles.modal}>
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseModal}
+            sx={styles.closeButton}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography component="h2" id="confirm-password-modal" sx={styles.modalTitle}>
+            Confirmar Senha Atual
+          </Typography>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="current-password"
+            label="Senha Atual"
+            name="current-password"
+            type="password"
+            value={currentPassword}
+            onChange={handlePasswordChange}
+            sx={styles.modalTextField}
+          />
+          {error && (
+            <Typography variant="body2" color="error" sx={{ mt: 1, textAlign: 'center' }}>
+              {error}
+            </Typography>
+          )}
+          {message && (
+            <Typography variant="body2" color="success" sx={{ mt: 1, textAlign: 'center' }}>
+              {message}
+            </Typography>
+          )}
+          <Button
+            type="button"
+            variant="contained"
+            fullWidth
+            sx={styles.modalButton}
+            onClick={handleConfirmPassword}
+          >
+            Confirmar
+          </Button>
+        </Box>
+      </Modal>
     </Box>
   );
 }
@@ -217,6 +334,52 @@ function getStyles() {
         color: "rgba(200, 0, 0, 1)",
         textDecoration: "underline",
       },
+    },
+    modal: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '300px',
+      bgcolor: 'background.paper',
+      border: '1px solid #c0c0c0',
+      boxShadow: 24,
+      p: 4,
+      borderRadius: '15px',
+      textAlign: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      position: 'relative'
+    },
+    modalTitle: {
+      mb: 2,
+      fontWeight: 'bold',
+      color: '#333'
+    },
+    modalTextField: {
+      mb: 2,
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "8px",
+        backgroundColor: "#f5f5f5",
+      },
+    },
+    modalButton: {
+      mt: 1,
+      color: "white",
+      backgroundColor: "rgba(255, 0, 0, 1)",
+      width: "100%",
+      height: 40,
+      fontWeight: 600,
+      fontSize: 14,
+      borderRadius: 8,
+      textTransform: "none",
+    },
+    closeButton: {
+      position: 'absolute',
+      right: 8,
+      top: 8,
+      color: 'rgba(255, 0, 0, 0.8)',
     },
   };
 }

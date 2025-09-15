@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import RecSenha from "./pages/RecSenha";
 import Perfil from "./pages/Perfil";
+import AtualizarPerfil from "./pages/AtualizarPerfil";
 import Itens from "./pages/Itens";
 import DefaultLayout from "./components/layout/DefaultLayout";
 
@@ -46,14 +47,7 @@ function App() {
               </DefaultLayout>
             }
           />
-          <Route
-            path="/perfil"
-            element={
-              
-                <Perfil />
-              
-            }
-          />
+          <Route path="/perfil" element={<Perfil />} />
           <Route
             path="/principal"
             element={
@@ -62,6 +56,7 @@ function App() {
               </ProtectedRouter>
             }
           />
+          <Route path="/AtualizarPerfil" element={<AtualizarPerfil />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
