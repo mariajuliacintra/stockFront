@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -9,18 +9,22 @@ import {
   IconButton,
   InputAdornment,
   Modal,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
 import FooterPerfil from "../components/layout/Footer";
 import HeaderPerfil from "../components/layout/Header";
-
+import sheets from "../services/axios";
+import CustomModal from "../components/mod/CustomModal";
 
 function AtualizarPerfil() {
   const styles = getStyles();
   const navigate = useNavigate();
 
+  // Estados do formulário e da tela
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -29,11 +33,49 @@ function AtualizarPerfil() {
     novaSenha: "",
     confirmarSenha: ""
   });
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // Novo estado para o modal de senha
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isVerifyUpdateModalOpen, setIsVerifyUpdateModalOpen] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [userId, setUserId] = useState(null);
 
+  // Estados para o CustomModal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalInfo, setModalInfo] = useState({
+    title: "",
+    message: "",
+    isSuccess: false,
+    type: "",
+  });
+
+  // Estado para o Snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
+
+  // Função para mostrar mensagens no Snackbar
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  // Busca os dados do usuário ao carregar a página
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.idUser) {
+      setUserId(user.idUser);
+      setForm({
+        nome: user.name,
+        email: user.email
+      });
+    }
+  }, []);
+
+  // Funções de handle
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
@@ -44,52 +86,167 @@ function AtualizarPerfil() {
     setPasswordForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
-  const handleUpdate = (e) => {
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    navigate("/perfil");
+  };
+
+  // FUNÇÃO DE ATUALIZAÇÃO DO PERFIL (NOME E/OU EMAIL)
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    // LÓGICA DE VALIDAÇÃO E ATUALIZAÇÃO DO PERFIL (SEM SENHA)
-    console.log("Perfil atualizado:", form);
-    navigate('/perfil');
+    setLoading(true);
+
+    try {
+      const payload = {
+        name: form.nome,
+        email: form.email,
+      };
+      const response = await sheets.putUpdateProfile(userId, payload);
+      const { message } = response.data;
+      
+      // A sua API não retorna "requiresEmailVerification", a lógica deve ser baseada na mensagem
+      if (message.includes("Verificação de e-mail necessária")) {
+        showSnackbar(message, "warning");
+        setIsVerifyUpdateModalOpen(true);
+      } else {
+        const updatedUser = {
+          ...JSON.parse(localStorage.getItem("user")),
+          name: form.nome,
+          email: form.email
+        };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setModalInfo({
+          title: "Sucesso!",
+          message: message,
+          isSuccess: true,
+          type: "success",
+        });
+        setModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar perfil:", error);
+      setModalInfo({
+        title: "Erro!",
+        message: error.response?.data?.error || "Erro ao atualizar perfil.",
+        isSuccess: false,
+        type: "error",
+      });
+      setModalOpen(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePasswordUpdate = (e) => {
+  // FUNÇÃO DE ATUALIZAÇÃO DA SENHA
+  const handlePasswordUpdate = async (e) => {
     e.preventDefault();
-    // LÓGICA DE VALIDAÇÃO E ATUALIZAÇÃO DA SENHA
-    console.log("Senha atualizada:", passwordForm);
-    // Feche o modal de senha após a atualização
-    setIsPasswordModalOpen(false);
+    setLoading(true);
+
+    if (passwordForm.novaSenha !== passwordForm.confirmarSenha) {
+      showSnackbar("As senhas não coincidem.", "error");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Endpoint da sua API é o /stock/user/recovery-password, que requer email, password e confirmPassword
+      const payload = {
+        email: form.email,
+        password: passwordForm.novaSenha,
+        confirmPassword: passwordForm.confirmarSenha,
+      };
+      
+      const response = await sheets.postRecoveryPassword(payload);
+      showSnackbar(response.data.message, "success");
+      setIsPasswordModalOpen(false);
+      setPasswordForm({ novaSenha: "", confirmarSenha: "" });
+    } catch (error) {
+      showSnackbar(error.response?.data?.error || "Erro ao atualizar a senha.", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = () => {
-    setIsDeleteModalOpen(true);
+  // FUNÇÃO PARA EXCLUIR O PERFIL
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+
+    try {
+      const response = await sheets.deleteProfile(userId);
+      showSnackbar(response.data.message, "success");
+      setIsDeleteModalOpen(false);
+
+      localStorage.removeItem("tokenUsuario");
+      localStorage.removeItem("authenticated");
+      localStorage.removeItem("user");
+      navigate("/");
+    } catch (error) {
+      showSnackbar(error.response?.data?.error || "Erro ao deletar o perfil.", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleConfirmDelete = () => {
-    console.log("Perfil confirmado para exclusão.");
-    setIsDeleteModalOpen(false);
-    // LÓGICA DE EXCLUSÃO
+  // FUNÇÃO PARA VALIDAR CÓDIGO DE ATUALIZAÇÃO DE E-MAIL
+  const handleVerifyUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const payload = {
+        email: form.email,
+        code: verificationCode
+      };
+      const response = await sheets.postVerifyUpdate(payload);
+      const { message, user } = response.data;
+      
+      const updatedUser = {
+        ...JSON.parse(localStorage.getItem("user")),
+        name: user.name,
+        email: user.email
+      };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      
+      setModalInfo({
+        title: "Sucesso!",
+        message: message,
+        isSuccess: true,
+        type: "success",
+      });
+      setModalOpen(true);
+      setIsVerifyUpdateModalOpen(false);
+      setVerificationCode("");
+      
+    } catch (error) {
+      showSnackbar(error.response?.data?.error || "Erro ao verificar o código.", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleClose = () => {
-    navigate('/perfil');
-  };
-
-  const handleOpenPasswordModal = () => {
-    setIsPasswordModalOpen(true);
-  };
-
+  // Funções de controle dos modais, sem lógica de API
+  const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
+  const handleOpenPasswordModal = () => setIsPasswordModalOpen(true);
   const handleClosePasswordModal = () => {
     setIsPasswordModalOpen(false);
-    setPasswordForm({ novaSenha: "", confirmarSenha: "" }); // Limpa o formulário ao fechar
+    setPasswordForm({ novaSenha: "", confirmarSenha: "" });
   };
+  const handleClose = () => navigate('/perfil');
 
   return (
     <Box sx={styles.pageLayout}>
       <HeaderPerfil />
       <Container component="main" maxWidth={false} sx={styles.container}>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarOpen(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
         <Box sx={styles.modal}>
           <IconButton
             aria-label="close"
@@ -142,14 +299,16 @@ function AtualizarPerfil() {
                 type="submit"
                 variant="contained"
                 sx={styles.modalButton}
+                disabled={loading}
               >
-                Editar Perfil
+                {loading ? "Carregando..." : "Editar Perfil"}
               </Button>
               <Button
                 type="button"
                 variant="contained"
                 sx={{ ...styles.modalButton, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
-                onClick={handleDelete}
+                onClick={() => setIsDeleteModalOpen(true)}
+                disabled={loading}
               >
                 Deletar Perfil
               </Button>
@@ -186,21 +345,22 @@ function AtualizarPerfil() {
               variant="contained"
               onClick={handleConfirmDelete}
               sx={styles.confirmModalButtonConfirm}
+              disabled={loading}
             >
-              Confirmar
+              {loading ? "Deletando..." : "Confirmar"}
             </Button>
           </Box>
         </Box>
       </Modal>
 
-      {/* Novo Modal de Alteração de Senha */}
+      {/* Modal de Alteração de Senha */}
       <Modal
         open={isPasswordModalOpen}
         onClose={handleClosePasswordModal}
         aria-labelledby="change-password-modal-title"
         aria-describedby="change-password-modal-description"
       >
-        <Box sx={styles.confirmModal}> {/* Reutilizando o estilo do modal de confirmação */}
+        <Box sx={styles.confirmModal}>
           <IconButton
             aria-label="close"
             onClick={handleClosePasswordModal}
@@ -268,12 +428,68 @@ function AtualizarPerfil() {
               type="submit"
               variant="contained"
               sx={styles.modalButton}
+              disabled={loading}
             >
-              Confirmar Alteração
+              {loading ? "Carregando..." : "Confirmar Alteração"}
             </Button>
           </Box>
         </Box>
       </Modal>
+
+      {/* NOVO: Modal de Verificação de E-mail */}
+      <Modal
+        open={isVerifyUpdateModalOpen}
+        onClose={() => setIsVerifyUpdateModalOpen(false)}
+        aria-labelledby="verify-update-modal-title"
+        aria-describedby="verify-update-modal-description"
+      >
+        <Box sx={styles.confirmModal}>
+          <IconButton
+            aria-label="close"
+            onClick={() => setIsVerifyUpdateModalOpen(false)}
+            sx={styles.closeButton}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography id="verify-update-modal-title" variant="h6" component="h2" sx={styles.confirmModalTitle}>
+            Verificação de E-mail
+          </Typography>
+          <Typography id="verify-update-modal-description" sx={{ mt: 2, textAlign: 'center' }}>
+            Um código foi enviado para seu novo e-mail. Por favor, insira-o abaixo.
+          </Typography>
+          <Box component="form" onSubmit={handleVerifyUpdate} sx={styles.formContent}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="verification-code"
+              label="Código de Verificação"
+              name="verificationCode"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              sx={styles.modalTextField}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              sx={styles.modalButton}
+              disabled={loading}
+            >
+              {loading ? "Verificando..." : "Verificar"}
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+      
+      {/* Utilizando o CustomModal para mensagens de sucesso/erro */}
+      <CustomModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        title={modalInfo.title}
+        message={modalInfo.message}
+        type={modalInfo.type}
+        buttonText="Fechar"
+      />
     </Box>
   );
 }
@@ -393,7 +609,6 @@ function getStyles() {
       top: 8,
       color: 'rgba(255, 0, 0, 0.8)',
     },
-    // Estilos para o Modal de Confirmação de Exclusão e Alteração de Senha
     confirmModal: {
       position: 'absolute',
       top: '50%',

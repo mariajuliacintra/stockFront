@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.82:5000/stock/",
+  baseURL: "http://10.89.240.76:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -49,6 +49,11 @@ const sheets = {
   getItens: (category, params) => api.get(`item/${category}`, { params }),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
+
+  getUserProfile: (id) => api.get(`user/${id}`), // Adicionei este endpoint, que parece ser necessário
+  putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
+  postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
+  deleteProfile: (id) => api.delete(`user/${id}`),
 };
 
 export default sheets;

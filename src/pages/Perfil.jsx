@@ -15,7 +15,7 @@ import HeaderPerfil from "../components/layout/HeaderPerfil";
 import senaiLogo from '../../img/logo.png';
 
 // Endpoint da API (baseado na documentação fornecida)
-const API_BASE_URL = "http://10.89.240.82:5000/stock/user";
+const API_BASE_URL = "http://10.89.240.76:5000/stock/user";
 
 function Perfil() {
   const navigate = useNavigate(); // Hook para navegação
