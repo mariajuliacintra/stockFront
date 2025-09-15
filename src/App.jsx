@@ -10,6 +10,7 @@ import Perfil from "./pages/Perfil";
 import AtualizarPerfil from "./pages/AtualizarPerfil";
 import Itens from "./pages/Itens";
 import DefaultLayout from "./components/layout/DefaultLayout";
+import Transacoes from "./pages/Transacoes";
 
 const theme = createTheme({
   typography: {
@@ -57,6 +58,14 @@ function App() {
             }
           />
           <Route path="/AtualizarPerfil" element={<AtualizarPerfil />} />
+                    <Route
+            path="/transacoes"
+            element={
+              <ProtectedRouter>
+                <Transacoes />
+              </ProtectedRouter>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

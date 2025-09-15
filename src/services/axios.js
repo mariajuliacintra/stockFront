@@ -51,6 +51,8 @@ const sheets = {
   getItens: (itens) => api.get(`items/`, itens),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
+  getTransacoes: () => api.get("transactions"),
+  deleteTransacao: (id) => api.delete(`transactions/${id}`),
 };
 
 export default sheets;
