@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.76:5000/stock/",
+  baseURL: "http://10.89.240.85:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -9,7 +9,7 @@ api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem("tokenUsuario");
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers["Authorization"] = token;
     }
     return config;
   },
@@ -21,8 +21,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      const isLoginRequest = error.config.url.includes("user/login"); // Se for um erro 401 ou 403 E NÃO for a requisição de login, redireciona.
-      const isVerifyRequest = requestUrl.includes("verify-register");
+      const isLoginRequest = error.config.url.includes("user/login");
+      // CORREÇÃO: Usar `error.config.url` aqui também
+      const isVerifyRequest = error.config.url.includes("verify-register");
       if (
         (error.response.status === 401 || error.response.status === 403) &&
         error.response.data.auth === false &&
@@ -52,12 +53,11 @@ const sheets = {
   getItens: (itens) => api.get(`items/`, itens),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
+  getTransactionsByUser: (userId) => api.get(`transactions/user/${userId}`),
   getUserProfile: (id) => api.get(`user/${id}`), // Adicionei este endpoint, que parece ser necessário
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   deleteProfile: (id) => api.delete(`user/${id}`),
-  getTransacoes: () => api.get("transactions"),
-  deleteTransacao: (id) => api.delete(`transactions/${id}`),
 };
 
 export default sheets;

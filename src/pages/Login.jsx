@@ -11,7 +11,7 @@ import {
   IconButton,
   Typography,
   Alert,
-  Snackbar
+  Snackbar,
 } from "@mui/material";
 
 import {
@@ -52,10 +52,15 @@ function Login() {
 
   const showAlert = (severity, message) => {
     setAlert({ open: true, severity: severity, message: message });
-    localStorage.removeItem("refresh_token");
+    if (severity === "warning") {
+      localStorage.removeItem("refresh_token");
+    }
   };
 
-  const handleCloseAlert = () => {
+  const handleCloseAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
     setAlert({ ...alert, open: false });
   };
 
@@ -77,32 +82,25 @@ function Login() {
   };
 
   async function LoginUser() {
-    await api.postLogin(user).then(
-      (response) => {
-        localStorage.setItem("tokenUsuario", response.data.user?.[0]?.token);
-        localStorage.setItem("authenticated", true);
-        localStorage.setItem("user", JSON.stringify(response.data.user[0]));
-        console.log("Resposta da API:", response.data);
+    try {
+      const response = await api.postLogin(user);
+      localStorage.setItem("tokenUsuario", response.data.user?.[0]?.token);
+      localStorage.setItem("authenticated", true);
+      localStorage.setItem("user", JSON.stringify(response.data.user[0]));
 
-        setModalInfo({
-          title: "Sucesso!",
-          message: response.data.message,
-          isSuccess: true,
-          type: "success",
-        });
-        setModalOpen(true);
-      },
-      (error) => {
-        console.log(error);
-        setModalInfo({
-          title: "Erro!",
-          message: error.response?.data?.error,
-          isSuccess: false,
-          type: "error",
-        });
-        setModalOpen(true);
-      }
-    );
+      setModalInfo({
+        title: "Sucesso!",
+        message: response.data.message,
+        isSuccess: true,
+        type: "success",
+      });
+      setModalOpen(true);
+    } catch (error) {
+      console.log(error);
+      const errorMessage =
+        error.response?.data?.error || "Ocorreu um erro ao fazer login.";
+      showAlert("error", errorMessage);
+    }
   }
 
   return (
