@@ -6,16 +6,16 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import RecSenha from "./pages/RecSenha";
-import Perfil from "./pages/Perfil"; 
+import Perfil from "./pages/Perfil";
 import AtualizarPerfil from "./pages/AtualizarPerfil";
-import PageCards from "./pages/PageCards";
 import Itens from "./pages/Itens";
 import DefaultLayout from "./components/layout/DefaultLayout";
+import Transacoes from "./pages/Transacoes";
 
 const theme = createTheme({
-  typography: {
-    fontFamily: "'Roboto Mono', monospace",
-  },
+  typography: {
+    fontFamily: "'Roboto Mono', monospace",
+  },
 });
 
 function App() {
@@ -23,7 +23,6 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          {/* Rota da página inicial */}
           <Route path="/" element={<Home />} />
           <Route
             path="/login"
@@ -49,39 +48,24 @@ function App() {
               </DefaultLayout>
             }
           />
-          <Route
-            path="/perfil"
-            element={
-              
-                <Perfil />
-              
-            }
-          />
+          <Route path="/perfil" element={<Perfil />} />
           <Route
             path="/principal"
-            element={
-              <ProtectedRouter>
-                <PageCards />
-              </ProtectedRouter>
-            }
-          />
-          <Route
-            path="/:category"
             element={
               <ProtectedRouter>
                 <Itens />
               </ProtectedRouter>
             }
           />
-              
-          <Route
-            path="/AtualizarPerfil"
-            element={
-              
-                <AtualizarPerfil />
-              
-            }
-          />
+          <Route path="/AtualizarPerfil" element={<AtualizarPerfil />} />
+                    <Route
+            path="/transacoes"
+            element={
+              <ProtectedRouter>
+                <Transacoes />
+              </ProtectedRouter>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

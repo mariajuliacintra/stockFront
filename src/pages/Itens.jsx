@@ -1,67 +1,38 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import {
   Box,
   Button,
   Typography,
-  Grid,
   Card,
   CardContent,
   CardActions,
   TextField,
-  IconButton,
 } from "@mui/material";
-import {
-  Settings,
-  Archive,
-  Extension,
-  Construction,
-  Folder,
-  Add,
-  Park,
-} from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
 import api from "../services/axios";
 import ModalDescription from "../components/mod/ModalDescription";
 
 function Itens() {
-  const { category } = useParams();
   const [search, setSearch] = useState("");
   const [allItens, setAllItens] = useState([]);
   const [itens, setItens] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [errorMessage, setErrorMessage] = useState();
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const categoryDisplay = {
-    tool: "Ferramentas",
-    material: "Materiais",
-    product: "Produtos",
-    equipment: "Equipamentos",
-    rawMaterial: "Matéria-prima",
-    diverses: "Diversos",
-  };
-
-  const categoryIcon = {
-    tools: <Construction sx={styles.icon} />,
-    materials: <Extension sx={styles.icon} />,
-    products: <Archive sx={styles.icon} />,
-    equipments: <Settings sx={styles.icon} />,
-    rawMaterials: <Park sx={styles.icon} />,
-    diverses: <Folder sx={styles.icon} />,
-  };
-
-  // Busca itens (usa params para query string)
+  // Busca todos os itens
   const fetchItens = async () => {
-    if (!category) return;
     try {
-      const response = await api.getItens(category);
+      const response = await api.getItens();
       const data = Array.isArray(response.data) ? response.data : [];
       setAllItens(data);
       setItens(data);
     } catch (error) {
-      setErrorMessage(error.response?.data?.message);
+      setErrorMessage(
+        error.response?.data?.message || "Erro ao carregar itens."
+      );
       setItens([]);
     }
   };
@@ -77,39 +48,47 @@ function Itens() {
       setErrorMessage("");
       return;
     }
+
     const filtered = allItens.filter((item) => {
       const nome = item.name || "";
       return nome.toLowerCase().includes(search.toLowerCase());
     });
+
     setItens(filtered);
-    if (filtered.length === 0) {
-      setErrorMessage("Nenhum item encontrado.");
-    } else {
-      setErrorMessage("");
-    }
+    setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
   };
-  
 
   useEffect(() => {
-    if (!category) return;
-    document.title = `${categoryDisplay[category] || category} | SENAI`;
+    document.title = "Itens | SENAI";
     fetchItens();
-  }, [category]);
+  }, []);
 
+  // Extrai título e especificação
+  const getTitle = (item) => {
+    if (!item.name) return "";
+    return typeof item.name === "object"
+      ? JSON.stringify(item.name)
+      : item.name;
+  };
 
-  // Extrai título e especificação de forma robusta (vários nomes de campo possíveis)
-  const getTitle = (item) => item.name;
-  const getSpecs = (item) => item.technicalSpecs;
+  const getSpecs = (item) => {
+  if (!item.technicalSpecs || item.technicalSpecs.length === 0) return "";
+
+  // Pega só os valores, ex: ["500g", "Madeira e Aço"]
+  const values = item.technicalSpecs.map(spec => spec.technicalSpecValue);
+
+  // Junta tudo em uma string
+  return values.join(", ");
+};
 
   const CardItem = ({ item, index, onOpenModal }) => {
     const title = getTitle(item) || `Item ${index + 1}`;
     const specsRaw = getSpecs(item);
-    const specs = specsRaw ? specsRaw : null;
-    // Opcional: truncar especificação para exibir resumo
     const specsPreview =
-      specs && specs.length > 140 ? specs.slice(0, 140) + "..." : specs;
+      specsRaw && specsRaw.length > 140
+        ? specsRaw.slice(0, 140) + "..."
+        : specsRaw;
 
-    // id de fallback
     const id =
       item.idTool ||
       item.idMaterial ||
@@ -123,7 +102,7 @@ function Itens() {
         <CardContent sx={{ p: 0 }}>
           <Box sx={{ display: "flex", alignItems: "row", gap: 2, mb: 1 }}>
             <Box sx={styles.iconContainer}>
-              {categoryIcon[category] || <Add sx={styles.icon} />}
+              <Add sx={styles.icon} />
             </Box>
             <Typography sx={styles.cardTitle}>{title}</Typography>
           </Box>
@@ -131,7 +110,7 @@ function Itens() {
           <Typography sx={{ fontWeight: 600, mb: 0.5, mt: -5 }}>
             Especificação técnica:
           </Typography>
-          {specs ? (
+          {specsPreview ? (
             <Typography sx={styles.specs}>{specsPreview}</Typography>
           ) : (
             <Typography
@@ -160,16 +139,14 @@ function Itens() {
       <HeaderPrincipal />
       <Box sx={styles.content}>
         <Typography variant="h4" gutterBottom sx={styles.headerTitle}>
-          {categoryDisplay[category] || category}
+          Itens
         </Typography>
 
         <Box sx={styles.filterRow}>
-        <TextField
+          <TextField
             fullWidth
             variant="outlined"
-            placeholder={`Filtro de ${
-              categoryDisplay[category] || category
-            } ex: chave`}
+            placeholder="Filtrar por nome..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             size="small"
@@ -244,7 +221,7 @@ const styles = {
   cardsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "16px 12px",// Reduz o espaçamento entre os cards
+    gap: "28px 32px",
     paddingLeft: "50px",
     paddingRight: "50px",
     marginTop: "24px",
@@ -256,6 +233,7 @@ const styles = {
     width: "100%",
     minHeight: 150,
     maxWidth: "30vw",
+    padding: "16px",
     borderRadius: "10px",
     boxShadow: "0 6px 10px rgba(0,0,0,0.12)",
     display: "flex",

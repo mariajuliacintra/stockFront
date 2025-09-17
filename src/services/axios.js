@@ -9,7 +9,7 @@ api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem("tokenUsuario");
     if (token) {
-      config.headers["Authorization"] = token;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -26,7 +26,8 @@ api.interceptors.response.use(
       if (
         (error.response.status === 401 || error.response.status === 403) &&
         error.response.data.auth === false &&
-        !isLoginRequest
+        !isLoginRequest &&
+        !isVerifyRequest
       ) {
         localStorage.setItem("refresh_token", true);
         localStorage.removeItem("tokenUsuario");
@@ -48,13 +49,15 @@ const sheets = {
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
-  getItens: (category, params) => api.get(`item/${category}`, { params }),
+  getItens: (itens) => api.get(`items/`, itens),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
   getUserProfile: (id) => api.get(`user/${id}`), // Adicionei este endpoint, que parece ser necessário
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   deleteProfile: (id) => api.delete(`user/${id}`),
+  getTransacoes: () => api.get("transactions"),
+  deleteTransacao: (id) => api.delete(`transactions/${id}`),
 };
 
 export default sheets;
