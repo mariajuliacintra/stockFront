@@ -24,10 +24,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      // Defina a variável requestUrl aqui para que ela seja acessível
-      const requestUrl = error.config.url;
-      const isLoginRequest = requestUrl.includes("user/login");
-      const isVerifyRequest = requestUrl.includes("user/verify-register");
+      const isLoginRequest = error.config.url.includes("user/login");
+      // CORREÇÃO: Usar `error.config.url` aqui também
+      const isVerifyRequest = error.config.url.includes("verify-register");
       if (
         (error.response.status === 401 || error.response.status === 403) &&
         error.response.data.auth === false &&
@@ -54,15 +53,16 @@ const sheets = {
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
-  getItens: () => api.get(`items`),
+  getItens: () => api.get(`items/`),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
-  getUserProfile: (id) => api.get(`user/${id}`),
+  getCategories: () => api.get("category"),
+  getTransactionsByUser: (userId) => api.get(`transactions/user/${userId}`),
+  getUserProfile: (id) => api.get(`user/${id}`), // Adicionei este endpoint, que parece ser necessário
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   deleteProfile: (id) => api.delete(`user/${id}`),
-  getTransacoes: () => api.get("transactions"),
-  deleteTransacao: (id) => api.delete(`transactions/${id}`),
+
 };
 
 export default sheets;
