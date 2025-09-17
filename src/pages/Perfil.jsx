@@ -105,6 +105,7 @@ function Perfil() {
     event.preventDefault();
   };
 
+
   return (
     <Box sx={styles.pageLayout}>
       <HeaderPerfil />
@@ -211,7 +212,7 @@ function Perfil() {
         </Box>
       </Modal>
     </Box>
-  );
+  )
 }
 
 function getStyles() {

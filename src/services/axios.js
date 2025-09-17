@@ -25,7 +25,6 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       const isLoginRequest = error.config.url.includes("user/login");
-      // CORREÇÃO: Usar `error.config.url` aqui também
       const isVerifyRequest = error.config.url.includes("verify-register");
       if (
         (error.response.status === 401 || error.response.status === 403) &&
