@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Importe useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -14,23 +14,15 @@ import FooterPerfil from "../components/layout/Footer";
 import HeaderPerfil from "../components/layout/HeaderPerfil";
 import senaiLogo from '../../img/logo.png';
 
-// Endpoint da API (baseado na documentação fornecida)
-const API_BASE_URL = "http://10.89.240.76:5000/stock/user";
+const API_BASE_URL = "http://10.89.240.85:5000/stock/user";
 
 function Perfil() {
-  const navigate = useNavigate(); // Hook para navegação
+  const navigate = useNavigate();
   const styles = getStyles();
 
-  // Estado para exibir os dados do usuário
   const [userProfile, setUserProfile] = useState({ name: "", email: "" });
-
-  // Estado para controlar a abertura/fechamento do modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Estado para a senha digitada no modal
   const [currentPassword, setCurrentPassword] = useState("");
-
-  // Estado para as mensagens de erro ou sucesso
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -93,11 +85,14 @@ function Perfil() {
 
       const data = await response.json();
 
-      if (response.ok && data.auth) {
-        // Se a senha estiver correta, navegue para a tela de AtualizarPerfil
+      if (response.ok && data.success) {
+        localStorage.setItem("tokenUsuario", data.user?.[0]?.token);
+        localStorage.setItem("authenticated", true);
+        localStorage.setItem("user", JSON.stringify(data.user[0]));
+        
         navigate('/atualizarperfil');
       } else {
-        setError(data.error || "Senha incorreta. Tente novamente.");
+        setError(data.message || "Senha incorreta. Tente novamente.");
       }
     } catch (error) {
       console.error("Erro ao confirmar senha:", error);
@@ -160,15 +155,8 @@ function Perfil() {
           >
             Editar Perfil
           </Button>
-          <Button component={Link} to="/meuspedidos" sx={styles.linkButton} variant="text">
-            Minhas Transação
-          <Button
-            type="button"
-            variant="contained"
-            sx={{...styles.button, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
-            onClick={() => console.log("Deletar Conta Clicado")}
-          />
-            Deletar Conta
+          <Button component={Link} to="/transacoes" sx={styles.linkButton} variant="text">
+            Minhas Transações
           </Button>
         </Box>
       </Container>
