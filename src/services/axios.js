@@ -5,6 +5,7 @@ const api = axios.create({
   headers: { accept: "application/json" },
 });
 
+// Interceptor para adicionar o token JWT automaticamente
 api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem("tokenUsuario");
@@ -17,6 +18,8 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// Interceptor para tratar erros de resposta (401/403)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -41,8 +44,8 @@ api.interceptors.response.use(
 );
 
 const sheets = {
-  postLogin: (user) => api.post(`user/login/`, user),
-  postRegister: (user) => api.post(`user/register/`, user),
+  postLogin: (user) => api.post(`user/login`, user),
+  postRegister: (user) => api.post(`user/register`, user),
   securyCodeApi: (code, email) =>
     api.post(`user/verify-register`, { code, email }),
   postVerifyRecoveryPassword: (email) =>
