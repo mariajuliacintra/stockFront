@@ -9,6 +9,7 @@ import {
   TextField,
   InputAdornment,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 
 import { Email } from "@mui/icons-material";
@@ -26,7 +27,8 @@ function RecSenha() {
 
   const [email, setEmail] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [recoveryModalOpen, setRecoveryModalOpen] = useState(false); // Novo estado para controlar o RecoveryModal
+  const [recoveryModalOpen, setRecoveryModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false); // <- novo estado para controlar o loading
   const [modalInfo, setModalInfo] = useState({
     title: "",
     message: "",
@@ -39,6 +41,10 @@ function RecSenha() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (loading) return; // impede cliques múltiplos
+
+    setLoading(true);
     try {
       await api.postVerifyRecoveryPassword({ email });
       setModalInfo({
@@ -63,6 +69,8 @@ function RecSenha() {
         },
       });
       setModalOpen(true);
+    } finally {
+      setLoading(false); // libera o botão novamente
     }
   };
 
@@ -98,8 +106,9 @@ function RecSenha() {
           type="submit"
           variant="contained"
           sx={styles.buttonEnviar}
+          disabled={loading} // desabilita durante o loading
         >
-          Enviar
+          {loading ? <CircularProgress size={24} color="inherit" /> : "Enviar"}
         </Button>
       </Box>
       <CustomModal
@@ -121,7 +130,6 @@ function RecSenha() {
 }
 
 function getStyles() {
-  
   return {
     container: {
       backgroundImage: `url(../../img/fundo.png)`,
