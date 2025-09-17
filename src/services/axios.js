@@ -1,15 +1,16 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.76:5000/stock/",
+  baseURL: "http://10.89.240.85:5000/stock/",
   headers: { accept: "application/json" },
 });
 
+// Interceptor para adicionar o token JWT automaticamente
 api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem("tokenUsuario");
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers["Authorization"] = token;
     }
     return config;
   },
@@ -17,12 +18,16 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// Interceptor para tratar erros de resposta (401/403)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      const isLoginRequest = error.config.url.includes("user/login"); // Se for um erro 401 ou 403 E NÃO for a requisição de login, redireciona.
-      const isVerifyRequest = requestUrl.includes("verify-register");
+      // Defina a variável requestUrl aqui para que ela seja acessível
+      const requestUrl = error.config.url;
+      const isLoginRequest = requestUrl.includes("user/login");
+      const isVerifyRequest = requestUrl.includes("user/verify-register");
       if (
         (error.response.status === 401 || error.response.status === 403) &&
         error.response.data.auth === false &&
@@ -40,8 +45,8 @@ api.interceptors.response.use(
 );
 
 const sheets = {
-  postLogin: (user) => api.post(`user/login/`, user),
-  postRegister: (user) => api.post(`user/register/`, user),
+  postLogin: (user) => api.post(`user/login`, user),
+  postRegister: (user) => api.post(`user/register`, user),
   securyCodeApi: (code, email) =>
     api.post(`user/verify-register`, { code, email }),
   postVerifyRecoveryPassword: (email) =>
@@ -49,10 +54,10 @@ const sheets = {
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
-  getItens: (itens) => api.get(`items/`, itens),
+  getItens: () => api.get(`items`),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
-  getUserProfile: (id) => api.get(`user/${id}`), // Adicionei este endpoint, que parece ser necessário
+  getUserProfile: (id) => api.get(`user/${id}`),
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   deleteProfile: (id) => api.delete(`user/${id}`),
