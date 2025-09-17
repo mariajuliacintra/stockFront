@@ -7,8 +7,15 @@ import {
   CardContent,
   CardActions,
   TextField,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Checkbox,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import MenuIcon from "@mui/icons-material/Menu";
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
 import api from "../services/axios";
@@ -18,15 +25,20 @@ function Itens() {
   const [search, setSearch] = useState("");
   const [allItens, setAllItens] = useState([]);
   const [itens, setItens] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Busca todos os itens
+  // Buscar itens
   const fetchItens = async () => {
     try {
       const response = await api.getItens();
-      const data = Array.isArray(response.data) ? response.data : [];
+      const data = Array.isArray(response.data.items)
+        ? response.data.items
+        : [];
       setAllItens(data);
       setItens(data);
     } catch (error) {
@@ -37,68 +49,71 @@ function Itens() {
     }
   };
 
-  const handleOpenModal = (item) => {
-    setSelectedItem(item);
-    setModalOpen(true);
+  // Buscar categorias
+  const fetchCategories = async () => {
+    try {
+      const response = await api.getCategories();
+      const data = Array.isArray(response.data.categories)
+        ? response.data.categories
+        : [];
+      console.log(response.data.categories);
+      setCategories(data);
+    } catch (error) {
+      console.error("Erro ao carregar categorias:", error);
+    }
   };
 
+  // Filtrar itens pelo nome e categoria
   const handleFilter = () => {
-    if (!search.trim()) {
-      setItens(allItens);
-      setErrorMessage("");
-      return;
+    let filtered = allItens;
+
+    if (search.trim()) {
+      filtered = filtered.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase())
+      );
     }
 
-    const filtered = allItens.filter((item) => {
-      const nome = item.name || "";
-      return nome.toLowerCase().includes(search.toLowerCase());
-    });
+    if (selectedCategory) {
+      filtered = filtered.filter(
+        (item) => item.category?.idCategory === selectedCategory.idCategory
+      );
+    }
 
     setItens(filtered);
     setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
   };
 
+  const handleOpenModal = (item) => {
+    setSelectedItem(item);
+    setModalOpen(true);
+  };
+
+  const handleSelectCategory = (category) => {
+    setSelectedCategory(
+      selectedCategory?.idCategory === category.idCategory ? null : category
+    );
+  };
+
   useEffect(() => {
     document.title = "Itens | SENAI";
     fetchItens();
-  }, []);
+    fetchCategories();
+    handleFilter();
+  }, [search, selectedCategory]);
 
-  // Extrai título e especificação
-  const getTitle = (item) => {
-    if (!item.name) return "";
-    return typeof item.name === "object"
-      ? JSON.stringify(item.name)
-      : item.name;
-  };
-
-  const getSpecs = (item) => {
-  if (!item.technicalSpecs || item.technicalSpecs.length === 0) return "";
-
-  // Pega só os valores, ex: ["500g", "Madeira e Aço"]
-  const values = item.technicalSpecs.map(spec => spec.technicalSpecValue);
-
-  // Junta tudo em uma string
-  return values.join(", ");
-};
+  const getTitle = (item) => item.name || "";
+  const getSpecs = (item) =>
+    item.technicalSpecs?.map((spec) => spec.technicalSpecValue).join(", ") ||
+    "";
 
   const CardItem = ({ item, index, onOpenModal }) => {
     const title = getTitle(item) || `Item ${index + 1}`;
     const specsRaw = getSpecs(item);
     const specsPreview =
-      specsRaw && specsRaw.length > 140
-        ? specsRaw.slice(0, 140) + "..."
-        : specsRaw;
-
-    const id =
-      item.idTool ||
-      item.idMaterial ||
-      item.idRawMaterial ||
-      item.idEquipment ||
-      item.idProduct ||
-      item.idDiverses;
+      specsRaw.length > 140 ? specsRaw.slice(0, 140) + "..." : specsRaw;
 
     return (
-      <Card key={id} sx={styles.card} elevation={2}>
+      <Card key={item.idItem ?? index} sx={styles.card} elevation={2}>
         <CardContent sx={{ p: 0 }}>
           <Box sx={{ display: "flex", alignItems: "row", gap: 2, mb: 1 }}>
             <Box sx={styles.iconContainer}>
@@ -117,6 +132,12 @@ function Itens() {
               sx={{ ...styles.specs, fontStyle: "italic", color: "#777" }}
             >
               — Nenhuma descrição cadastrada.
+            </Typography>
+          )}
+
+          {item.category?.value && (
+            <Typography sx={{ mt: 1, fontWeight: 500 }}>
+              Categoria: {item.category.value}
             </Typography>
           )}
         </CardContent>
@@ -142,39 +163,90 @@ function Itens() {
           Itens
         </Typography>
 
-        <Box sx={styles.filterRow}>
+        {/* Filtro com menu hamburguer */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            alignItems: "center",
+            maxWidth: 1000,
+            mx: "auto",
+            p: 1,
+            borderRadius: "8px",
+          }}
+        >
+          <IconButton
+            onClick={() => setDrawerOpen(true)}
+            sx={{ color: "#a31515" }}
+          >
+            <MenuIcon />
+          </IconButton>
+
           <TextField
             fullWidth
             variant="outlined"
-            placeholder="Filtrar por nome..."
+            placeholder="Filtro de produto ex: chave"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             size="small"
-            sx={{ borderRadius: 50, backgroundColor: "#fff" }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleFilter();
+            sx={{
+              borderRadius:20,
+              backgroundColor: "#fff",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  border: "none", 
+                },
+                "&:hover fieldset": {
+                  border: "none",
+                },
+                "&.Mui-focused fieldset": {
+                  border: "none", 
+                },
+              },
             }}
           />
-          <Button
-            variant="contained"
-            onClick={handleFilter}
-            sx={{
-              backgroundColor: "#a31515",
-              "&:hover": { backgroundColor: "#8c1010" },
-              borderRadius: 2,
-              ml: 1,
-            }}
-          >
-            FILTRAR
-          </Button>
         </Box>
 
+        {/* Drawer lateral para categorias */}
+        <Drawer
+          anchor="left"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          PaperProps={{
+            sx: { backgroundColor: "#a31515", color: "#fff", width: 240 },
+          }}
+        >
+          <Typography sx={{ p: 2, fontWeight: "bold" }}>
+            Filtro Avançado
+          </Typography>
+          <List>
+            {categories.map((cat) => (
+              <ListItem
+                key={cat.idCategory}
+                button
+                onClick={() => handleSelectCategory(cat)}
+              >
+                <Checkbox
+                  checked={selectedCategory?.idCategory === cat.idCategory}
+                  sx={{ color: "#fff", "&.Mui-checked": { color: "#fff" } }}
+                />
+                {/* Mostrar o nome da categoria corretamente */}
+                <ListItemText primary={cat.categoryValue} />
+              </ListItem>
+            ))}
+            <ListItem button>
+              <ListItemText primary="+ Adicionar Item" />
+            </ListItem>
+          </List>
+        </Drawer>
+
+        {/* Cards dos itens */}
         <Box sx={styles.cardsGrid}>
           {itens.length > 0 ? (
             itens.map((item, idx) => (
               <CardItem
                 item={item}
-                key={idx}
+                key={item.idItem ?? idx}
                 index={idx}
                 onOpenModal={handleOpenModal}
               />
@@ -200,6 +272,7 @@ function Itens() {
 
 export default Itens;
 
+// Estilos
 const styles = {
   pageContainer: {
     minHeight: "100vh",
@@ -209,21 +282,12 @@ const styles = {
   },
   content: { flex: 1, p: { xs: 2, md: 3 } },
   headerTitle: { textAlign: "center", mb: 4 },
-  filterRow: {
-    display: "flex",
-    gap: 1,
-    maxWidth: 1000,
-    mx: "auto",
-    alignItems: "center",
-    p: 1,
-    borderRadius: "8px",
-  },
   cardsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "28px 32px",
-    paddingLeft: "50px",
-    paddingRight: "50px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
+    gap: "28px 60px",
+    paddingLeft: "30px",
+    paddingRight: "30px",
     marginTop: "24px",
     width: "100%",
     boxSizing: "border-box",
@@ -233,7 +297,6 @@ const styles = {
     width: "100%",
     minHeight: 150,
     maxWidth: "30vw",
-    padding: "16px",
     borderRadius: "10px",
     boxShadow: "0 6px 10px rgba(0,0,0,0.12)",
     display: "flex",

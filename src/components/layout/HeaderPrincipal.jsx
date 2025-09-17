@@ -15,7 +15,7 @@ const HeaderPrincipal = ({}) => {
         <Button component={Link} to="/perfil" >
           <PersonIcon sx={styles.PersonIcon} />
         </Button>
-        <Button component={Link} to="/principal" sx={styles.buttonHome}>
+        <Button component={Link} to="/" sx={styles.buttonHome}>
           <HomeIcon sx={styles.HomeIcon} />
         </Button>
       </Box>
