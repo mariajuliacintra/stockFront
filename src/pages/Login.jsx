@@ -79,9 +79,10 @@ function Login() {
   async function LoginUser() {
     await api.postLogin(user).then(
       (response) => {
-        localStorage.setItem("tokenUsuario", response.data.token);
+        localStorage.setItem("tokenUsuario", response.data.user?.[0]?.token);
         localStorage.setItem("authenticated", true);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("user", JSON.stringify(response.data.user[0]));
+        console.log("Resposta da API:", response.data);
 
         setModalInfo({
           title: "Sucesso!",

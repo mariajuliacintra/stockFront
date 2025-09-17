@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.91:5000/stock/",
+  baseURL: "http://10.89.240.82:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -9,7 +9,7 @@ api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem("tokenUsuario");
     if (token) {
-      config.headers["Authorization"] = token;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -26,7 +26,8 @@ api.interceptors.response.use(
       if (
         (error.response.status === 401 || error.response.status === 403) &&
         error.response.data.auth === false &&
-        !isLoginRequest
+        !isLoginRequest &&
+        !isVerifyRequest
       ) {
         localStorage.setItem("refresh_token", true);
         localStorage.removeItem("tokenUsuario");
