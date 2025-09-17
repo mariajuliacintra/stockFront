@@ -54,6 +54,10 @@ const sheets = {
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
   getTransactionsByUser: (userId) => api.get(`transactions/user/${userId}`),
+  getUserProfile: (id) => api.get(`user/${id}`), // Adicionei este endpoint, que parece ser necessário
+  putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
+  postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
+  deleteProfile: (id) => api.delete(`user/${id}`),
 };
 
 export default sheets;
