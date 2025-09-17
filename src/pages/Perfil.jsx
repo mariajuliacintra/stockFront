@@ -15,7 +15,7 @@ import HeaderPerfil from "../components/layout/HeaderPerfil";
 import senaiLogo from '../../img/logo.png';
 
 // Endpoint da API (baseado na documentação fornecida)
-const API_BASE_URL = "http://10.89.240.82:5000/stock/user";
+const API_BASE_URL = "http://10.89.240.76:5000/stock/user";
 
 function Perfil() {
   const navigate = useNavigate(); // Hook para navegação
@@ -159,6 +159,8 @@ function Perfil() {
           >
             Editar Perfil
           </Button>
+          <Button component={Link} to="/meuspedidos" sx={styles.linkButton} variant="text">
+            Minhas Transação
           <Button
             type="button"
             variant="contained"
@@ -166,9 +168,6 @@ function Perfil() {
             onClick={() => console.log("Deletar Conta Clicado")}
           >
             Deletar Conta
-          </Button>
-          <Button component={Link} to="/transacoes" sx={styles.linkButton} variant="text">
-            Meus Pedidos
           </Button>
         </Box>
       </Container>
