@@ -526,7 +526,7 @@ function getStyles() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      position: 'relative'
+      position: 'relative',
     },
     modalTitle: {
       mb: 2,
@@ -610,7 +610,6 @@ function getStyles() {
       color: 'rgba(255, 0, 0, 0.8)',
     },
     confirmModal: {
-      position: 'absolute',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',

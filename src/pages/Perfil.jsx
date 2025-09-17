@@ -110,6 +110,7 @@ function Perfil() {
     event.preventDefault();
   };
 
+
   return (
     <Box sx={styles.pageLayout}>
       <HeaderPerfil />
@@ -166,7 +167,7 @@ function Perfil() {
             variant="contained"
             sx={{...styles.button, backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
             onClick={() => console.log("Deletar Conta Clicado")}
-          >
+          />
             Deletar Conta
           </Button>
         </Box>
@@ -223,7 +224,7 @@ function Perfil() {
         </Box>
       </Modal>
     </Box>
-  );
+  )
 }
 
 function getStyles() {
