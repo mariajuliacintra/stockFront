@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.82:5000/stock/",
+  baseURL: "http://10.89.240.85:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -9,7 +9,7 @@ api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem("tokenUsuario");
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers["Authorization"] = token;
     }
     return config;
   },
@@ -49,9 +49,10 @@ const sheets = {
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
-  getItens: (itens) => api.get(`items/`, itens),
+  getItens: () => api.get(`items/`),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
+  getCategories: () => api.get("category"),
 };
 
 export default sheets;
