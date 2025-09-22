@@ -11,6 +11,7 @@ import AtualizarPerfil from "./pages/AtualizarPerfil";
 import Itens from "./pages/Itens";
 import DefaultLayout from "./components/layout/DefaultLayout";
 import Transactions from "./pages/Transactions";
+import UserManagement from "./pages/UserManagement";
 
 const theme = createTheme({
   typography: {
@@ -63,6 +64,14 @@ function App() {
             element={
               <ProtectedRouter>
                 <Transactions />
+              </ProtectedRouter>
+            }
+          />
+          <Route
+            path="/UserManagement"
+            element={
+              <ProtectedRouter>
+                <UserManagement />
               </ProtectedRouter>
             }
           />

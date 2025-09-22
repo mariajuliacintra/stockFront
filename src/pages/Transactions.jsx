@@ -4,7 +4,7 @@ import CustomModal from "../components/mod/CustomModal";
 import Header from "../components/layout/HeaderPerfil";
 import Footer from "../components/layout/Footer";
 import sheets from "../services/axios";
-import fundoImage from '../../img/fundo.png'; // Importe a imagem de fundo
+import fundoImage from "../../img/fundo.png"; // Importe a imagem de fundo
 
 function Transactions() {
   const [transactions, setTransactions] = useState([]);
@@ -37,7 +37,7 @@ function Transactions() {
       console.error("Erro ao fazer o parse do JSON do usuário:", e);
     }
     const userId = storedUserData?.idUser;
-    
+
     if (!userId) {
       setModalCustom({
         open: true,
@@ -62,7 +62,8 @@ function Transactions() {
           type: "info",
         });
       } else {
-        const errorMessage = error.response?.data?.error || "Erro ao carregar transações.";
+        const errorMessage =
+          error.response?.data?.error || "Erro ao carregar transações.";
         setModalCustom({
           open: true,
           title: "Erro!",
@@ -76,11 +77,10 @@ function Transactions() {
     }
   }
 
-  // Objeto para traduzir as descrições das ações
   const actionTranslations = {
-    'IN': 'Entrada',
-    'OUT': 'Retirada',
-    'REAJUST': 'Reajuste',
+    IN: "Entrada",
+    OUT: "Retirada",
+    REAJUST: "Reajuste",
   };
 
   const styles = getStyles();
@@ -108,7 +108,9 @@ function Transactions() {
           ) : (
             <Box sx={styles.transactionsList}>
               {transactions.map((transaction, index) => {
-                const formattedDate = new Date(transaction.transactionDate).toLocaleDateString();
+                const formattedDate = new Date(
+                  transaction.transactionDate
+                ).toLocaleDateString();
 
                 return (
                   <Box key={index} sx={styles.transactionItem}>
@@ -121,14 +123,17 @@ function Transactions() {
                     </Typography>
                     <Typography variant="body2">
                       <span style={{ fontWeight: "bold" }}>Tipo da Ação:</span>{" "}
-                      {actionTranslations[transaction.actionDescription] || transaction.actionDescription}
+                      {actionTranslations[transaction.actionDescription] ||
+                        transaction.actionDescription}
                     </Typography>
                     <Typography variant="body2">
                       <span style={{ fontWeight: "bold" }}>Quantidade:</span>{" "}
                       {transaction.quantityChange}
                     </Typography>
                     <Typography variant="body2">
-                      <span style={{ fontWeight: "bold" }}>Data do Pedido:</span>{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        Data do Pedido:
+                      </span>{" "}
                       {formattedDate}
                     </Typography>
                   </Box>
