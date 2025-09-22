@@ -13,17 +13,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 
 const tipoAcoes = [
-  { label: "Reajuste", value: "reajuste" },
   { label: "Retirar", value: "retirar" },
   { label: "Adicionar", value: "adicionar" },
 ];
 
-
 export default function ModalDescription({ open, onClose, item }) {
-    const [modifications, setModifications] = useState({
-        amount:"",
-        typeAction:""
-    }); 
+  const [modifications, setModifications] = useState({
+    amount: "",
+    typeAction: "",
+  });
 
   if (!item) return null;
 
@@ -52,14 +50,16 @@ export default function ModalDescription({ open, onClose, item }) {
         <Typography>Marca: {item?.brand || "—"}</Typography>
         <Typography>Descrição: {item?.description || "—"}</Typography>
         <Typography>
-          Especificações Técnicas: {item?.technicalSpecs || "—"}
+          Especificações Técnicas:
+          {item?.technicalSpecs?.map((spec, index) => (
+            <span key={index}>
+              {spec.technicalSpecValue}
+              {index < item.technicalSpecs.length - 1 && ", "}
+            </span>
+          )) || "—"}
         </Typography>
         <Typography>Quantidade: {item?.quantity || "—"}</Typography>
         <Typography>Número do lote: {item?.batchNumber || "—"}</Typography>
-        <Typography>
-          Última Manutenção: {item?.lastMaintenance || "—"}
-        </Typography>
-
         <Box mt={3}>
           <Typography>Quantidade</Typography>
           <TextField

@@ -26,7 +26,7 @@ function Itens() {
   const [allItens, setAllItens] = useState([]);
   const [itens, setItens] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]); // Alterado para um array
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -43,7 +43,7 @@ function Itens() {
       setItens(data);
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.message 
+        error.response?.data?.details || "Erro ao carregar a lista de itens"
       );
       setItens([]);
     }
@@ -63,7 +63,7 @@ function Itens() {
     }
   };
 
-  // Filtrar itens pelo nome e categoria
+  // Filtrar itens pelo nome e pelas categorias selecionadas
   const handleFilter = () => {
     let filtered = allItens;
 
@@ -73,9 +73,12 @@ function Itens() {
       );
     }
 
-    if (selectedCategory) {
-      filtered = filtered.filter(
-        (item) => item.category?.idCategory === selectedCategory.idCategory
+    // Filtrando pelos itens que pertencem a qualquer uma das categorias selecionadas
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((item) =>
+        selectedCategories.some(
+          (category) => item.category?.idCategory === category.idCategory
+        )
       );
     }
 
@@ -83,15 +86,27 @@ function Itens() {
     setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
   };
 
+  // Abre o modal de detalhes do item
   const handleOpenModal = (item) => {
     setSelectedItem(item);
     setModalOpen(true);
   };
 
+  // Selecionar ou desmarcar uma categoria
   const handleSelectCategory = (category) => {
-    setSelectedCategory(
-      selectedCategory?.idCategory === category.idCategory ? null : category
-    );
+    setSelectedCategories((prevSelectedCategories) => {
+      if (
+        prevSelectedCategories.some(
+          (cat) => cat.idCategory === category.idCategory
+        )
+      ) {
+        return prevSelectedCategories.filter(
+          (cat) => cat.idCategory !== category.idCategory
+        ); // Desmarca a categoria
+      } else {
+        return [...prevSelectedCategories, category]; // Marca a categoria
+      }
+    });
   };
 
   useEffect(() => {
@@ -99,10 +114,10 @@ function Itens() {
     fetchItens();
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchCategories();
     handleFilter();
-  }, [search, selectedCategory]);
+  }, [search, selectedCategories]); // Atualizando o filtro quando as categorias selecionadas mudam
 
   const getTitle = (item) => item.name || "";
   const getSpecs = (item) =>
@@ -193,17 +208,17 @@ function Itens() {
             onChange={(e) => setSearch(e.target.value)}
             size="small"
             sx={{
-              borderRadius:20,
+              borderRadius: 20,
               backgroundColor: "#fff",
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  border: "none", 
+                  border: "none",
                 },
                 "&:hover fieldset": {
                   border: "none",
                 },
                 "&.Mui-focused fieldset": {
-                  border: "none", 
+                  border: "none",
                 },
               },
             }}
@@ -230,10 +245,11 @@ function Itens() {
                 onClick={() => handleSelectCategory(cat)}
               >
                 <Checkbox
-                  checked={selectedCategory?.idCategory === cat.idCategory}
+                  checked={selectedCategories.some(
+                    (category) => category.idCategory === cat.idCategory
+                  )}
                   sx={{ color: "#fff", "&.Mui-checked": { color: "#fff" } }}
                 />
-                {/* Mostrar o nome da categoria corretamente */}
                 <ListItemText primary={cat.categoryValue} />
               </ListItem>
             ))}
