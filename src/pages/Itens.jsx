@@ -32,6 +32,7 @@ function Itens() {
   const [errorMessage, setErrorMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+
   // Buscar itens
   const fetchItens = async () => {
     try {
@@ -43,7 +44,7 @@ function Itens() {
       setItens(data);
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.details || "Erro ao carregar a lista de itens"
+        error.response?.data?.error || "Erro ao carregar a lista de itens"
       );
       setItens([]);
     }
@@ -87,8 +88,8 @@ function Itens() {
   };
 
   // Abre o modal de detalhes do item
-  const handleOpenModal = (item) => {
-    setSelectedItem(item);
+  const handleOpenModal = (itemId) => {
+    setSelectedItem(itemId);
     setModalOpen(true);
   };
 
@@ -164,7 +165,7 @@ function Itens() {
           <Button
             size="small"
             sx={styles.verMaisButton}
-            onClick={() => onOpenModal(item)}
+            onClick={() => onOpenModal(item.idItem)} 
           >
             Ver mais
           </Button>
@@ -283,7 +284,7 @@ function Itens() {
       <ModalDescription
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        item={selectedItem}
+        itemId={selectedItem}
       />
     </Box>
   );

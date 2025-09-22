@@ -10,20 +10,51 @@ import {
   Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
+import { Buffer } from "buffer";
+import { useState, useEffect } from "react";
+import api from "../../services/axios"; // garante que está importando
 
 const tipoAcoes = [
   { label: "Retirar", value: "retirar" },
   { label: "Adicionar", value: "adicionar" },
 ];
 
-export default function ModalDescription({ open, onClose, item }) {
-  const [modifications, setModifications] = useState({
-    amount: "",
-    typeAction: "",
-  });
+export default function ModalDescription({ open, onClose, itemId }) {
+  const [itemDetails, setItemDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  if (!item) return null;
+  useEffect(() => {
+    const fetchItemById = async (id) => {
+      if (!id) return;
+
+      setLoading(true);
+      setErrorMessage("");
+
+      try {
+        const response = await api.getItensID(id);
+        if (Array.isArray(response.data.item) && response.data.item.length > 0) {
+          setItemDetails(response.data.item[0]); // pegar o primeiro item do array
+          console.log("imagem: ", response.data.item[0].image);
+          console.log("imagem: ", response.data.item.image.data); 
+        } else {
+          setErrorMessage("Item não encontrado.");
+        }
+      } catch (error) {
+        setErrorMessage(
+          error.response?.data?.error
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (open && itemId) {
+      fetchItemById(itemId);
+    }
+  }, [open, itemId]);
+
+  if (!open) return null;
 
   return (
     <Dialog
@@ -31,12 +62,10 @@ export default function ModalDescription({ open, onClose, item }) {
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      PaperProps={{
-        sx: { borderRadius: "20px" },
-      }}
+      PaperProps={{ sx: { borderRadius: "20px" } }}
     >
       <DialogTitle>
-        Nome da Ferramenta: {item?.name}
+        {itemDetails ? `Nome da Ferramenta: ${itemDetails.name}` : "Carregando..."}
         <IconButton
           aria-label="close"
           onClick={onClose}
@@ -47,51 +76,72 @@ export default function ModalDescription({ open, onClose, item }) {
       </DialogTitle>
 
       <DialogContent dividers>
-        <Typography>Marca: {item?.brand || "—"}</Typography>
-        <Typography>Descrição: {item?.description || "—"}</Typography>
-        <Typography>
-          Especificações Técnicas:
-          {item?.technicalSpecs?.map((spec, index) => (
-            <span key={index}>
-              {spec.technicalSpecValue}
-              {index < item.technicalSpecs.length - 1 && ", "}
-            </span>
-          )) || "—"}
-        </Typography>
-        <Typography>Quantidade: {item?.quantity || "—"}</Typography>
-        <Typography>Número do lote: {item?.batchNumber || "—"}</Typography>
-        <Box mt={3}>
-          <Typography>Quantidade</Typography>
-          <TextField
-            fullWidth
-            defaultValue=""
-            placeholder="Selecione a quantidade"
-            type="number"
-          />
+        {loading && <Typography>Carregando detalhes...</Typography>}
+        {errorMessage && <Typography color="error">{errorMessage}</Typography>}
 
-          <Typography mt={2} gutterBottom>
-            Tipo da Ação
-          </Typography>
-          <TextField select fullWidth defaultValue="">
-            {tipoAcoes.map((acao) => (
-              <MenuItem key={acao.value} value={acao.value}>
-                {acao.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Box>
+        {itemDetails && (
+          <>
+            {/* Imagem */}
+            {itemDetails.image ? (
+              <Box display="flex" justifyContent="center" mb={3}>
+                <img
+                  src={`data:${itemDetails.image.type};base64,${itemDetails.image.data}`}
+                  alt="imagem da ferramenta"
+                  style={{ maxWidth: "250px", borderRadius: "12px", objectFit: "cover" }}
+                />
+              </Box>
+            ) : (
+              <Typography sx={{ fontStyle: "italic", color: "text.secondary", mb: 2 }}>
+                Essa ferramenta não possui imagem.
+              </Typography>
+            )}
 
-        <Box
-          mt={4}
-          display="flex"
-          justifyContent="space-between"
-          flexWrap="wrap"
-          gap={2}
-        >
-          <Button variant="contained" color="error">
-            Editar
-          </Button>
-        </Box>
+            <Typography>Marca: {itemDetails.brand || "—"}</Typography>
+            <Typography>Descrição: {itemDetails.description || "—"}</Typography>
+            <Typography>
+              Especificações Técnicas:{" "}
+              {itemDetails.technicalSpecs?.length > 0
+                ? itemDetails.technicalSpecs.map((spec) => spec.technicalSpecValue).join(", ")
+                : "—"}
+            </Typography>
+            <Typography>Quantidade: {itemDetails.totalQuantity || "—"}</Typography>
+            <Typography>Número do SAP: {itemDetails.sapCode || "—"}</Typography>
+
+            {/* Inputs */}
+            <Box mt={3}>
+              <Typography>Quantidade</Typography>
+              <TextField
+                fullWidth
+                defaultValue=""
+                placeholder="Selecione a quantidade"
+                type="number"
+              />
+
+              <Typography mt={2} gutterBottom>
+                Tipo da Ação
+              </Typography>
+              <TextField select fullWidth defaultValue="">
+                {tipoAcoes.map((acao) => (
+                  <MenuItem key={acao.value} value={acao.value}>
+                    {acao.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Box>
+
+            <Box
+              mt={4}
+              display="flex"
+              justifyContent="space-between"
+              flexWrap="wrap"
+              gap={2}
+            >
+              <Button variant="contained" color="error">
+                Editar
+              </Button>
+            </Box>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
