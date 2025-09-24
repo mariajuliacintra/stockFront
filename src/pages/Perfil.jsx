@@ -100,6 +100,7 @@ function Perfil() {
     }
   }, [currentPassword, navigate, status]);
 
+
   return (
     <Box sx={styles.pageLayout}>
       <HeaderPerfil />
@@ -141,7 +142,7 @@ function Perfil() {
           >
             Editar Perfil
           </Button>
-          <Button component={Link} to="/meuspedidos" sx={styles.linkButton} variant="text">
+          <Button component={Link} to="/transacoes" sx={styles.linkButton} variant="text">
             Minhas Transações
           </Button>
         </Box>
@@ -196,7 +197,7 @@ function Perfil() {
         </Box>
       </Modal>
     </Box>
-  );
+  )
 }
 
 function getStyles() {

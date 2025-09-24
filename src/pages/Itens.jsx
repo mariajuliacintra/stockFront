@@ -43,7 +43,7 @@ function Itens() {
       setItens(data);
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.message || "Erro ao carregar itens."
+        error.response?.data?.message 
       );
       setItens([]);
     }
@@ -97,6 +97,9 @@ function Itens() {
   useEffect(() => {
     document.title = "Itens | SENAI";
     fetchItens();
+  }, []);
+
+  useEffect(()=>{
     fetchCategories();
     handleFilter();
   }, [search, selectedCategory]);
