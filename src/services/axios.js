@@ -62,6 +62,7 @@ const sheets = {
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   deleteProfile: (id) => api.delete(`user/${id}`),
+  CreateLot: (lot, idLot) => api.put(`lot/quantity/${idLot}`, lot),
 
 };
 

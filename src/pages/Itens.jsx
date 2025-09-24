@@ -15,6 +15,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import CustomModal from "../components/mod/CustomModal";
 import MenuIcon from "@mui/icons-material/Menu";
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
@@ -32,6 +33,13 @@ function Itens() {
   const [errorMessage, setErrorMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorModalMessage, setErrorModalMessage] = useState("");
+
+  const handleSuccessMessage = (msg) => {
+    setSuccessMessage(msg);
+    setErrorModalMessage("");
+  };
 
   // Buscar itens
   const fetchItens = async () => {
@@ -57,7 +65,6 @@ function Itens() {
       const data = Array.isArray(response.data.categories)
         ? response.data.categories
         : [];
-      console.log(response.data.categories);
       setCategories(data);
     } catch (error) {
       console.error("Erro ao carregar categorias:", error);
@@ -109,6 +116,10 @@ function Itens() {
       }
     });
   };
+
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const idUser = user?.idUser || null;
 
   useEffect(() => {
     document.title = "Itens | SENAI";
@@ -165,7 +176,7 @@ function Itens() {
           <Button
             size="small"
             sx={styles.verMaisButton}
-            onClick={() => onOpenModal(item.idItem)} 
+            onClick={() => onOpenModal(item.idItem)}
           >
             Ver mais
           </Button>
@@ -285,7 +296,32 @@ function Itens() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         itemId={selectedItem}
+        idUser={idUser}
+        onSuccess={(msg) => setSuccessMessage(msg)}
+        onError={(msg) => setErrorModalMessage(msg)}
       />
+
+      {/* Modal de sucesso */}
+      {successMessage && (
+        <CustomModal
+          open={!!successMessage}
+          onClose={() => setSuccessMessage("")}
+          title="Sucesso"
+          message={successMessage}
+          type="success"
+        />
+      )}
+
+      {/* Modal de erro */}
+      {errorModalMessage && (
+        <CustomModal
+          open={!!errorModalMessage}
+          onClose={() => setErrorModalMessage("")}
+          title="Erro"
+          message={errorModalMessage}
+          type="error"
+        />
+      )}
     </Box>
   );
 }
