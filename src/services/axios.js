@@ -45,12 +45,9 @@ api.interceptors.response.use(
 const sheets = {
   postLogin: (user) => api.post(`user/login`, user),
   postRegister: (user) => api.post(`user/register`, user),
-  securyCodeApi: (code, email) =>
-    api.post(`user/verify-register`, { code, email }),
-  postVerifyRecoveryPassword: (email) =>
-    api.post("user/verify-recovery-password", email),
-  postValidateRecoveryCode: (data) =>
-    api.post("user/validate-recovery-code", data),
+  securyCodeApi: (code, email) => api.post(`user/verify-register`, { code, email }),
+  postVerifyRecoveryPassword: (email) => api.post("user/verify-recovery-password", email),
+  postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
   getItens: () => api.get(`items/`),
   getLocations: () => api.get("locations"),
@@ -60,8 +57,9 @@ const sheets = {
   getUserProfile: (id) => api.get(`user/${id}`),
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
-  deleteProfile: (id) => api.delete(`user/${id}`), 
-  putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
+  deleteProfile: (id) => api.delete(`user/${id}`),
+  // Nova função para atualizar a senha
+  putUpdatePassword: (idUser, data) => api.put(`user/password/${idUser}`, data),
 };
 
 export default sheets;
