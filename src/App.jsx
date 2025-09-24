@@ -68,7 +68,7 @@ function App() {
             }
           />
           <Route
-            path="/UserManagement"
+            path="/adm/users"
             element={
               <ProtectedRouter>
                 <UserManagement />
