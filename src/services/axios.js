@@ -5,7 +5,6 @@ const api = axios.create({
   headers: { accept: "application/json" },
 });
 
-// Interceptor para adicionar o token JWT automaticamente
 api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem("tokenUsuario");
@@ -19,7 +18,6 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para tratar erros de resposta (401/403)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -62,6 +60,9 @@ const sheets = {
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   deleteProfile: (id) => api.delete(`user/${id}`), 
   putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
+  getUsers: () => api.get("users"), 
+  updateUser: (id, data) => api.put(`user/${id}`, data),
+  createUser: (userData) => api.post("user/create", userData),
 };
 
 export default sheets;
