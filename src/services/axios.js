@@ -58,9 +58,9 @@ const sheets = {
   getUserProfile: (id) => api.get(`user/${id}`),
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
-  deleteProfile: (id) => api.delete(`user/${id}`),
+  deleteProfile: (id) => api.delete(`user/${id}`), 
+  putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
   getUsers: () => api.get("users"), 
-  deleteUser: (id) => api.delete(`user/${id}`),
   updateUser: (id, data) => api.put(`user/${id}`, data),
   createUser: (userData) => api.post("user/create", userData),
 };

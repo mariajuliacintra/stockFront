@@ -49,7 +49,14 @@ function App() {
               </DefaultLayout>
             }
           />
-          <Route path="/perfil" element={<Perfil />} />
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRouter>
+                <Perfil />
+              </ProtectedRouter>
+            }
+          />
           <Route
             path="/principal"
             element={
@@ -58,7 +65,14 @@ function App() {
               </ProtectedRouter>
             }
           />
-          <Route path="/AtualizarPerfil" element={<AtualizarPerfil />} />
+          <Route
+            path="/AtualizarPerfil"
+            element={
+              <ProtectedRouter>
+                <AtualizarPerfil />
+              </ProtectedRouter>
+            }
+          />
           <Route
             path="/transacoes"
             element={

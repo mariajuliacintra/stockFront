@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../services/axios";
 import {
   Box,
   Button,
@@ -8,13 +9,12 @@ import {
   Typography,
   Modal,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import FooterPerfil from "../components/layout/Footer";
 import HeaderPerfil from "../components/layout/HeaderPerfil";
 import senaiLogo from '../../img/logo.png';
-
-const API_BASE_URL = "http://10.89.240.85:5000/stock/user";
 
 function Perfil() {
   const navigate = useNavigate();
@@ -23,30 +23,37 @@ function Perfil() {
   const [userProfile, setUserProfile] = useState({ name: "", email: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [status, setStatus] = useState({ message: "", error: "", loading: false });
 
   useEffect(() => {
     document.title = "Perfil | SENAI";
 
-    const storedUserData = localStorage.getItem('user');
-
-    if (storedUserData) {
-      try {
-        const userData = JSON.parse(storedUserData);
-        setUserProfile({
-          name: userData.name || "",
-          email: userData.email || ""
-        });
-      } catch (error) {
-        console.error("Falha ao parsear os dados do usuário do localStorage:", error);
+    const fetchUserProfile = async () => {
+      const idUsuario = localStorage.getItem('idUsuario');
+      if (!idUsuario) {
+        console.error("ID do usuário não encontrado no localStorage.");
+        navigate('/login'); // Redireciona para o login se o ID não for encontrado
+        return;
       }
-    }
-  }, []);
+
+      try {
+        const response = await api.getUserProfile(idUsuario);
+        if (response.data.success && response.data.user && response.data.user.length > 0) {
+          const userData = response.data.user[0];
+          setUserProfile({ name: userData.name, email: userData.email });
+        } else {
+          console.error("Falha ao carregar o perfil do usuário:", response.data.message);
+        }
+      } catch (e) {
+        console.error("Erro na requisição da API:", e);
+      }
+    };
+
+    fetchUserProfile();
+  }, [navigate]);
 
   const handleOpenModal = () => {
-    setMessage("");
-    setError("");
+    setStatus({ message: "", error: "", loading: false });
     setIsModalOpen(true);
   };
 
@@ -59,58 +66,46 @@ function Perfil() {
     setCurrentPassword(event.target.value);
   };
 
-  const handleConfirmPassword = async () => {
-    setError("");
-    setMessage("");
-
+  const handleConfirmPassword = useCallback(async () => {
+    setStatus({ ...status, loading: true });
     try {
       const storedUserData = localStorage.getItem('user');
       const userData = storedUserData ? JSON.parse(storedUserData) : null;
-
       if (!userData || !userData.email) {
-        setError("Não foi possível encontrar o e-mail do usuário.");
+        setStatus({ ...status, error: "Não foi possível encontrar o e-mail do usuário.", loading: false });
         return;
       }
-
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          password: currentPassword,
-        }),
+      
+      const response = await api.postLogin({ 
+        email: userData.email, 
+        password: currentPassword 
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        localStorage.setItem("tokenUsuario", data.user?.[0]?.token);
+      if (response.status === 200 && response.data.success) {
+        localStorage.setItem("tokenUsuario", response.data.user?.[0]?.token);
         localStorage.setItem("authenticated", true);
-        localStorage.setItem("user", JSON.stringify(data.user[0]));
-        
+        localStorage.setItem("user", JSON.stringify(response.data.user[0]));
         navigate('/atualizarperfil');
       } else {
-        setError(data.message || "Senha incorreta. Tente novamente.");
+        setStatus({ 
+          ...status, 
+          error: response.data.message || "Senha incorreta. Tente novamente.", 
+          loading: false 
+        });
       }
-    } catch (error) {
-      console.error("Erro ao confirmar senha:", error);
-      setError("Ocorreu um erro ao tentar confirmar a senha. Tente novamente mais tarde.");
+    } catch (e) {
+      console.error("Erro ao confirmar senha:", e);
+      const errorMessage = e.response?.data?.error || "Ocorreu um erro. Tente novamente mais tarde.";
+      setStatus({ ...status, error: errorMessage, loading: false });
     }
-  };
-
-  const onChange = () => {};
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  };
+  }, [currentPassword, navigate, status]);
 
 
   return (
     <Box sx={styles.pageLayout}>
       <HeaderPerfil />
       <Container component="main" maxWidth={false} sx={styles.container}>
-        <Box component="form" sx={styles.form} onSubmit={handleSubmit} noValidate>
+        <Box sx={styles.form}>
           <Box sx={styles.senaiLogo}></Box>
           <Typography component="h1" variant="h5" sx={styles.profileTitle}>
             Meu Perfil
@@ -122,14 +117,10 @@ function Perfil() {
             id="name"
             label="nome"
             name="name"
-            autoFocus
             value={userProfile.name}
-            onChange={onChange}
             disabled
             sx={styles.textField}
-            InputLabelProps={{
-              shrink: true,
-            }}
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             margin="normal"
@@ -138,14 +129,10 @@ function Perfil() {
             id="email"
             label="e-mail"
             name="email"
-            autoComplete="email"
             value={userProfile.email}
-            onChange={onChange}
             disabled
             sx={styles.textField}
-            InputLabelProps={{
-              shrink: true,
-            }}
+            InputLabelProps={{ shrink: true }}
           />
           <Button
             type="button"
@@ -160,7 +147,9 @@ function Perfil() {
           </Button>
         </Box>
       </Container>
-      <FooterPerfil/>
+      <FooterPerfil />
+
+      {/* Modal de Confirmação de Senha */}
       <Modal
         open={isModalOpen}
         onClose={handleCloseModal}
@@ -190,14 +179,9 @@ function Perfil() {
             onChange={handlePasswordChange}
             sx={styles.modalTextField}
           />
-          {error && (
+          {status.error && (
             <Typography variant="body2" color="error" sx={{ mt: 1, textAlign: 'center' }}>
-              {error}
-            </Typography>
-          )}
-          {message && (
-            <Typography variant="body2" color="success" sx={{ mt: 1, textAlign: 'center' }}>
-              {message}
+              {status.error}
             </Typography>
           )}
           <Button
@@ -206,8 +190,9 @@ function Perfil() {
             fullWidth
             sx={styles.modalButton}
             onClick={handleConfirmPassword}
+            disabled={status.loading}
           >
-            Confirmar
+            {status.loading ? <CircularProgress size={24} color="inherit" /> : "Confirmar"}
           </Button>
         </Box>
       </Modal>
@@ -338,12 +323,12 @@ function getStyles() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      position: 'relative'
+      position: 'relative',
     },
     modalTitle: {
       mb: 2,
       fontWeight: 'bold',
-      color: '#333'
+      color: '#333',
     },
     modalTextField: {
       mb: 2,
@@ -363,7 +348,7 @@ function getStyles() {
       borderRadius: 8,
       textTransform: "none",
     },
-    closeButton: {
+    closeButton: {      
       position: 'absolute',
       right: 8,
       top: 8,
