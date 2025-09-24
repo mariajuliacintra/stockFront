@@ -86,7 +86,7 @@ function Login() {
       const response = await api.postLogin(user);
       localStorage.setItem("tokenUsuario", response.data.user?.[0]?.token);
       localStorage.setItem("authenticated", true);
-      localStorage.setItem("user", JSON.stringify(response.data.user[0]));
+      localStorage.setItem("idUsuario", response.data.user[0].idUser);
 
       setModalInfo({
         title: "Sucesso!",

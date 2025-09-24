@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.85:5000/stock/",
+  baseURL: "http://10.89.240.82:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -25,7 +25,6 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       const isLoginRequest = error.config.url.includes("user/login");
-      // CORREÇÃO: Usar `error.config.url` aqui também
       const isVerifyRequest = error.config.url.includes("verify-register");
       if (
         (error.response.status === 401 || error.response.status === 403) &&
@@ -58,11 +57,11 @@ const sheets = {
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
   getCategories: () => api.get("category"),
   getTransactionsByUser: (userId) => api.get(`transactions/user/${userId}`),
-  getUserProfile: (id) => api.get(`user/${id}`), // Adicionei este endpoint, que parece ser necessário
+  getUserProfile: (id) => api.get(`user/${id}`),
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
-  deleteProfile: (id) => api.delete(`user/${id}`),
-
+  deleteProfile: (id) => api.delete(`user/${id}`), 
+  putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
 };
 
 export default sheets;
