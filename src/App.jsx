@@ -11,6 +11,7 @@ import AtualizarPerfil from "./pages/AtualizarPerfil";
 import Itens from "./pages/Itens";
 import DefaultLayout from "./components/layout/DefaultLayout";
 import Transactions from "./pages/Transactions";
+import UserManagement from "./pages/UserManagement";
 
 const theme = createTheme({
   typography: {
@@ -48,7 +49,14 @@ function App() {
               </DefaultLayout>
             }
           />
-          <Route path="/perfil" element={<Perfil />} />
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRouter>
+                <Perfil />
+              </ProtectedRouter>
+            }
+          />
           <Route
             path="/principal"
             element={
@@ -57,12 +65,27 @@ function App() {
               </ProtectedRouter>
             }
           />
-          <Route path="/AtualizarPerfil" element={<AtualizarPerfil />} />
+          <Route
+            path="/AtualizarPerfil"
+            element={
+              <ProtectedRouter>
+                <AtualizarPerfil />
+              </ProtectedRouter>
+            }
+          />
           <Route
             path="/transacoes"
             element={
               <ProtectedRouter>
                 <Transactions />
+              </ProtectedRouter>
+            }
+          />
+          <Route
+            path="/UserManagement"
+            element={
+              <ProtectedRouter>
+                <UserManagement />
               </ProtectedRouter>
             }
           />
