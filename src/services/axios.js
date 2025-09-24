@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.82:5000/stock/",
+  baseURL: "http://10.89.240.85:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -65,6 +65,7 @@ const sheets = {
   getUsers: () => api.get("users"), 
   updateUser: (id, data) => api.put(`user/${id}`, data),
   createUser: (userData) => api.post("user/create", userData),
+  registerUserByManager: (user) => api.post(`user/register/manager`, user),
 };
 
 export default sheets;
