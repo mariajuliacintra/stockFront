@@ -4,43 +4,28 @@ import HomeIcon from "@mui/icons-material/Home";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { useEffect, useState } from "react";
 
-// Função para buscar o usuário no localStorage e determinar a role
 const getUserRole = () => {
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
-    return user ? user.role : null;
-  } catch (e) {
-    console.error("Erro ao ler user do localStorage:", e);
-    return null;
-  }
+  const userRole = localStorage.getItem("userRole");
+  return userRole || null;
 };
 
 const HeaderPerfil = () => {
-  // Inicializa o estado lendo o localStorage logo de cara
   const [userRole, setUserRole] = useState(getUserRole());
-  const styles = getStyles();
+  const styles = getStyles(); 
 
-  // 🚨 CORREÇÃO AQUI: Adiciona os Event Listeners 🚨
   useEffect(() => {
     const handleStorageChange = () => {
-        // Reler a role quando o evento 'storage' é disparado
-        setUserRole(getUserRole());
+      setUserRole(getUserRole());
     };
-    
-    // Escuta mudanças no localStorage (disparado pelo EditUserModal)
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Escuta o retorno para a aba. Ajuda a sincronizar entre abas.
-    // Também garante que a role é lida corretamente caso o useEffect inicial 
-    // não tenha pego.
-    window.addEventListener('focus', handleStorageChange);
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("focus", handleStorageChange);
 
     return () => {
-      // Limpeza dos listeners na desmontagem
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", handleStorageChange);
     };
-  }, []); // Roda apenas na montagem e desmontagem
+  }, []); 
 
   const isManager = userRole === "manager";
 
@@ -50,13 +35,12 @@ const HeaderPerfil = () => {
         <IconButton
           component={Link}
           to="/adm/users"
-          sx={styles.managerIconOuter} 
+          sx={styles.buttonStyle} 
           aria-label="Gerenciar Usuários"
         >
-          <ManageAccountsIcon sx={styles.managerIconInner} />
+          <ManageAccountsIcon sx={styles.managerIconStyle} />
         </IconButton>
       )}
-
       <Button component={Link} to="/principal" sx={styles.buttonHome}>
         <HomeIcon sx={styles.HomeIcon} />
       </Button>
@@ -64,18 +48,29 @@ const HeaderPerfil = () => {
   );
 };
 
-
 function getStyles() {
-  // Define um estilo base para o contêiner do ícone (o círculo vermelho)
-  const baseIconContainerStyle = {
+  const baseIconStyle = {
+    width: { xs: 20, sm: 30 },
+    height: { xs: 20, sm: 30 },
     borderRadius: "50%",
     backgroundColor: "darkred",
-    border: "4px solid white",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: 0.5,
+    border: "4px solid white",
     color: "white",
+    padding: 0.5,
+    fontSize: { xs: 15, sm: 25 },
+  };
+
+  // Estilo do Contêiner do Botão (para remover padding/margem extras)
+  const buttonContainerStyle = {
+    padding: 0,
+    minWidth: 0,
+    // Estilo de hover simples para o IconButton (Manager)
+    '&:hover': {
+      backgroundColor: 'transparent',
+    }
   };
 
   return {
@@ -87,35 +82,38 @@ function getStyles() {
       alignItems: "center",
       justifyContent: "flex-end",
       borderBottom: "1vh solid white",
-    },
+    }, 
 
-    // 1. Estilo do Contêiner (círculo) do Manager.
-    managerIconOuter: {
-      ...baseIconContainerStyle,
-      mr: 1,
-      width: { xs: 35, sm: 45 },
-      height: { xs: 35, sm: 45 },
-      '&:hover': {
+    // Estilo do botão do Manager (IconButton)
+    buttonStyle: {
+      ...buttonContainerStyle,
+      mr: 1, // Espaçamento à direita
+      // O IconButton (Manager) precisa de um hover:
+      '&:hover .MuiSvgIcon-root': {
         backgroundColor: "rgba(100, 0, 0, 1)",
-      }
+      },
     },
 
-    // 2. Estilo do Desenho Interno (Personagem) do Manager. AUMENTADO AQUI.
-    managerIconInner: {
+    // Estilo do desenho interno do Manager
+    managerIconStyle: {
+      ...baseIconStyle,
+      // O ManageAccountsIcon é um ícone maior, ajustamos o tamanho de exibição para caber no círculo
       fontSize: { xs: 20, sm: 30 },
     },
 
+    // O seu botão Home (agora de Link)
     buttonHome: {
+      ...buttonContainerStyle, // Remove padding padrão
       mr: { xs: 0.5, sm: 1.5 },
-    },
+      '&:hover .MuiSvgIcon-root': {
+        backgroundColor: "rgba(100, 0, 0, 1)",
+      },
+    }, 
 
     // Estilo do Ícone Home
     HomeIcon: {
-      ...baseIconContainerStyle,
-      width: { xs: 20, sm: 30 },
-      height: { xs: 20, sm: 30 },
-      // Definindo o tamanho do desenho da casinha (mantido menor para preenchimento)
-      fontSize: { xs: 15, sm: 25 }, 
+      ...baseIconStyle,
+      fontSize: { xs: 20, sm: 30 },
     },
   };
 }

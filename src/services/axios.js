@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.82:5000/stock/",
+  baseURL: "http://10.89.240.85:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -22,18 +22,20 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      const isLoginRequest = error.config.url.includes("user/login");
-      const isVerifyRequest = error.config.url.includes("verify-register");
-      if (
-        (error.response.status === 401 || error.response.status === 403) &&
-        error.response.data.auth === false &&
-        !isLoginRequest &&
-        !isVerifyRequest
-      ) {
-        localStorage.setItem("refresh_token", true);
-        localStorage.removeItem("tokenUsuario");
-        localStorage.removeItem("authenticated");
-        window.location.href = "/";
+      const { status, config } = error.response;
+      
+      const isAuthError = (status === 401 || status === 403);
+      const isLoginOrVerify = config.url.includes("user/login") || config.url.includes("verify-register");
+
+      if (isAuthError && !isLoginOrVerify) {
+          
+          localStorage.setItem("refresh_token", true);
+          localStorage.removeItem("tokenUsuario");
+          localStorage.removeItem("authenticated");
+          
+          if (window.location.pathname !== "/") {
+            window.location.href = "/";
+          }
       }
     }
     return Promise.reject(error);
@@ -66,6 +68,7 @@ const sheets = {
   updateUser: (id, data) => api.put(`user/${id}`, data),
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
+  deleteUser: (id) => api.delete(`user/${id}`),
 };
 
 export default sheets;
