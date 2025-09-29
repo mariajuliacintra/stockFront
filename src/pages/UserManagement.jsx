@@ -46,7 +46,6 @@ function UserManagement() {
     fetchUsers();
   }, []);
 
-  // Função para disparar o Snackbar (Alert) - recebida como 'onAlert' pelos modais
   const handleAlert = (message, severity = 'error') => {
     setAlert({ open: true, severity, message });
   };
@@ -56,9 +55,9 @@ function UserManagement() {
     setAlert({ ...alert, open: false });
   };
 
-  const checkUserRole = () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || user.role !== 'manager') {
+const checkUserRole = () => {
+    const userRole = localStorage.getItem('userRole'); 
+    if (userRole !== 'manager') {
       handleAlert('Acesso negado. Você não tem permissão para esta página.', 'error');
       setTimeout(() => navigate('/principal'), 3000);
       return false;
