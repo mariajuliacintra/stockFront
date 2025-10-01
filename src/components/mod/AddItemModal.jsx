@@ -13,13 +13,13 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 import sheets from "../../services/axios";
 
+// Modal de feedback
 const CustomModal = ({ open, onClose, title, message, type = "info" }) => {
   const iconProps =
     {
@@ -69,24 +69,31 @@ const CustomModal = ({ open, onClose, title, message, type = "info" }) => {
   );
 };
 
-export default function AddItemModal({ open, onClose, idUser, itemId }) {
+export default function AddItemModal({ open, onClose, idUser }) {
   const [formData, setFormData] = useState({});
   const [locations, setLocations] = useState([]);
+  const [availableSpecs, setAvailableSpecs] = useState([]); // Lista completa da API
+  const [technicalSpecs, setTechnicalSpecs] = useState([]); // Selecionadas
   const [loading, setLoading] = useState(false);
+  const [loadingLocations, setLoadingLocations] = useState(true);
   const [modalInfo, setModalInfo] = useState({
     open: false,
     title: "",
     message: "",
     type: "info",
   });
-  const [loadingLocations, setLoadingLocations] = useState(true);
-  const [technicalSpecs, setTechnicalSpecs] = useState([""]);
   const [imagem, setImagem] = useState(null);
+  const [newSpecName, setNewSpecName] = useState(""); // Para criar nova spec
+  const [addingNewSpec, setAddingNewSpec] = useState(false);
 
   useEffect(() => {
-    if (open) fetchLocations();
+    if (open) {
+      fetchLocations();
+      fetchTechnicalSpecs();
+    }
   }, [open]);
 
+  // Fetch locations
   const fetchLocations = async () => {
     try {
       setLoadingLocations(true);
@@ -104,8 +111,19 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
     }
   };
 
-  const handleFileChange = (e) => {
-    setImagem(e.target.files[0]);
+  // Fetch technical specs
+  const fetchTechnicalSpecs = async () => {
+    try {
+      const response = await sheets.getTechnicalSpecs();
+      setAvailableSpecs(response.data.technicalSpecs);
+    } catch {
+      setModalInfo({
+        open: true,
+        title: "Erro!",
+        message: "Falha ao carregar especificações técnicas",
+        type: "error",
+      });
+    }
   };
 
   const handleFormChange = (e) => {
@@ -113,24 +131,56 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleTechnicalChange = (index, value) => {
-    const updated = [...technicalSpecs];
-    updated[index] = value;
-    setTechnicalSpecs(updated);
+  const handleSelectSpec = (id) => {
+    const spec = availableSpecs.find((s) => s.idTechnicalSpec === id);
+    if (spec && !technicalSpecs.some((s) => s.idTechnicalSpec === id)) {
+      setTechnicalSpecs([...technicalSpecs, { ...spec, value: "" }]);
+    }
   };
 
-  const addTechnicalSpec = () => setTechnicalSpecs([...technicalSpecs, ""]);
-  const removeTechnicalSpec = (index) =>
-    setTechnicalSpecs(technicalSpecs.filter((_, i) => i !== index));
+  const handleTechnicalChange = (id, value) => {
+    setTechnicalSpecs((prev) =>
+      prev.map((spec) =>
+        spec.idTechnicalSpec === id ? { ...spec, value } : spec
+      )
+    );
+  };
+
+  const handleRemoveSpec = (id) =>
+    setTechnicalSpecs(technicalSpecs.filter((s) => s.idTechnicalSpec !== id));
+
+  const handleAddNewSpec = async () => {
+    if (!newSpecName.trim()) return;
+    try {
+      const response = await sheets.createTechnicalSpec({
+        technicalSpecKey: newSpecName,
+      });
+      const createdSpec = response.data.technicalSpec;
+      setAvailableSpecs([...availableSpecs, createdSpec]);
+      setTechnicalSpecs([...technicalSpecs, { ...createdSpec, value: "" }]);
+      setNewSpecName("");
+      setAddingNewSpec(false);
+    } catch (err) {
+      console.error(err);
+      setModalInfo({
+        open: true,
+        title: "Erro!",
+        message: "Falha ao criar nova especificação",
+        type: "error",
+      });
+    }
+  };
+
+  const handleFileChange = (e) => setImagem(e.target.files[0]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Monta objeto technicalSpecs com chaves 1,2,3...
     const techSpecsObj = {};
-    technicalSpecs.forEach((value, index) => {
-      if (value.trim()) techSpecsObj[index + 1] = value.trim();
+    technicalSpecs.forEach((spec) => {
+      if (spec.value.trim())
+        techSpecsObj[spec.idTechnicalSpec] = spec.value.trim();
     });
 
     if (Object.keys(techSpecsObj).length === 0) {
@@ -147,7 +197,6 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
     const payload = {
       sapCode: formData.sapCode || "",
       name: formData.name || "",
-      aliases: formData.aliases || "",
       brand: formData.brand || "",
       description: formData.description || "",
       technicalSpecs: techSpecsObj,
@@ -164,16 +213,21 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
         (payload[key] === "" || payload[key] === null) && delete payload[key]
     );
 
+    let newItemId = null;
+
     try {
       const response = await sheets.postAddItem(payload);
+      newItemId = response.data?.itemId;
+
       setModalInfo({
         open: true,
         title: "Sucesso!",
         message: response.data?.message || "Item adicionado!",
         type: "success",
       });
+
       setFormData({});
-      setTechnicalSpecs([""]);
+      setTechnicalSpecs([]);
       onClose();
     } catch (error) {
       setModalInfo({
@@ -185,25 +239,22 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
     } finally {
       setLoading(false);
     }
-    try {
-      if (!imagem) return;
 
-      // Cria FormData para envio
-      const formDataImg = new FormData();
-      formDataImg.append("imagem", imagem);
-
-      // Chama a API
-      const response = await sheets.insertImage(itemId, formDataImg);
-
-      // Feedback da API
-      if (response.data?.message) {
-        console.log(response.data.message);
-      } else {
-        alert("Imagem enviada com sucesso!");
+    if (imagem && newItemId) {
+      try {
+        const responseImg = await sheets.insertImage(newItemId, imagem);
+        console.log(responseImg.data?.message || "Imagem enviada com sucesso!");
+      } catch (err) {
+        console.error("Erro ao enviar imagem:", err);
+        setModalInfo({
+          open: true,
+          title: "Atenção!",
+          message:
+            err.response?.data?.details ||
+            "Item criado, mas falha ao enviar imagem",
+          type: "error",
+        });
       }
-    } catch (err) {
-      console.error(err);
-      console.log(err.response?.data?.message || "Erro ao enviar a imagem");
     }
   };
 
@@ -223,6 +274,7 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
             Adicionar Novo Item
           </Typography>
 
+          {/* Outros campos do formulário */}
           <TextField
             label="SAP Code"
             name="sapCode"
@@ -239,14 +291,6 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
             onChange={handleFormChange}
             margin="normal"
             required
-          />
-          <TextField
-            label="Apelidos"
-            name="aliases"
-            fullWidth
-            value={formData.aliases || ""}
-            onChange={handleFormChange}
-            margin="normal"
           />
           <TextField
             label="Marca"
@@ -294,23 +338,7 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
             margin="normal"
           />
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Categoria</InputLabel>
-            <Select
-              name="fkIdCategory"
-              value={formData.fkIdCategory || ""}
-              onChange={handleFormChange}
-            >
-              <MenuItem value={1}>Ferramenta</MenuItem>
-              <MenuItem value={2}>Material</MenuItem>
-              <MenuItem value={3}>Produto</MenuItem>
-              <MenuItem value={4}>Equipamento</MenuItem>
-              <MenuItem value={5}>Matéria-prima</MenuItem>
-              <MenuItem value={6}>Diversos</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth margin="normal">
+           <FormControl fullWidth margin="normal">
             <InputLabel>Localização</InputLabel>
             <Select
               name="fkIdLocation"
@@ -325,7 +353,7 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
               ) : (
                 locations.map((loc) => (
                   <MenuItem key={loc.idLocation} value={loc.idLocation}>
-                    {loc.place}
+                    {loc.place} - {loc.code}
                   </MenuItem>
                 ))
               )}
@@ -339,35 +367,70 @@ export default function AddItemModal({ open, onClose, idUser, itemId }) {
             style={{ marginBottom: 16 }}
           />
 
-          <Typography variant="subtitle1" mt={2}>
-            Technical Specs
-          </Typography>
-          {technicalSpecs.map((value, idx) => (
-            <Box key={idx} display="flex" gap={1} alignItems="center" mt={1}>
-              <TextField
-                label={`Valor ${idx + 1}`}
-                value={value}
-                onChange={(e) => handleTechnicalChange(idx, e.target.value)}
-                sx={{ flex: 1 }}
-                required={idx === 0}
-              />
-              {idx > 0 && (
-                <IconButton
-                  onClick={() => removeTechnicalSpec(idx)}
-                  color="error"
+          {/* Dropdown Technical Specs */}
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Especificações técnicas</InputLabel>
+            <Select
+              value=""
+              onChange={(e) => {
+                if (e.target.value === "new") {
+                  setAddingNewSpec(true);
+                } else {
+                  handleSelectSpec(e.target.value);
+                }
+              }}
+            >
+              {availableSpecs.map((spec) => (
+                <MenuItem
+                  key={spec.idTechnicalSpec}
+                  value={spec.idTechnicalSpec}
                 >
-                  <DeleteIcon />
-                </IconButton>
-              )}
+                  {spec.technicalSpecKey}
+                </MenuItem>
+              ))}
+              <MenuItem value="new">Adicionar especificação...</MenuItem>
+            </Select>
+          </FormControl>
+
+          {addingNewSpec && (
+            <Box display="flex" gap={1} mt={1} alignItems="center">
+              <TextField
+                label="Nova especificação"
+                value={newSpecName}
+                onChange={(e) => setNewSpecName(e.target.value)}
+                fullWidth
+              />
+              <Button variant="contained" onClick={handleAddNewSpec}>
+                Adicionar
+              </Button>
+            </Box>
+          )}
+
+          {/* Lista de specs selecionadas */}
+          {technicalSpecs.map((spec) => (
+            <Box
+              key={spec.idTechnicalSpec}
+              display="flex"
+              gap={1}
+              alignItems="center"
+              mt={1}
+            >
+              <TextField
+                label={spec.technicalSpecKey}
+                value={spec.value}
+                onChange={(e) =>
+                  handleTechnicalChange(spec.idTechnicalSpec, e.target.value)
+                }
+                sx={{ flex: 1 }}
+              />
+              <IconButton
+                color="error"
+                onClick={() => handleRemoveSpec(spec.idTechnicalSpec)}
+              >
+                <DeleteIcon />
+              </IconButton>
             </Box>
           ))}
-          <Button
-            startIcon={<AddIcon />}
-            onClick={addTechnicalSpec}
-            sx={{ mt: 1 }}
-          >
-            Adicionar Technical Spec
-          </Button>
 
           <Box mt={3} display="flex" justifyContent="flex-end" gap={1}>
             <Button onClick={onClose} variant="outlined">

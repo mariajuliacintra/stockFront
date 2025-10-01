@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.82:5000/stock/",
+  baseURL: "http://10.89.240.6:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -23,19 +23,20 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       const { status, config } = error.response;
-      
-      const isAuthError = (status === 401 || status === 403);
-      const isLoginOrVerify = config.url.includes("user/login") || config.url.includes("verify-register");
+
+      const isAuthError = status === 401 || status === 403;
+      const isLoginOrVerify =
+        config.url.includes("user/login") ||
+        config.url.includes("verify-register");
 
       if (isAuthError && !isLoginOrVerify) {
-          
-          localStorage.setItem("refresh_token", true);
-          localStorage.removeItem("tokenUsuario");
-          localStorage.removeItem("authenticated");
-          
-          if (window.location.pathname !== "/") {
-            window.location.href = "/";
-          }
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("tokenUsuario");
+        localStorage.removeItem("authenticated");
+
+        if (window.location.pathname !== "/") {
+          window.location.href = "/";
+        }
       }
     }
     return Promise.reject(error);
@@ -62,24 +63,26 @@ const sheets = {
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   deleteProfile: (id) => api.delete(`user/${id}`),
-  CreateLot: (lot, idLot) => api.put(`lot/quantity/${idLot}`, lot), 
+  CreateLot: (lot, idLot) => api.put(`lot/quantity/${idLot}`, lot),
   putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
-  getUsers: () => api.get("users"), 
+  getUsers: () => api.get("users"),
   updateUser: (id, data) => api.put(`user/${id}`, data),
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
   deleteUser: (id) => api.delete(`user/${id}`),
+  getTechnicalSpecs: () => api.get(`technicalSpec/`),
+  createTechnicalSpec: (technicalSpecKey) => api.post(`technicalSpec/`, technicalSpecKey),
   insertImage: (id_item, imagem) => {
-  const data = new FormData();
-  data.append("imagem", imagem); // "imagem" deve ser o nome que o backend espera
+    const data = new FormData();
+    data.append("imagem", imagem); // "imagem" deve ser o nome que o backend espera
 
-  return api.post(`item/image/${id_item}`, data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      Accept: "application/json",
-    },
-  });
-},
+    return api.post(`item/image/${id_item}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
+      },
+    });
+  },
 };
 
 export default sheets;
