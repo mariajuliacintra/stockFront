@@ -140,7 +140,7 @@ function AtualizarPerfil() {
       }
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
-      const errorMessage = error.response?.data?.error || "Erro desconhecido ao atualizar perfil.";
+      const errorMessage = error.response?.data?.details || error.response?.data?.error || "Erro desconhecido ao atualizar perfil.";
       setModalInfo({
         title: "Erro!",
         message: errorMessage,
@@ -214,7 +214,7 @@ function AtualizarPerfil() {
       setVerificationCode("");
     } catch (error) {
       console.error("Erro ao verificar o código:", error);
-      const errorMessage = error.response?.data?.error || "Erro desconhecido ao verificar código.";
+      const errorMessage = error.response?.data?.details || error.response?.data?.error || "Erro desconhecido ao verificar código.";
       showSnackbar(errorMessage, "error");
     } finally {
       setLoading(false);
