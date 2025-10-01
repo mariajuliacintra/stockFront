@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.82:5000/stock/",
+  baseURL: "http://10.89.240.85:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -22,18 +22,20 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      const isLoginRequest = error.config.url.includes("user/login");
-      const isVerifyRequest = error.config.url.includes("verify-register");
-      if (
-        (error.response.status === 401 || error.response.status === 403) &&
-        error.response.data.auth === false &&
-        !isLoginRequest &&
-        !isVerifyRequest
-      ) {
-        localStorage.setItem("refresh_token", true);
-        localStorage.removeItem("tokenUsuario");
-        localStorage.removeItem("authenticated");
-        window.location.href = "/";
+      const { status, config } = error.response;
+      
+      const isAuthError = (status === 401 || status === 403);
+      const isLoginOrVerify = config.url.includes("user/login") || config.url.includes("verify-register");
+
+      if (isAuthError && !isLoginOrVerify) {
+          
+          localStorage.setItem("refresh_token", true);
+          localStorage.removeItem("tokenUsuario");
+          localStorage.removeItem("authenticated");
+          
+          if (window.location.pathname !== "/") {
+            window.location.href = "/";
+          }
       }
     }
     return Promise.reject(error);
@@ -48,6 +50,7 @@ const sheets = {
   postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
   getItens: () => api.get(`items/`),
+  getItensID: (id_item) => api.get(`item/${id_item}/details`, id_item),
   getLocations: () => api.get("locations"),
   postAddItem: (category, itemData) => api.post(`${category}`, itemData),
   getCategories: () => api.get("category"),
@@ -55,11 +58,14 @@ const sheets = {
   getUserProfile: (id) => api.get(`user/${id}`),
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
-  deleteProfile: (id) => api.delete(`user/${id}`), 
+  deleteProfile: (id) => api.delete(`user/${id}`),
+  CreateLot: (lot, idLot) => api.put(`lot/quantity/${idLot}`, lot), 
   putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
   getUsers: () => api.get("users"), 
   updateUser: (id, data) => api.put(`user/${id}`, data),
   createUser: (userData) => api.post("user/create", userData),
+  registerUserByManager: (user) => api.post(`user/register/manager`, user),
+  deleteUser: (id) => api.delete(`user/${id}`),
 };
 
 export default sheets;

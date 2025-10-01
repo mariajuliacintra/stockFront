@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import { Box, Button } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
-import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from '@mui/icons-material/Logout';
 import logo from "../../../img/logo.png";
 
+
+function logout() {
+  localStorage.removeItem("authenticated");
+  navigate("/");
+}
 
 const HeaderPrincipal = ({}) => {
   const styles = getStyles();
@@ -15,8 +20,8 @@ const HeaderPrincipal = ({}) => {
         <Button component={Link} to="/perfil" >
           <PersonIcon sx={styles.PersonIcon} />
         </Button>
-        <Button component={Link} to="/" sx={styles.buttonHome}>
-          <HomeIcon sx={styles.HomeIcon} />
+        <Button component={Link} to="/" sx={styles.buttonHome} onClick={logout}>
+          <LogoutIcon sx={styles.LogoutIcon} />
         </Button>
       </Box>
     </Box>
@@ -37,7 +42,7 @@ function getStyles() {
     buttonHome: {
       mr: { xs: 0.5, sm: 1.5 },
     },
-    HomeIcon: {
+    LogoutIcon: {
       width: { xs: 20, sm: 30 },
       height: { xs: 20, sm: 30 },
       borderRadius: "50%",
@@ -47,7 +52,7 @@ function getStyles() {
       justifyContent: "center",
       border: "4px solid white",
       color: "white",
-      padding: 0.5,
+      padding:0.5,
     },
     PersonIcon: {
       width: { xs: 20, sm: 30 },

@@ -35,11 +35,11 @@ function Home() {
         </Box>
         <Box sx={styles.body}>
           <Typography sx={styles.bodyText}>
-            Seja Bem-
+            Seja Bem-vindo
             <br />
-            vindo ao site
+            ao site de
             <br />
-            de estoque do
+            estoque do
             <br />
             SENAI
           </Typography>

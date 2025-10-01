@@ -15,6 +15,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import CustomModal from "../components/mod/CustomModal";
 import MenuIcon from "@mui/icons-material/Menu";
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
@@ -26,11 +27,19 @@ function Itens() {
   const [allItens, setAllItens] = useState([]);
   const [itens, setItens] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]); // Alterado para um array
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorModalMessage, setErrorModalMessage] = useState("");
+
+  const handleSuccessMessage = (msg) => {
+    setSuccessMessage(msg);
+    setErrorModalMessage("");
+  };
 
   // Buscar itens
   const fetchItens = async () => {
@@ -43,7 +52,7 @@ function Itens() {
       setItens(data);
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.message 
+        error.response?.data?.error || "Erro ao carregar a lista de itens"
       );
       setItens([]);
     }
@@ -56,14 +65,13 @@ function Itens() {
       const data = Array.isArray(response.data.categories)
         ? response.data.categories
         : [];
-      console.log(response.data.categories);
       setCategories(data);
     } catch (error) {
       console.error("Erro ao carregar categorias:", error);
     }
   };
 
-  // Filtrar itens pelo nome e categoria
+  // Filtrar itens pelo nome e pelas categorias selecionadas
   const handleFilter = () => {
     let filtered = allItens;
 
@@ -73,9 +81,12 @@ function Itens() {
       );
     }
 
-    if (selectedCategory) {
-      filtered = filtered.filter(
-        (item) => item.category?.idCategory === selectedCategory.idCategory
+    // Filtrando pelos itens que pertencem a qualquer uma das categorias selecionadas
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((item) =>
+        selectedCategories.some(
+          (category) => item.category?.idCategory === category.idCategory
+        )
       );
     }
 
@@ -83,26 +94,41 @@ function Itens() {
     setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
   };
 
-  const handleOpenModal = (item) => {
-    setSelectedItem(item);
+  // Abre o modal de detalhes do item
+  const handleOpenModal = (itemId) => {
+    setSelectedItem(itemId);
     setModalOpen(true);
   };
 
+  // Selecionar ou desmarcar uma categoria
   const handleSelectCategory = (category) => {
-    setSelectedCategory(
-      selectedCategory?.idCategory === category.idCategory ? null : category
-    );
+    setSelectedCategories((prevSelectedCategories) => {
+      if (
+        prevSelectedCategories.some(
+          (cat) => cat.idCategory === category.idCategory
+        )
+      ) {
+        return prevSelectedCategories.filter(
+          (cat) => cat.idCategory !== category.idCategory
+        ); // Desmarca a categoria
+      } else {
+        return [...prevSelectedCategories, category]; // Marca a categoria
+      }
+    });
   };
+
+  const idUser = localStorage.getItem("idUsuario");
+  console.log(idUser);
 
   useEffect(() => {
     document.title = "Itens | SENAI";
     fetchItens();
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchCategories();
     handleFilter();
-  }, [search, selectedCategory]);
+  }, [search, selectedCategories]); // Atualizando o filtro quando as categorias selecionadas mudam
 
   const getTitle = (item) => item.name || "";
   const getSpecs = (item) =>
@@ -149,7 +175,7 @@ function Itens() {
           <Button
             size="small"
             sx={styles.verMaisButton}
-            onClick={() => onOpenModal(item)}
+            onClick={() => onOpenModal(item.idItem)}
           >
             Ver mais
           </Button>
@@ -193,17 +219,17 @@ function Itens() {
             onChange={(e) => setSearch(e.target.value)}
             size="small"
             sx={{
-              borderRadius:20,
+              borderRadius: 20,
               backgroundColor: "#fff",
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  border: "none", 
+                  border: "none",
                 },
                 "&:hover fieldset": {
                   border: "none",
                 },
                 "&.Mui-focused fieldset": {
-                  border: "none", 
+                  border: "none",
                 },
               },
             }}
@@ -230,10 +256,11 @@ function Itens() {
                 onClick={() => handleSelectCategory(cat)}
               >
                 <Checkbox
-                  checked={selectedCategory?.idCategory === cat.idCategory}
+                  checked={selectedCategories.some(
+                    (category) => category.idCategory === cat.idCategory
+                  )}
                   sx={{ color: "#fff", "&.Mui-checked": { color: "#fff" } }}
                 />
-                {/* Mostrar o nome da categoria corretamente */}
                 <ListItemText primary={cat.categoryValue} />
               </ListItem>
             ))}
@@ -267,8 +294,33 @@ function Itens() {
       <ModalDescription
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        item={selectedItem}
+        itemId={selectedItem}
+        idUser={idUser}
+        onSuccess={(msg) => setSuccessMessage(msg)}
+        onError={(msg) => setErrorModalMessage(msg)}
       />
+
+      {/* Modal de sucesso */}
+      {successMessage && (
+        <CustomModal
+          open={!!successMessage}
+          onClose={() => setSuccessMessage("")}
+          title="Sucesso"
+          message={successMessage}
+          type="success"
+        />
+      )}
+
+      {/* Modal de erro */}
+      {errorModalMessage && (
+        <CustomModal
+          open={!!errorModalMessage}
+          onClose={() => setErrorModalMessage("")}
+          title="Erro"
+          message={errorModalMessage}
+          type="error"
+        />
+      )}
     </Box>
   );
 }

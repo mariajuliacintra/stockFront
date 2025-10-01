@@ -27,17 +27,7 @@ function Transactions() {
 
   async function fetchTransactions() {
     setLoading(true);
-    let storedUserData = null;
-    try {
-      const storedUserString = localStorage.getItem("user");
-      if (storedUserString) {
-        storedUserData = JSON.parse(storedUserString);
-      }
-    } catch (e) {
-      console.error("Erro ao fazer o parse do JSON do usuário:", e);
-    }
-    const userId = storedUserData?.idUser;
-
+    const userId = localStorage.getItem("idUsuario"); 
     if (!userId) {
       setModalCustom({
         open: true,
