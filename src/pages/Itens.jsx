@@ -21,6 +21,7 @@ import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
 import api from "../services/axios";
 import ModalDescription from "../components/mod/ModalDescription";
+import AddItemModal from "../components/mod/AddItemModal";
 
 function Itens() {
   const [search, setSearch] = useState("");
@@ -32,7 +33,7 @@ function Itens() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+  const [modalAddOpen, setModalAddOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
 
@@ -117,8 +118,17 @@ function Itens() {
     });
   };
 
+  const handleOpenModalAdd = () => {
+    setDrawerOpen(false); // fecha o menu
+    setModalAddOpen(true); // abre o modal
+  };
+
+  const handleCloseModalAdd = () => {
+    setModalAddOpen(false);
+  };
+
   const idUser = localStorage.getItem("idUsuario");
-  console.log(idUser);
+
 
   useEffect(() => {
     document.title = "Itens | SENAI";
@@ -264,8 +274,11 @@ function Itens() {
                 <ListItemText primary={cat.categoryValue} />
               </ListItem>
             ))}
-            <ListItem button>
-              <ListItemText primary="+ Adicionar Item" />
+            <ListItem button onClick={handleOpenModalAdd}>
+              <ListItemText
+                primary="+ Adicionar Item"
+                sx={{ fontWeight: "bold", cursor: "pointer", color: "#fff" }}
+              />
             </ListItem>
           </List>
         </Drawer>
@@ -321,6 +334,13 @@ function Itens() {
           type="error"
         />
       )}
+
+      <AddItemModal
+        open={modalAddOpen}
+        onClose={handleCloseModalAdd}
+        idUser={idUser}
+        itemId={selectedItem}
+      />
     </Box>
   );
 }

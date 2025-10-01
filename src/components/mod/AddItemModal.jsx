@@ -10,70 +10,58 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-// Este é o código do seu serviço de API que deve ser usado.
 import sheets from "../../services/axios";
 
-
-// Componente CustomModal simplificado para este exemplo
 const CustomModal = ({ open, onClose, title, message, type = "info" }) => {
-  const iconProps = {
-    success: { IconComponent: CheckCircleOutlineIcon, color: "#4CAF50" },
-    error: { IconComponent: ErrorOutlineIcon, color: "#F44336" },
-    info: { IconComponent: InfoOutlinedIcon, color: "#2196F3" },
-  }[type] || {};
-
+  const iconProps =
+    {
+      success: { IconComponent: CheckCircleOutlineIcon, color: "#4CAF50" },
+      error: { IconComponent: ErrorOutlineIcon, color: "#F44336" },
+      info: { IconComponent: InfoOutlinedIcon, color: "#2196F3" },
+    }[type] || {};
   const IconComponent = iconProps.IconComponent;
-
-  const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', sm: 400 },
-    bgcolor: 'white',
-    borderRadius: '15px',
-    boxShadow: '0 8px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-    p: 4,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-  };
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={modalStyle}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: { xs: "90%", sm: 400 },
+          bgcolor: "white",
+          borderRadius: "15px",
+          boxShadow: "0 8px 12px rgba(0,0,0,0.15)",
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
         {IconComponent && (
-          <IconComponent sx={{ fontSize: '7rem', color: iconProps.color, mb: '16px' }} />
+          <IconComponent
+            sx={{ fontSize: "5rem", color: iconProps.color, mb: 2 }}
+          />
         )}
-        <Typography id="modal-title" variant="h5" component="h2" fontWeight="bold" color="#333" mb={1}>
+        <Typography variant="h6" fontWeight="bold" mb={1}>
           {title}
         </Typography>
-        <Typography id="modal-description" sx={{ color: '#666', mb: 2 }}>
-          {message}
-        </Typography>
-        <Button 
-          variant="contained" 
-          onClick={onClose} 
-          sx={{
-            width: '80%',
-            paddingY: '12px',
-            borderRadius: '10px',
-            backgroundColor: iconProps.color,
-            color: '#fff',
-            fontSize: { xs: '1rem', sm: '1.1rem' },
-            fontWeight: '600',
-            textTransform: 'none',
-            '&:hover': {
-              backgroundColor: iconProps.color,
-              opacity: 0.9,
-            },
-          }}>
+        <Typography sx={{ color: "#666", mb: 2 }}>{message}</Typography>
+        <Button
+          variant="contained"
+          onClick={onClose}
+          sx={{ width: "60%", backgroundColor: iconProps.color }}
+        >
           OK
         </Button>
       </Box>
@@ -81,233 +69,312 @@ const CustomModal = ({ open, onClose, title, message, type = "info" }) => {
   );
 };
 
-// Estilo aprimorado para o modal principal
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: { xs: "95%", sm: 400 },
-  maxHeight: "90vh", // Limita a altura para caber na tela
-  overflowY: 'auto', // Adiciona rolagem vertical quando necessário
-  bgcolor: "white",
-  borderRadius: "15px",
-  boxShadow: '0 8px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-  p: 4,
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const formFields = {
-  tool: ["name", "aliases", "brand", "quantity", "expirationDate", "batchNumber"],
-  material: ["name", "aliases", "brand", "description", "technicalSpecs", "quantity", "expirationDate", "batchNumber"],
-  product: ["name", "aliases", "brand", "quantity", "expirationDate", "batchNumber"],
-  equipment: ["name", "aliases", "brand", "description", "technicalSpecs", "quantity", "batchNumber"],
-  rawMaterial: ["name", "aliases", "brand", "quantity", "batchNumber"],
-  diverses: ["name", "aliases", "quantity", "batchNumber"],
-};
-
-const fieldLabels = {
-  name: "Nome",
-  aliases: "Apelidos (opcional)",
-  brand: "Marca",
-  quantity: "Quantidade",
-  expirationDate: "Data de Validade (AAAA-MM-DD)",
-  batchNumber: "Número do Lote",
-  description: "Descrição",
-  technicalSpecs: "Especificações Técnicas",
-};
-
-export default function AddItemModal({ open, onClose }) {
-  const [selectedCategory, setSelectedCategory] = useState("");
+export default function AddItemModal({ open, onClose, idUser, itemId }) {
   const [formData, setFormData] = useState({});
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [modalInfo, setModalInfo] = useState({ open: false, title: "", message: "", type: "info" });
+  const [modalInfo, setModalInfo] = useState({
+    open: false,
+    title: "",
+    message: "",
+    type: "info",
+  });
   const [loadingLocations, setLoadingLocations] = useState(true);
+  const [technicalSpecs, setTechnicalSpecs] = useState([""]);
+  const [imagem, setImagem] = useState(null);
 
-  // Função para buscar localizações da API
+  useEffect(() => {
+    if (open) fetchLocations();
+  }, [open]);
+
   const fetchLocations = async () => {
     try {
       setLoadingLocations(true);
       const response = await sheets.getLocations();
-      setLocations(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar localizações:", error);
-      const errorMessage = error.response?.data?.message;
-      setModalInfo({ open: true, title: "Erro!", message: errorMessage, type: "error" });
+      setLocations(response.data.locations);
+    } catch {
+      setModalInfo({
+        open: true,
+        title: "Erro!",
+        message: "Falha ao carregar localizações",
+        type: "error",
+      });
     } finally {
       setLoadingLocations(false);
     }
   };
 
-  useEffect(() => {
-    if (open) {
-      fetchLocations();
-    }
-  }, [open]);
-
-  const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value);
-    setFormData({ fkIdLocation: "" });
+  const handleFileChange = (e) => {
+    setImagem(e.target.files[0]);
   };
 
-  const handleFormChange = (event) => {
-    const { name, value } = event.target;
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleCloseModalInfo = () => {
-    setModalInfo({ ...modalInfo, open: false });
-  };
-  
-  // Função para fechar e resetar o modal
-  const handleCloseAndReset = () => {
-    setSelectedCategory("");
-    setFormData({});
-    onClose();
+  const handleTechnicalChange = (index, value) => {
+    const updated = [...technicalSpecs];
+    updated[index] = value;
+    setTechnicalSpecs(updated);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const addTechnicalSpec = () => setTechnicalSpecs([...technicalSpecs, ""]);
+  const removeTechnicalSpec = (index) =>
+    setTechnicalSpecs(technicalSpecs.filter((_, i) => i !== index));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
 
-    const fkIdUser = "12345";
+    // Monta objeto technicalSpecs com chaves 1,2,3...
+    const techSpecsObj = {};
+    technicalSpecs.forEach((value, index) => {
+      if (value.trim()) techSpecsObj[index + 1] = value.trim();
+    });
+
+    if (Object.keys(techSpecsObj).length === 0) {
+      setModalInfo({
+        open: true,
+        title: "Erro!",
+        message: "Informe ao menos uma TechnicalSpec",
+        type: "error",
+      });
+      setLoading(false);
+      return;
+    }
+
     const payload = {
-      ...formData,
-      fkIdUser,
-      fkIdLocation: Number(formData.fkIdLocation),
-      quantity: Number(formData.quantity)
+      sapCode: formData.sapCode || "",
+      name: formData.name || "",
+      aliases: formData.aliases || "",
+      brand: formData.brand || "",
+      description: formData.description || "",
+      technicalSpecs: techSpecsObj,
+      minimumStock: Number(formData.minimumStock || 0),
+      fkIdCategory: formData.fkIdCategory || null,
+      quantity: Number(formData.quantity || 0),
+      expirationDate: formData.expirationDate || "",
+      fkIdLocation: Number(formData.fkIdLocation || 0),
+      fkIdUser: Number(idUser),
     };
 
-    // Remove campos com valores vazios antes de enviar para evitar erros 400
-    for (const key in payload) {
-      if (payload[key] === "" || payload[key] === null) {
-        delete payload[key];
-      }
-    }
-    
+    Object.keys(payload).forEach(
+      (key) =>
+        (payload[key] === "" || payload[key] === null) && delete payload[key]
+    );
+
     try {
-      const response = await sheets.postAddItem(selectedCategory, payload);
-      // Pega a mensagem de sucesso diretamente da resposta da API
-      const successMessage = response.data?.message || "Operação realizada com sucesso.";
-      setModalInfo({ open: true, title: "Sucesso!", message: successMessage, type: "success" });
-      handleCloseAndReset();
+      const response = await sheets.postAddItem(payload);
+      setModalInfo({
+        open: true,
+        title: "Sucesso!",
+        message: response.data?.message || "Item adicionado!",
+        type: "success",
+      });
+      setFormData({});
+      setTechnicalSpecs([""]);
+      onClose();
     } catch (error) {
-      console.error("Erro ao adicionar item:", error);
-      // Pega a mensagem de erro diretamente da resposta da API com um fallback
-      const errorMessage = error.response?.data?.message || "Ocorreu um erro inesperado ao adicionar o item.";
-      setModalInfo({ open: true, title: "Erro!", message: errorMessage, type: "error" });
+      setModalInfo({
+        open: true,
+        title: "Erro!",
+        message: error.response?.data?.message || "Erro ao adicionar item",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
-  };
+    try {
+      if (!imagem) return;
 
-  const renderFormFields = () => {
-    if (!selectedCategory) return null;
-    return formFields[selectedCategory].map((field) => (
-      <TextField
-        key={field}
-        name={field}
-        label={fieldLabels[field]}
-        type={field === "quantity" ? "number" : "text"}
-        fullWidth
-        required={field !== "aliases"}
-        value={formData[field] || ""}
-        onChange={handleFormChange}
-        margin="normal"
-        variant="outlined"
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            backgroundColor: '#F3F4F6',
-          },
-        }}
-      />
-    ));
+      // Cria FormData para envio
+      const formDataImg = new FormData();
+      formDataImg.append("imagem", imagem);
+
+      // Chama a API
+      const response = await sheets.insertImage(itemId, formDataImg);
+
+      // Feedback da API
+      if (response.data?.message) {
+        console.log(response.data.message);
+      } else {
+        alert("Imagem enviada com sucesso!");
+      }
+    } catch (err) {
+      console.error(err);
+      console.log(err.response?.data?.message || "Erro ao enviar a imagem");
+    }
   };
 
   return (
     <>
-      <Modal open={open} onClose={handleCloseAndReset} sx={{ backdropFilter: 'blur(3px)', backgroundColor: 'rgba(0,0,0,0.4)' }}>
-        <Box sx={modalStyle} component="form" onSubmit={handleSubmit}>
-          <Typography variant="h5" component="h2" mb={2} fontWeight="bold" textAlign="center">
+      <Modal
+        open={open}
+        onClose={onClose}
+        sx={{ backdropFilter: "blur(3px)", backgroundColor: "rgba(0,0,0,0.4)" }}
+      >
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ ...modalStyle, maxHeight: "90vh", overflowY: "auto" }}
+        >
+          <Typography variant="h5" fontWeight="bold" textAlign="center" mb={2}>
             Adicionar Novo Item
           </Typography>
-          <FormControl fullWidth margin="normal" sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px', backgroundColor: '#F3F4F6', }, }}>
-            <InputLabel id="category-select-label">Selecione a Categoria</InputLabel>
+
+          <TextField
+            label="SAP Code"
+            name="sapCode"
+            fullWidth
+            value={formData.sapCode || ""}
+            onChange={handleFormChange}
+            margin="normal"
+          />
+          <TextField
+            label="Nome"
+            name="name"
+            fullWidth
+            value={formData.name || ""}
+            onChange={handleFormChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Apelidos"
+            name="aliases"
+            fullWidth
+            value={formData.aliases || ""}
+            onChange={handleFormChange}
+            margin="normal"
+          />
+          <TextField
+            label="Marca"
+            name="brand"
+            fullWidth
+            value={formData.brand || ""}
+            onChange={handleFormChange}
+            margin="normal"
+          />
+          <TextField
+            label="Descrição"
+            name="description"
+            fullWidth
+            value={formData.description || ""}
+            onChange={handleFormChange}
+            margin="normal"
+          />
+          <TextField
+            label="Quantidade"
+            name="quantity"
+            type="number"
+            fullWidth
+            value={formData.quantity || ""}
+            onChange={handleFormChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Data de Validade"
+            name="expirationDate"
+            type="date"
+            fullWidth
+            value={formData.expirationDate || ""}
+            onChange={handleFormChange}
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            label="Estoque Mínimo"
+            name="minimumStock"
+            type="number"
+            fullWidth
+            value={formData.minimumStock || ""}
+            onChange={handleFormChange}
+            margin="normal"
+          />
+
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Categoria</InputLabel>
             <Select
-              labelId="category-select-label"
-              value={selectedCategory}
-              label="Selecione a Categoria"
-              onChange={handleCategoryChange}
-              required
+              name="fkIdCategory"
+              value={formData.fkIdCategory || ""}
+              onChange={handleFormChange}
             >
-              <MenuItem value="tool">Ferramenta</MenuItem>
-              <MenuItem value="material">Material</MenuItem>
-              <MenuItem value="product">Produto</MenuItem>
-              <MenuItem value="equipment">Equipamento</MenuItem>
-              <MenuItem value="rawMaterial">Matéria-prima</MenuItem>
-              <MenuItem value="diverses">Diversos</MenuItem>
+              <MenuItem value={1}>Ferramenta</MenuItem>
+              <MenuItem value={2}>Material</MenuItem>
+              <MenuItem value={3}>Produto</MenuItem>
+              <MenuItem value={4}>Equipamento</MenuItem>
+              <MenuItem value={5}>Matéria-prima</MenuItem>
+              <MenuItem value={6}>Diversos</MenuItem>
             </Select>
           </FormControl>
 
-          {renderFormFields()}
-
-          {selectedCategory && (
-            <FormControl fullWidth margin="normal" required sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px', backgroundColor: '#F3F4F6', }, }}>
-              <InputLabel>Localização</InputLabel>
-              <Select
-                name="fkIdLocation"
-                value={formData.fkIdLocation || ""}
-                onChange={handleFormChange}
-                label="Localização"
-                disabled={loadingLocations}
-              >
-                {loadingLocations ? (
-                  <MenuItem disabled>
-                    <CircularProgress size={20} sx={{ mr: 2 }} />
-                    Carregando Localizações...
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Localização</InputLabel>
+            <Select
+              name="fkIdLocation"
+              value={formData.fkIdLocation || ""}
+              onChange={handleFormChange}
+            >
+              {loadingLocations ? (
+                <MenuItem disabled>
+                  <CircularProgress size={20} />
+                  Carregando...
+                </MenuItem>
+              ) : (
+                locations.map((loc) => (
+                  <MenuItem key={loc.idLocation} value={loc.idLocation}>
+                    {loc.place}
                   </MenuItem>
-                ) : (
-                  locations.map((loc) => (
-                    <MenuItem key={loc.idLocation} value={loc.idLocation}>
-                      {loc.place} - {loc.code}
-                    </MenuItem>
-                  ))
-                )}
-              </Select>
-            </FormControl>
-          )}
+                ))
+              )}
+            </Select>
+          </FormControl>
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ marginBottom: 16 }}
+          />
+
+          <Typography variant="subtitle1" mt={2}>
+            Technical Specs
+          </Typography>
+          {technicalSpecs.map((value, idx) => (
+            <Box key={idx} display="flex" gap={1} alignItems="center" mt={1}>
+              <TextField
+                label={`Valor ${idx + 1}`}
+                value={value}
+                onChange={(e) => handleTechnicalChange(idx, e.target.value)}
+                sx={{ flex: 1 }}
+                required={idx === 0}
+              />
+              {idx > 0 && (
+                <IconButton
+                  onClick={() => removeTechnicalSpec(idx)}
+                  color="error"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </Box>
+          ))}
+          <Button
+            startIcon={<AddIcon />}
+            onClick={addTechnicalSpec}
+            sx={{ mt: 1 }}
+          >
+            Adicionar Technical Spec
+          </Button>
+
           <Box mt={3} display="flex" justifyContent="flex-end" gap={1}>
-            <Button onClick={handleCloseAndReset} variant="outlined" sx={{
-              borderRadius: '10px',
-              textTransform: 'none',
-              height: 48,
-              fontWeight: 600,
-              color: '#6B7280',
-              borderColor: '#D1D5DB',
-              '&:hover': {
-                backgroundColor: '#F3F4F6',
-                borderColor: '#6B7280',
-              }
-            }}>
+            <Button onClick={onClose} variant="outlined">
               Cancelar
             </Button>
-            <Button type="submit" variant="contained" disabled={loading} sx={{
-              backgroundColor: '#DC2626',
-              color: 'white',
-              height: 48,
-              fontWeight: '600',
-              fontSize: 16,
-              borderRadius: '10px',
-              textTransform: 'none',
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-              '&:hover': {
-                backgroundColor: '#B91C1C',
-              },
-            }}>
-              {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : "Adicionar"}
+            <Button type="submit" variant="contained" disabled={loading}>
+              {loading ? <CircularProgress size={24} /> : "Adicionar"}
             </Button>
           </Box>
         </Box>
@@ -315,7 +382,7 @@ export default function AddItemModal({ open, onClose }) {
 
       <CustomModal
         open={modalInfo.open}
-        onClose={handleCloseModalInfo}
+        onClose={() => setModalInfo({ ...modalInfo, open: false })}
         title={modalInfo.title}
         message={modalInfo.message}
         type={modalInfo.type}
@@ -323,3 +390,17 @@ export default function AddItemModal({ open, onClose }) {
     </>
   );
 }
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: { xs: "95%", sm: 500 },
+  bgcolor: "white",
+  borderRadius: "15px",
+  boxShadow: "0 8px 12px rgba(0,0,0,0.15)",
+  p: 4,
+  display: "flex",
+  flexDirection: "column",
+};
