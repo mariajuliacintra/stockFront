@@ -2,15 +2,15 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/axios"; 
 import {
-  Box,
-  Button,
-  Container,
-  TextField,
-  Typography,
-  Modal,
-  IconButton,
-  CircularProgress,
-  InputAdornment, 
+    Box,
+    Button,
+    Container,
+    TextField,
+    Typography,
+    Modal,
+    IconButton,
+    CircularProgress,
+    InputAdornment, 
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Visibility from "@mui/icons-material/Visibility"; 
@@ -20,243 +20,243 @@ import HeaderPerfil from "../components/layout/HeaderPerfil";
 import senaiLogo from "../../img/logo.png";
 
 function Perfil() {
-  const navigate = useNavigate();
-  const styles = getStyles();
+    const navigate = useNavigate();
+    const styles = getStyles();
 
-  const [userProfile, setUserProfile] = useState({ name: "", email: "" });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); 
-  const [status, setStatus] = useState({
-    message: "",
-    error: "",
-    loading: false,
-  });
-
-  const fetchUserProfile = useCallback(async () => {
-    const idUsuario = localStorage.getItem("idUsuario");
-    if (!idUsuario) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const response = await api.getUserProfile(idUsuario);
-      if (
-        response.data.success &&
-        response.data.user &&
-        response.data.user.length > 0
-      ) {
-        const userData = response.data.user[0];
-        setUserProfile({ name: userData.name, email: userData.email });
-      } else {
-      }
-    } catch (e) {
-      console.error("Erro na requisição da API:", e.response?.data?.error || "Erro desconhecido");
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    document.title = "Perfil | SENAI";
-    fetchUserProfile();
-  }, [fetchUserProfile]);
-
-  const handleOpenModal = () => {
-    setStatus({ message: "", error: "", loading: false });
-    setCurrentPassword(""); 
-    setShowPassword(false); 
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setCurrentPassword("");
-    setShowPassword(false); 
-    setStatus({ message: "", error: "", loading: false });
-  };
-
-  const handlePasswordChange = (event) => {
-    setCurrentPassword(event.target.value);
-  };
-
-  const handleClickShowPassword = () => { 
-    setShowPassword((prev) => !prev);
-  };
-
-  const handleMouseDownPassword = (event) => { 
-    event.preventDefault();
-  };
-
-  const handleConfirmPassword = useCallback(async () => {
-    setStatus({ ...status, loading: true, error: "" });
-
-    const userEmail = userProfile.email;
-
-    if (!userEmail) {
-      setStatus({
-        error: "E-mail do usuário não carregado. Tente recarregar a página.",
+    const [userProfile, setUserProfile] = useState({ name: "", email: "" });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false); 
+    const [status, setStatus] = useState({
+        message: "",
+        error: "",
         loading: false,
-      });
-      return;
-    }
+    });
 
-    try {
-      const response = await api.postLogin({
-        email: userEmail,
-        password: currentPassword,
-      });
+    const fetchUserProfile = useCallback(async () => {
+        const idUsuario = localStorage.getItem("idUsuario");
+        if (!idUsuario) {
+            navigate("/login");
+            return;
+        }
 
-      if (response.status === 200 && response.data.success) {
-        localStorage.setItem("tokenUsuario", response.data.user?.[0]?.token);
-        localStorage.setItem("authenticated", true);
-        localStorage.setItem(
-          "idUsuario",
-          String(response.data.user[0].idUser)
-        );
+        try {
+            const response = await api.getUserProfile(idUsuario);
+            if (
+                response.data.success &&
+                response.data.user &&
+                response.data.user.length > 0
+            ) {
+                const userData = response.data.user[0];
+                setUserProfile({ name: userData.name, email: userData.email });
+            } else {
+            }
+        } catch (e) {
+            console.error("Erro na requisição da API:", e.response?.data?.error || "Erro desconhecido");
+        }
+    }, [navigate]);
 
-        navigate("/atualizarperfil");
-      } else {
-        setStatus({
-          error: response.data.message || response.data.error,
-          loading: false,
-        });
-      }
-    } catch (e) {
-      const errorMessage = e.response?.data?.error || e.response?.data?.message; 
-      
-      const finalMessage = errorMessage || "Ocorreu um erro de rede. Tente novamente.";
-      
-      setStatus({ error: finalMessage, loading: false });
-    }
-  }, [currentPassword, navigate, userProfile.email, status]);
+    useEffect(() => {
+        document.title = "Perfil | SENAI";
+        fetchUserProfile();
+    }, [fetchUserProfile]);
 
-  return (
-    <Box sx={styles.pageLayout}>
-      <HeaderPerfil />
-      <Container component="main" maxWidth={false} sx={styles.container}>
-        <Box sx={styles.form}>
-          <Box sx={styles.senaiLogo}></Box>
-          <Typography component="h1" variant="h5" sx={styles.profileTitle}>
-            Meu Perfil
-          </Typography>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="nome"
-            name="name"
-            value={userProfile.name}
-            disabled
-            sx={styles.textField}
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="e-mail"
-            name="email"
-            value={userProfile.email}
-            disabled
-            sx={styles.textField}
-            InputLabelProps={{ shrink: true }}
-          />
-          <Button
-            type="button"
-            variant="contained"
-            sx={styles.button}
-            onClick={handleOpenModal}
-          >
-            Editar Perfil
-          </Button>
-          <Button
-            component={Link}
-            to="/transacoes"
-            sx={styles.linkButton}
-            variant="text"
-          >
-            Minhas Transações
-          </Button>
-        </Box>
-      </Container>
-      <FooterPerfil />
+    const handleOpenModal = () => {
+        setStatus({ message: "", error: "", loading: false });
+        setCurrentPassword(""); 
+        setShowPassword(false); 
+        setIsModalOpen(true);
+    };
 
-      <Modal
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        aria-labelledby="confirm-password-modal"
-        aria-describedby="confirm-password-description"
-      >
-        <Box sx={styles.modal}>
-          <IconButton
-            aria-label="close"
-            onClick={handleCloseModal}
-            sx={styles.closeButton}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography
-            component="h2"
-            id="confirm-password-modal"
-            sx={styles.modalTitle}
-          >
-            Confirmar Senha Atual
-          </Typography>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="current-password"
-            label="Senha Atual"
-            name="current-password"
-            type={showPassword ? "text" : "password"} 
-            value={currentPassword}
-            onChange={handlePasswordChange}
-            sx={styles.modalTextField}
-            InputProps={{
-                endAdornment: (
-                    <InputAdornment position="end">
-                        <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                            edge="end"
-                        >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                    </InputAdornment>
-                ),
-            }}
-          />
-          {status.error && (
-            <Typography
-              variant="body2"
-              color="error"
-              sx={{ mt: 1, textAlign: "center" }}
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setCurrentPassword("");
+        setShowPassword(false); 
+        setStatus({ message: "", error: "", loading: false });
+    };
+
+    const handlePasswordChange = (event) => {
+        setCurrentPassword(event.target.value);
+    };
+
+    const handleClickShowPassword = () => { 
+        setShowPassword((prev) => !prev);
+    };
+
+    const handleMouseDownPassword = (event) => { 
+        event.preventDefault();
+    };
+
+    const handleConfirmPassword = useCallback(async () => {
+        setStatus({ ...status, loading: true, error: "" });
+
+        const userEmail = userProfile.email;
+
+        if (!userEmail) {
+            setStatus({
+                error: "E-mail do usuário não carregado. Tente recarregar a página.",
+                loading: false,
+            });
+            return;
+        }
+
+        try {
+            const response = await api.postLogin({
+                email: userEmail,
+                password: currentPassword,
+            });
+
+            if (response.status === 200 && response.data.success) {
+                localStorage.setItem("tokenUsuario", response.data.user?.[0]?.token);
+                localStorage.setItem("authenticated", true);
+                localStorage.setItem(
+                    "idUsuario",
+                    String(response.data.user[0].idUser)
+                );
+
+                navigate("/atualizarperfil");
+            } else {
+                setStatus({
+                    error: response.data.message || response.data.error,
+                    loading: false,
+                });
+            }
+        } catch (e) {
+            const errorMessage = e.response?.data?.error || e.response?.data?.message; 
+            
+            const finalMessage = errorMessage || "Ocorreu um erro de rede. Tente novamente.";
+            
+            setStatus({ error: finalMessage, loading: false });
+        }
+    }, [currentPassword, navigate, userProfile.email, status]);
+
+    return (
+        <Box sx={styles.pageLayout}>
+            <HeaderPerfil />
+            <Container component="main" maxWidth={false} sx={styles.container}>
+                <Box sx={styles.form}>
+                    <Box sx={styles.senaiLogo}></Box>
+                    <Typography component="h1" variant="h5" sx={styles.profileTitle}>
+                        Meu Perfil
+                    </Typography>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="name"
+                        label="nome"
+                        name="name"
+                        value={userProfile.name}
+                        disabled
+                        sx={styles.textField}
+                        InputLabelProps={{ shrink: true }}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="email"
+                        label="e-mail"
+                        name="email"
+                        value={userProfile.email}
+                        disabled
+                        sx={styles.textField}
+                        InputLabelProps={{ shrink: true }}
+                    />
+                    <Button
+                        type="button"
+                        variant="contained"
+                        sx={styles.button}
+                        onClick={handleOpenModal}
+                    >
+                        Editar Perfil
+                    </Button>
+                    <Button
+                        component={Link}
+                        to="/transacoes"
+                        sx={styles.linkButton}
+                        variant="text"
+                    >
+                        Minhas Transações
+                    </Button>
+                </Box>
+            </Container>
+            <FooterPerfil />
+
+            <Modal
+                open={isModalOpen}
+                onClose={handleCloseModal}
+                aria-labelledby="confirm-password-modal"
+                aria-describedby="confirm-password-description"
             >
-              {status.error}
-            </Typography>
-          )}
-          <Button
-            type="button"
-            variant="contained"
-            fullWidth
-            sx={styles.modalButton}
-            onClick={handleConfirmPassword}
-            disabled={status.loading}
-          >
-            {status.loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Confirmar"
-            )}
-          </Button>
+                <Box sx={styles.modal}>
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleCloseModal}
+                        sx={styles.closeButton}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography
+                        component="h2"
+                        id="confirm-password-modal"
+                        sx={styles.modalTitle}
+                    >
+                        Confirmar Senha Atual
+                    </Typography>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="current-password"
+                        label="Senha Atual"
+                        name="current-password"
+                        type={showPassword ? "text" : "password"} 
+                        value={currentPassword}
+                        onChange={handlePasswordChange}
+                        sx={styles.modalTextField}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    {status.error && (
+                        <Typography
+                            variant="body2"
+                            color="error"
+                            sx={{ mt: 1, textAlign: "center" }}
+                        >
+                            {status.error}
+                        </Typography>
+                    )}
+                    <Button
+                        type="button"
+                        variant="contained"
+                        fullWidth
+                        sx={styles.modalButton}
+                        onClick={handleConfirmPassword}
+                        disabled={status.loading}
+                    >
+                        {status.loading ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            "Confirmar"
+                        )}
+                    </Button>
+                </Box>
+            </Modal>
         </Box>
-      </Modal>
-    </Box>
-  );
+    );
 }
 
 function getStyles() {
@@ -382,7 +382,7 @@ function getStyles() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            position: "relative",
+            // REMOVEMOS A DUPLICATA AQUI (era a linha 'position: "relative",')
         },
         modalTitle: {
             mb: 2,
