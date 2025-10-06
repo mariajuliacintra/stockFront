@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.6:5000/stock/",
+  baseURL: "http://10.89.240.107:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -74,7 +74,7 @@ const sheets = {
   createTechnicalSpec: (technicalSpecKey) => api.post(`technicalSpec/`, technicalSpecKey),
   insertImage: (id_item, imagem) => {
     const data = new FormData();
-    data.append("imagem", imagem); // "imagem" deve ser o nome que o backend espera
+    data.append("image", imagem); // "imagem" deve ser o nome que o backend espera
 
     return api.post(`item/image/${id_item}`, data, {
       headers: {

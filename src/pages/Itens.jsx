@@ -37,11 +37,6 @@ function Itens() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
 
-  const handleSuccessMessage = (msg) => {
-    setSuccessMessage(msg);
-    setErrorModalMessage("");
-  };
-
   // Buscar itens
   const fetchItens = async () => {
     try {

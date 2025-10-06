@@ -72,10 +72,12 @@ const CustomModal = ({ open, onClose, title, message, type = "info" }) => {
 export default function AddItemModal({ open, onClose, idUser }) {
   const [formData, setFormData] = useState({});
   const [locations, setLocations] = useState([]);
-  const [availableSpecs, setAvailableSpecs] = useState([]); // Lista completa da API
-  const [technicalSpecs, setTechnicalSpecs] = useState([]); // Selecionadas
+  const [availableSpecs, setAvailableSpecs] = useState([]);
+  const [technicalSpecs, setTechnicalSpecs] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingLocations, setLoadingLocations] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const [modalInfo, setModalInfo] = useState({
     open: false,
     title: "",
@@ -83,12 +85,13 @@ export default function AddItemModal({ open, onClose, idUser }) {
     type: "info",
   });
   const [imagem, setImagem] = useState(null);
-  const [newSpecName, setNewSpecName] = useState(""); // Para criar nova spec
+  const [newSpecName, setNewSpecName] = useState("");
   const [addingNewSpec, setAddingNewSpec] = useState(false);
 
   useEffect(() => {
     if (open) {
       fetchLocations();
+      fetchCategories();
       fetchTechnicalSpecs();
     }
   }, [open]);
@@ -123,6 +126,24 @@ export default function AddItemModal({ open, onClose, idUser }) {
         message: "Falha ao carregar especificações técnicas",
         type: "error",
       });
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const response = await sheets.getCategories();
+      setCategories(response.data.categories);
+      console.log(categories); // <-- adaptar de acordo com retorno da API
+    } catch {
+      setModalInfo({
+        open: true,
+        title: "Erro!",
+        message: "Falha ao carregar categorias",
+        type: "error",
+      });
+    } finally {
+      setLoadingCategories(false);
     }
   };
 
@@ -206,7 +227,10 @@ export default function AddItemModal({ open, onClose, idUser }) {
       expirationDate: formData.expirationDate || "",
       fkIdLocation: Number(formData.fkIdLocation || 0),
       fkIdUser: Number(idUser),
+      // fkIdCategory:
     };
+
+    console.log("payload enviado: ", payload);
 
     Object.keys(payload).forEach(
       (key) =>
@@ -217,7 +241,7 @@ export default function AddItemModal({ open, onClose, idUser }) {
 
     try {
       const response = await sheets.postAddItem(payload);
-      newItemId = response.data?.itemId;
+      newItemId = response.data.data[0].itemId;
 
       setModalInfo({
         open: true,
@@ -241,6 +265,7 @@ export default function AddItemModal({ open, onClose, idUser }) {
     }
 
     if (imagem && newItemId) {
+      console.log("imagem -> entrou no if");
       try {
         const responseImg = await sheets.insertImage(newItemId, imagem);
         console.log(responseImg.data?.message || "Imagem enviada com sucesso!");
@@ -274,7 +299,27 @@ export default function AddItemModal({ open, onClose, idUser }) {
             Adicionar Novo Item
           </Typography>
 
-          {/* Outros campos do formulário */}
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Categoria</InputLabel>
+            <Select
+              name="fkIdCategory"
+              value={formData.fkIdCategory || ""}
+              onChange={handleFormChange}
+            >
+              {loadingCategories ? (
+                <MenuItem disabled>
+                  <CircularProgress size={20} /> Carregando...
+                </MenuItem>
+              ) : (
+                categories.map((cat) => (
+                  <MenuItem key={cat.idCategory} value={cat.idCategory}>
+                    {cat.categoryValue}
+                  </MenuItem>
+                ))
+              )}
+            </Select>
+          </FormControl>
+
           <TextField
             label="SAP Code"
             name="sapCode"
@@ -338,7 +383,7 @@ export default function AddItemModal({ open, onClose, idUser }) {
             margin="normal"
           />
 
-           <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="normal">
             <InputLabel>Localização</InputLabel>
             <Select
               name="fkIdLocation"
@@ -360,12 +405,69 @@ export default function AddItemModal({ open, onClose, idUser }) {
             </Select>
           </FormControl>
 
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{ marginBottom: 16 }}
-          />
+          {/* Campo de upload estilizado */}
+          <Box
+            sx={{
+              border: "2px dashed #ccc",
+              borderRadius: "8px",
+              p: 2,
+              textAlign: "center",
+              mt: 2,
+              mb: 2,
+              transition: "0.3s",
+              "&:hover": { borderColor: "#1976d2", backgroundColor: "#f9f9f9" },
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              sx={{ mb: 1, color: "#555", fontWeight: 500 }}
+            >
+              Imagem do item que deseja adicionar
+            </Typography>
+
+            <label
+              htmlFor="upload-image"
+              style={{
+                display: "inline-block",
+                padding: "8px 16px",
+                backgroundColor: "#f5f5f5",
+                border: "1px solid #ccc",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontWeight: "500",
+                color: "#333",
+                transition: "all 0.3s",
+              }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#e0e0e0")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#f5f5f5")}
+            >
+              Adicione a imagem <span style={{ fontWeight: "bold" }}>+</span>
+            </label>
+
+            <input
+              id="upload-image"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
+
+            <Typography
+              variant="caption"
+              sx={{ display: "block", mt: 1, color: "#777" }}
+            >
+              Máximo suportado 5MB
+            </Typography>
+
+            {imagem && (
+              <Typography
+                variant="body2"
+                sx={{ mt: 1, color: "#4CAF50", fontWeight: 500 }}
+              >
+                Arquivo selecionado: {imagem.name}
+              </Typography>
+            )}
+          </Box>
 
           {/* Dropdown Technical Specs */}
           <FormControl fullWidth margin="normal">
