@@ -20,7 +20,8 @@ import {
   Person,
   Lock,
   ArrowForward,
-} from "@mui/icons-material";
+}
+from "@mui/icons-material";
 
 import CustomModal from "../components/mod/CustomModal";
 

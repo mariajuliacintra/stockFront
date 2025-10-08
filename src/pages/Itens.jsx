@@ -117,9 +117,8 @@ function Itens() {
     });
   };
 
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
-  const idUser = user?.idUser || null;
+  const idUser = localStorage.getItem("idUsuario");
+  console.log(idUser);
 
   useEffect(() => {
     document.title = "Itens | SENAI";
