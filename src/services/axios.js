@@ -1,7 +1,8 @@
 import axios from "axios";
 
+const baseURL = "http://192.168.1.69:5000/stock/"; 
 const api = axios.create({
-  baseURL: "http://10.89.240.82:5000/stock/",
+  baseURL: "http://192.168.1.69:5000/stock/",
   headers: { accept: "application/json" },
 });
 
