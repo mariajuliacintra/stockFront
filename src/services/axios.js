@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.85:5000/stock/",
+  baseURL: "http://10.89.240.96:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -23,19 +23,18 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       const { status, config } = error.response;
-      
-      const isAuthError = (status === 401 || status === 403);
-      const isLoginOrVerify = config.url.includes("user/login") || config.url.includes("verify-register");
+      const isAuthError = status === 401 || status === 403;
+      const isLoginOrVerify =
+        config.url.includes("user/login") ||
+        config.url.includes("verify-register");
 
       if (isAuthError && !isLoginOrVerify) {
-          
-          localStorage.setItem("refresh_token", true);
-          localStorage.removeItem("tokenUsuario");
-          localStorage.removeItem("authenticated");
-          
-          if (window.location.pathname !== "/") {
-            window.location.href = "/";
-          }
+        localStorage.setItem("refresh_token", true);
+        localStorage.removeItem("tokenUsuario");
+        localStorage.removeItem("authenticated");
+        if (window.location.pathname !== "/") {
+          window.location.href = "/";
+        }
       }
     }
     return Promise.reject(error);
@@ -43,6 +42,43 @@ api.interceptors.response.use(
 );
 
 const sheets = {
+  importItemsExcel: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return api.post("import/excel/items", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+  getReportUrl: (type, format) => {
+    let endpoint = "";
+    switch (type) {
+      case "general":
+        endpoint = `report/${format}/general`;
+        break;
+      case "low-stock":
+        endpoint = `report/${format}/low-stock`;
+        break;
+      case "transactions":
+        endpoint = `report/${format}/transactions`;
+        break;
+      default:
+        return null;
+    } // Retorna a URL completa para ser usada como endpoint no Axios
+    return baseURL + endpoint;
+  },
+
+  downloadReport: (reportType, format) => {
+    const fullUrl = sheets.getReportUrl(reportType, format);
+    const endpoint = fullUrl.replace(baseURL, "");
+
+    return api.get(endpoint, {
+      responseType: "blob",
+    });
+  }, // --- Funções Existentes ---
+
   postLogin: (user) => api.post(`user/login`, user),
   postRegister: (user) => api.post(`user/register`, user),
   securyCodeApi: (code, email) => api.post(`user/verify-register`, { code, email }),
@@ -59,9 +95,9 @@ const sheets = {
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
   postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   deleteProfile: (id) => api.delete(`user/${id}`),
-  CreateLot: (lot, idLot) => api.put(`lot/quantity/${idLot}`, lot), 
+  CreateLot: (lot, idLot) => api.put(`lot/quantity/${idLot}`, lot),
   putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
-  getUsers: () => api.get("users"), 
+  getUsers: () => api.get("users"),
   updateUser: (id, data) => api.put(`user/${id}`, data),
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),

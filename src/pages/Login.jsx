@@ -87,10 +87,11 @@ function Login() {
       const response = await api.postLogin(user);
       const userData = response.data.user?.[0];
 
-      if (userData) {
+      if (userData) { 
         localStorage.setItem("tokenUsuario", userData.token);
         localStorage.setItem("authenticated", true);
         localStorage.setItem("idUsuario", String(userData.idUser));
+        localStorage.setItem("userRole", userData.role);
       }
 
       setModalInfo({
