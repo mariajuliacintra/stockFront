@@ -69,7 +69,7 @@ const CustomModal = ({ open, onClose, title, message, type = "info" }) => {
   );
 };
 
-export default function AddItemModal({ open, onClose, idUser }) {
+export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
   const [formData, setFormData] = useState({});
   const [locations, setLocations] = useState([]);
   const [availableSpecs, setAvailableSpecs] = useState([]);
@@ -134,7 +134,6 @@ export default function AddItemModal({ open, onClose, idUser }) {
       setLoadingCategories(true);
       const response = await sheets.getCategories();
       setCategories(response.data.categories);
-      console.log(categories); // <-- adaptar de acordo com retorno da API
     } catch {
       setModalInfo({
         open: true,
@@ -169,28 +168,6 @@ export default function AddItemModal({ open, onClose, idUser }) {
 
   const handleRemoveSpec = (id) =>
     setTechnicalSpecs(technicalSpecs.filter((s) => s.idTechnicalSpec !== id));
-
-  const handleAddNewSpec = async () => {
-    if (!newSpecName.trim()) return;
-    try {
-      const response = await sheets.createTechnicalSpec({
-        technicalSpecKey: newSpecName,
-      });
-      const createdSpec = response.data.technicalSpec;
-      setAvailableSpecs([...availableSpecs, createdSpec]);
-      setTechnicalSpecs([...technicalSpecs, { ...createdSpec, value: "" }]);
-      setNewSpecName("");
-      setAddingNewSpec(false);
-    } catch (err) {
-      console.error(err);
-      setModalInfo({
-        open: true,
-        title: "Erro!",
-        message: "Falha ao criar nova especificação",
-        type: "error",
-      });
-    }
-  };
 
   const handleFileChange = (e) => setImagem(e.target.files[0]);
 
@@ -227,10 +204,8 @@ export default function AddItemModal({ open, onClose, idUser }) {
       expirationDate: formData.expirationDate || "",
       fkIdLocation: Number(formData.fkIdLocation || 0),
       fkIdUser: Number(idUser),
-      // fkIdCategory:
     };
 
-    console.log("payload enviado: ", payload);
 
     Object.keys(payload).forEach(
       (key) =>
@@ -241,23 +216,37 @@ export default function AddItemModal({ open, onClose, idUser }) {
 
     try {
       const response = await sheets.postAddItem(payload);
-      newItemId = response.data.data[0].itemId;
+      const data = response.data;
 
-      setModalInfo({
-        open: true,
-        title: "Sucesso!",
-        message: response.data?.message || "Item adicionado!",
-        type: "success",
-      });
+      // Verifica success
+      if (data.success === true) {
+        newItemId = data.data[0]?.itemId;
 
-      setFormData({});
-      setTechnicalSpecs([]);
-      onClose();
+        setModalInfo({
+          open: true,
+          title: "Sucesso!",
+          message: data.message || "Item adicionado!",
+          type: "success",
+        });
+
+        setFormData({});
+        setTechnicalSpecs([]);
+        onClose();
+        if (onSuccess) onSuccess();
+      } else {
+        // success === false
+        setModalInfo({
+          open: true,
+          title: "Erro!",
+          message: data.message || "Falha ao adicionar item",
+          type: "error",
+        });
+      }
     } catch (error) {
       setModalInfo({
         open: true,
         title: "Erro!",
-        message: error.response?.data?.message || "Erro ao adicionar item",
+        message: error.response?.data?.details,
         type: "error",
       });
     } finally {
@@ -265,12 +254,9 @@ export default function AddItemModal({ open, onClose, idUser }) {
     }
 
     if (imagem && newItemId) {
-      console.log("imagem -> entrou no if");
       try {
         const responseImg = await sheets.insertImage(newItemId, imagem);
-        console.log(responseImg.data?.message || "Imagem enviada com sucesso!");
       } catch (err) {
-        console.error("Erro ao enviar imagem:", err);
         setModalInfo({
           open: true,
           title: "Atenção!",
@@ -490,23 +476,8 @@ export default function AddItemModal({ open, onClose, idUser }) {
                   {spec.technicalSpecKey}
                 </MenuItem>
               ))}
-              <MenuItem value="new">Adicionar especificação...</MenuItem>
             </Select>
           </FormControl>
-
-          {addingNewSpec && (
-            <Box display="flex" gap={1} mt={1} alignItems="center">
-              <TextField
-                label="Nova especificação"
-                value={newSpecName}
-                onChange={(e) => setNewSpecName(e.target.value)}
-                fullWidth
-              />
-              <Button variant="contained" onClick={handleAddNewSpec}>
-                Adicionar
-              </Button>
-            </Box>
-          )}
 
           {/* Lista de specs selecionadas */}
           {technicalSpecs.map((spec) => (
@@ -534,6 +505,7 @@ export default function AddItemModal({ open, onClose, idUser }) {
             </Box>
           ))}
 
+          {/* Botões de ação do form */}
           <Box mt={3} display="flex" justifyContent="flex-end" gap={1}>
             <Button onClick={onClose} variant="outlined">
               Cancelar

@@ -335,6 +335,7 @@ function Itens() {
         onClose={handleCloseModalAdd}
         idUser={idUser}
         itemId={selectedItem}
+        onSuccess={() => fetchItens()}
       />
     </Box>
   );
