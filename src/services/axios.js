@@ -23,7 +23,6 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       const { status, config } = error.response;
-
       const isAuthError = status === 401 || status === 403;
       const isLoginOrVerify =
         config.url.includes("user/login") ||
@@ -44,14 +43,48 @@ api.interceptors.response.use(
 );
 
 const sheets = {
+  importItemsExcel: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return api.post("import/excel/items", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+  getReportUrl: (type, format) => {
+    let endpoint = "";
+    switch (type) {
+      case "general":
+        endpoint = `report/${format}/general`;
+        break;
+      case "low-stock":
+        endpoint = `report/${format}/low-stock`;
+        break;
+      case "transactions":
+        endpoint = `report/${format}/transactions`;
+        break;
+      default:
+        return null;
+    } // Retorna a URL completa para ser usada como endpoint no Axios
+    return baseURL + endpoint;
+  },
+
+  downloadReport: (reportType, format) => {
+    const fullUrl = sheets.getReportUrl(reportType, format);
+    const endpoint = fullUrl.replace(baseURL, "");
+
+    return api.get(endpoint, {
+      responseType: "blob",
+    });
+  }, // --- Funções Existentes ---
+
   postLogin: (user) => api.post(`user/login`, user),
   postRegister: (user) => api.post(`user/register`, user),
-  securyCodeApi: (code, email) =>
-    api.post(`user/verify-register`, { code, email }),
-  postVerifyRecoveryPassword: (email) =>
-    api.post("user/verify-recovery-password", email),
-  postValidateRecoveryCode: (data) =>
-    api.post("user/validate-recovery-code", data),
+  securyCodeApi: (code, email) => api.post(`user/verify-register`, { code, email }),
+  postVerifyRecoveryPassword: (email) => api.post("user/verify-recovery-password", email),
+  postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
   getItens: () => api.get(`items/`),
   getItensID: (id_item) => api.get(`item/${id_item}/details`, id_item),
@@ -74,7 +107,7 @@ const sheets = {
   createTechnicalSpec: (technicalSpecKey) => api.post(`technicalSpec/`, technicalSpecKey),
   insertImage: (id_item, imagem) => {
     const data = new FormData();
-    data.append("image", imagem); // "imagem" deve ser o nome que o backend espera
+    data.append("image", imagem); 
 
     return api.post(`item/image/${id_item}`, data, {
       headers: {

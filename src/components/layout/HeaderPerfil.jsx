@@ -63,11 +63,9 @@ function getStyles() {
     fontSize: { xs: 15, sm: 25 },
   };
 
-  // Estilo do Contêiner do Botão (para remover padding/margem extras)
   const buttonContainerStyle = {
-    padding: 0,
+    padding: 0.8,
     minWidth: 0,
-    // Estilo de hover simples para o IconButton (Manager)
     '&:hover': {
       backgroundColor: 'transparent',
     }
@@ -84,33 +82,27 @@ function getStyles() {
       borderBottom: "1vh solid white",
     }, 
 
-    // Estilo do botão do Manager (IconButton)
     buttonStyle: {
-      ...buttonContainerStyle,
-      mr: 1, // Espaçamento à direita
-      // O IconButton (Manager) precisa de um hover:
+      ...buttonContainerStyle,  
+      mr: 1,
       '&:hover .MuiSvgIcon-root': {
         backgroundColor: "rgba(100, 0, 0, 1)",
       },
     },
 
-    // Estilo do desenho interno do Manager
     managerIconStyle: {
       ...baseIconStyle,
-      // O ManageAccountsIcon é um ícone maior, ajustamos o tamanho de exibição para caber no círculo
       fontSize: { xs: 20, sm: 30 },
     },
 
-    // O seu botão Home (agora de Link)
     buttonHome: {
-      ...buttonContainerStyle, // Remove padding padrão
+      ...buttonContainerStyle,
       mr: { xs: 0.5, sm: 1.5 },
       '&:hover .MuiSvgIcon-root': {
         backgroundColor: "rgba(100, 0, 0, 1)",
       },
     }, 
 
-    // Estilo do Ícone Home
     HomeIcon: {
       ...baseIconStyle,
       fontSize: { xs: 20, sm: 30 },

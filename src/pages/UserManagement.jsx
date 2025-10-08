@@ -19,11 +19,11 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import HeaderPerfil from '../components/layout/HeaderPerfil';
 import Footer from '../components/layout/Footer';
 import EditUserModal from '../components/mod/EditUserModal';
 import DeleteUserModal from '../components/mod/DeleteUserModal';
 import CreateUserModal from '../components/mod/CreateUserModal'; 
+import HeaderAdm from '../components/layout/HeaderAdm';
 
 function UserManagement() {
   const navigate = useNavigate();
@@ -135,7 +135,7 @@ const checkUserRole = () => {
 
   return (
     <Box sx={styles.pageLayout}>
-      <HeaderPerfil />
+      <HeaderAdm />
       <Container component="main" sx={styles.container}>
         <Snackbar
           open={alert.open}

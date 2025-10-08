@@ -12,6 +12,7 @@ import Itens from "./pages/Itens";
 import DefaultLayout from "./components/layout/DefaultLayout";
 import Transactions from "./pages/Transactions";
 import UserManagement from "./pages/UserManagement";
+import ReportManagement from "./pages/ReportManagement"
 
 const theme = createTheme({
   typography: {
@@ -86,6 +87,14 @@ function App() {
             element={
               <ProtectedRouter>
                 <UserManagement />
+              </ProtectedRouter>
+            }
+          />
+            <Route
+            path="/adm/reports"
+            element={
+              <ProtectedRouter>
+                <ReportManagement />
               </ProtectedRouter>
             }
           />
