@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.89.240.96:5000/stock/",
+  baseURL: "http://10.89.240.82:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -32,6 +32,7 @@ api.interceptors.response.use(
         localStorage.setItem("refresh_token", true);
         localStorage.removeItem("tokenUsuario");
         localStorage.removeItem("authenticated");
+
         if (window.location.pathname !== "/") {
           window.location.href = "/";
         }
@@ -87,8 +88,8 @@ const sheets = {
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
   getItens: () => api.get(`items/`),
   getItensID: (id_item) => api.get(`item/${id_item}/details`, id_item),
-  getLocations: () => api.get("locations"),
-  postAddItem: (category, itemData) => api.post(`${category}`, itemData),
+  getLocations: () => api.get("location"),
+  postAddItem: (itemData) => api.post(`/item`, itemData),
   getCategories: () => api.get("category"),
   getTransactionsByUser: (userId) => api.get(`transactions/user/${userId}`),
   getUserProfile: (id) => api.get(`user/${id}`),
@@ -102,6 +103,19 @@ const sheets = {
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
   deleteUser: (id) => api.delete(`user/${id}`),
+  getTechnicalSpecs: () => api.get(`technicalSpec/`),
+  createTechnicalSpec: (technicalSpecKey) => api.post(`technicalSpec/`, technicalSpecKey),
+  insertImage: (id_item, imagem) => {
+    const data = new FormData();
+    data.append("image", imagem); 
+
+    return api.post(`item/image/${id_item}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
+      },
+    });
+  },
 };
 
 export default sheets;
