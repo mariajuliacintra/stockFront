@@ -68,26 +68,33 @@ function Itens() {
   };
 
   // Filtrar itens pelo nome e pelas categorias selecionadas
-  const handleFilter = () => {
-    let filtered = allItens;
+  const handleFilter = async () => {
+    try {
+      const data = {
+        name: search.trim() || "",
+        idCategory: selectedCategories.map((cat) => cat.idCategory),
+      };
 
-    if (search.trim()) {
-      filtered = filtered.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
+      // caso não tenha filtro algum, busca todos os itens
+      const hasFilters = data.name !== "" || data.idCategory.length > 0;
+      if (!hasFilters) {
+        fetchItens();
+        return;
+      }
+
+      const response = await api.filterItens(data);
+      const filtered = Array.isArray(response.data.items)
+        ? response.data.items
+        : [];
+
+      setItens(filtered);
+      setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.error || "Erro ao aplicar o filtro."
       );
+      setItens([]);
     }
-
-    // Filtrando pelos itens que pertencem a qualquer uma das categorias selecionadas
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((item) =>
-        selectedCategories.some(
-          (category) => item.category?.idCategory === category.idCategory
-        )
-      );
-    }
-
-    setItens(filtered);
-    setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
   };
 
   // Abre o modal de detalhes do item
@@ -124,16 +131,14 @@ function Itens() {
 
   const idUser = localStorage.getItem("idUsuario");
 
-
   useEffect(() => {
     document.title = "Itens | SENAI";
     fetchItens();
   }, []);
 
   useEffect(() => {
-    fetchCategories();
     handleFilter();
-  }, [search, selectedCategories]); // Atualizando o filtro quando as categorias selecionadas mudam
+  }, [search, selectedCategories]);
 
   const getTitle = (item) => item.name || "";
   const getSpecs = (item) =>
