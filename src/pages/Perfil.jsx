@@ -331,7 +331,6 @@ function getStyles() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      position: 'relative',
     },
     modalTitle: {
       mb: 2,
