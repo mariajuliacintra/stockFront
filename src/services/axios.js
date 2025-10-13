@@ -103,15 +103,6 @@ const sheets = {
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
   deleteUser: (id) => api.delete(`user/${id}`),
-  getTechnicalSpecs: () => api.get(`technicalSpec/`),
-  createTechnicalSpec: (technicalSpecKey) => api.post(`technicalSpec/`, technicalSpecKey),
-  filterItens:(data) => api.post(`items/filter`, data),
-  createCategory:(category) => api.post(`category/`, category),
-  createLocation:(location) => api.post(`location/`, location),
-  insertImage: (id_item, imagem) => {
-    const data = new FormData();
-    data.append("image", imagem); 
-
   postImage: (id_item, formData) => {
     return api.post(`item/image/${id_item}`, formData, {
     });

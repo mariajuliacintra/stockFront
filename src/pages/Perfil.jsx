@@ -413,5 +413,5 @@ function getStyles() {
             color: "rgba(255, 0, 0, 0.8)",
         },
     };
-
+}
 export default Perfil;
