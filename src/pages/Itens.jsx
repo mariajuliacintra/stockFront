@@ -36,6 +36,10 @@ function Itens() {
   const [modalAddOpen, setModalAddOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
+  const [errorModal, setErrorModal] = useState({
+    open: false,
+    message: "",
+  });
 
   // Buscar itens
   const fetchItens = async () => {
@@ -75,7 +79,7 @@ function Itens() {
         idCategory: selectedCategories.map((cat) => cat.idCategory),
       };
 
-      // caso não tenha filtro algum, busca todos os itens
+      // senão tiver nenhum filtro para fazer renderiza o get dos itens
       const hasFilters = data.name !== "" || data.idCategory.length > 0;
       if (!hasFilters) {
         fetchItens();
@@ -130,10 +134,12 @@ function Itens() {
   };
 
   const idUser = localStorage.getItem("idUsuario");
+  
 
   useEffect(() => {
     document.title = "Itens | SENAI";
     fetchItens();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -154,7 +160,7 @@ function Itens() {
     return (
       <Card key={item.idItem ?? index} sx={styles.card} elevation={2}>
         <CardContent sx={{ p: 0 }}>
-          <Box sx={{ display: "flex", alignItems: "row", gap: 2, mb: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 2, mb: 1 }}>
             <Box sx={styles.iconContainer}>
               <Add sx={styles.icon} />
             </Box>
