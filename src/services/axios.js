@@ -2,7 +2,7 @@ import axios from "axios";
 
 const baseURL = "http://192.168.1.69:5000/stock/"; 
 const api = axios.create({
-  baseURL: "http://10.89.240.85:5000/stock/",
+  baseURL: "http://10.89.240.91:5000/stock/",
   headers: { accept: "application/json" },
 });
 
@@ -107,6 +107,8 @@ const sheets = {
   getTechnicalSpecs: () => api.get(`technicalSpec/`),
   createTechnicalSpec: (technicalSpecKey) => api.post(`technicalSpec/`, technicalSpecKey),
   filterItens:(data) => api.post(`items/filter`, data),
+  createCategory:(category) => api.post(`category/`, category),
+  createLocation:(location) => api.post(`location/`, location),
   insertImage: (id_item, imagem) => {
     const data = new FormData();
     data.append("image", imagem); 

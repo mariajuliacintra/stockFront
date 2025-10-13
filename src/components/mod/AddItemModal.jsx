@@ -16,7 +16,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-
 import sheets from "../../services/axios";
 
 // Modal de feedback
@@ -69,7 +68,7 @@ const CustomModal = ({ open, onClose, title, message, type = "info" }) => {
   );
 };
 
-export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
+export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
   const [formData, setFormData] = useState({});
   const [locations, setLocations] = useState([]);
   const [availableSpecs, setAvailableSpecs] = useState([]);
@@ -85,8 +84,17 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
     type: "info",
   });
   const [imagem, setImagem] = useState(null);
-  const [newSpecName, setNewSpecName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [addingNewSpec, setAddingNewSpec] = useState(false);
+  const [newSpecName, setNewSpecName] = useState("");
+  const [savingNewSpec, setSavingNewSpec] = useState(false);
+  const [addingNewCategory, setAddingNewCategory] = useState(false);
+  const [savingNewCategory, setSavingNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [addingNewLocation, setAddingNewLocation] = useState(false);
+  const [savingNewLocation, setSavingNewLocation] = useState(false);
+  const [newLocationName, setNewLocationName] = useState("");
+  const [newLocationCode, setNewLocationCode] = useState("");
 
   useEffect(() => {
     if (open) {
@@ -94,6 +102,9 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
       fetchCategories();
       fetchTechnicalSpecs();
     }
+
+    const role = localStorage.getItem("userRole");
+    setUserRole(role);
   }, [open]);
 
   // Fetch locations
@@ -103,14 +114,44 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
       const response = await sheets.getLocations();
       setLocations(response.data.locations);
     } catch {
+      const errorMessage = error?.response?.data?.error;
       setModalInfo({
         open: true,
-        title: "Erro!",
-        message: "Falha ao carregar localizações",
+        title: "Error!",
+        message: errorMessage,
         type: "error",
       });
     } finally {
       setLoadingLocations(false);
+    }
+  };
+
+  const createLocation = async (locationName, locationCode) => {
+    try {
+      const response = await sheets.createLocation({
+        place: locationName,
+        code: locationCode,
+      });
+      fetchLocations();
+
+      setModalInfo({
+        open: true,
+        title: "Sucesso!",
+        message: response.data.message,
+        type: "success",
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao criar localização:", error);
+      const errorMessage = error?.response?.data?.error;
+      setModalInfo({
+        open: true,
+        title: "Error!",
+        message: errorMessage,
+        type: "error",
+      });
+      return null;
     }
   };
 
@@ -146,6 +187,49 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
     }
   };
 
+  const createCategory = async () => {
+    if (!newCategoryName.trim()) return;
+
+    try {
+      setSavingNewCategory(true);
+
+      const response = await sheets.createCategory({
+        categoryValue: newCategoryName.trim(),
+      });
+      const data = response.data;
+
+      if (data.success) {
+        setNewCategoryName("");
+        setAddingNewCategory(false);
+        await fetchCategories();
+        setModalInfo({
+          open: true,
+          title: "Sucesso!",
+          message: "Categoria criada com sucesso!",
+          type: "success",
+        });
+        fetchCategories();
+        return data.data?.[0];
+      } else {
+        setModalInfo({
+          open: true,
+          title: "Erro!",
+          message: data.message || "Falha ao criar categoria",
+          type: "error",
+        });
+      }
+    } catch (erro) {
+      setModalInfo({
+        open: true,
+        title: "Erro!",
+        message: erro.response?.data?.details || "Falha ao criar categoria",
+        type: "error",
+      });
+    } finally {
+      setSavingNewCategory(false);
+    }
+  };
+
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -171,14 +255,66 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
 
   const handleFileChange = (e) => setImagem(e.target.files[0]);
 
+  const handleNewSpec = async () => {
+    if (!newSpecName.trim()) return;
+
+    try {
+      setSavingNewSpec(true);
+      const technicalSpecKey = newSpecName.trim();
+      const response = await sheets.createTechnicalSpec({ technicalSpecKey });
+      const data = response.data;
+
+      if (data.success) {
+        setNewSpecName("");
+        setAddingNewSpec(false);
+        await fetchTechnicalSpecs();
+
+        const createdSpec = data.technicalSpec?.[0];
+        if (createdSpec?.technicalSpecId) {
+          setTechnicalSpecs((prevSpecs) => [
+            ...prevSpecs,
+            {
+              idTechnicalSpec: createdSpec.technicalSpecId,
+              technicalSpecKey: createdSpec.technicalSpecKey,
+              value: "",
+            },
+          ]);
+        } else {
+          setModalInfo({
+            open: true,
+            title: "Erro!",
+            message: "ID da nova especificação não retornou corretamente",
+            type: "error",
+          });
+        }
+      } else {
+        setModalInfo({
+          open: true,
+          title: "Erro!",
+          message: data.message,
+          type: "error",
+        });
+      }
+    } catch (erro) {
+      setModalInfo({
+        open: true,
+        title: "Erro!",
+        message: erro.response?.data?.details || "Falha ao criar especificação",
+        type: "error",
+      });
+    } finally {
+      setSavingNewSpec(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     const techSpecsObj = {};
-    technicalSpecs.forEach((spec) => {
-      if (spec.value.trim())
-        techSpecsObj[spec.idTechnicalSpec] = spec.value.trim();
+    technicalSpecs.forEach((prevSpecs) => {
+      if (prevSpecs.value.trim())
+        techSpecsObj[prevSpecs.idTechnicalSpec] = prevSpecs.value.trim();
     });
 
     if (Object.keys(techSpecsObj).length === 0) {
@@ -205,7 +341,6 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
       fkIdLocation: Number(formData.fkIdLocation || 0),
       fkIdUser: Number(idUser),
     };
-
 
     Object.keys(payload).forEach(
       (key) =>
@@ -284,13 +419,21 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
           <Typography variant="h5" fontWeight="bold" textAlign="center" mb={2}>
             Adicionar Novo Item
           </Typography>
-
           <FormControl fullWidth margin="normal">
             <InputLabel>Categoria</InputLabel>
             <Select
+              required 
               name="fkIdCategory"
               value={formData.fkIdCategory || ""}
-              onChange={handleFormChange}
+              onChange={(e) => {
+                if (e.target.value === "newCategory") {
+                  setAddingNewCategory(true);
+                  setFormData({ ...formData, fkIdCategory: "" }); // limpa valor
+                } else {
+                  handleFormChange(e);
+                  setAddingNewCategory(false);
+                }
+              }}
             >
               {loadingCategories ? (
                 <MenuItem disabled>
@@ -303,13 +446,69 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
                   </MenuItem>
                 ))
               )}
+              {userRole === "manager" && (
+                <MenuItem value="newCategory">
+                  Adicionar nova categoria...
+                </MenuItem>
+              )}
             </Select>
-          </FormControl>
 
+            {addingNewCategory && (
+              <Box display="flex" gap={1} alignItems="center" mt={1}>
+                <TextField
+                  label="Nova Categoria"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  fullWidth
+                  required 
+                />
+                <Button
+                  variant="contained"
+                  onClick={async () => {
+                    const response = await createCategory(newCategoryName);
+                    const createdCategoryId = response?.categoryId;
+
+                    if (createdCategoryId) {
+                      const newCategory = {
+                        idCategory: createdCategoryId,
+                        categoryValue: newCategoryName,
+                      };
+
+                      setCategories((prev) => [...prev, newCategory]);
+                      setFormData({
+                        ...formData,
+                        fkIdCategory: createdCategoryId,
+                      });
+                    }
+
+                    setNewCategoryName("");
+                    setAddingNewCategory(false);
+                  }}
+                  disabled={savingNewCategory}
+                >
+                  {savingNewCategory ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    "Salvar"
+                  )}
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setAddingNewCategory(false);
+                    setNewCategoryName("");
+                  }}
+                >
+                  Cancelar
+                </Button>
+              </Box>
+            )}
+          </FormControl>
           <TextField
             label="SAP Code"
             name="sapCode"
             fullWidth
+            required 
             value={formData.sapCode || ""}
             onChange={handleFormChange}
             margin="normal"
@@ -330,6 +529,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
             value={formData.brand || ""}
             onChange={handleFormChange}
             margin="normal"
+            required 
           />
           <TextField
             label="Descrição"
@@ -367,19 +567,26 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
             value={formData.minimumStock || ""}
             onChange={handleFormChange}
             margin="normal"
+            required 
           />
-
           <FormControl fullWidth margin="normal">
             <InputLabel>Localização</InputLabel>
             <Select
               name="fkIdLocation"
               value={formData.fkIdLocation || ""}
-              onChange={handleFormChange}
+              onChange={(e) => {
+                if (e.target.value === "newLocation") {
+                  setAddingNewLocation(true);
+                  setFormData({ ...formData, fkIdLocation: "" }); // limpa seleção
+                } else {
+                  handleFormChange(e);
+                  setAddingNewLocation(false);
+                }
+              }}
             >
               {loadingLocations ? (
                 <MenuItem disabled>
-                  <CircularProgress size={20} />
-                  Carregando...
+                  <CircularProgress size={20} /> Carregando...
                 </MenuItem>
               ) : (
                 locations.map((loc) => (
@@ -388,9 +595,83 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
                   </MenuItem>
                 ))
               )}
-            </Select>
-          </FormControl>
 
+              {userRole === "manager" && (
+                <MenuItem value="newLocation">
+                  Adicionar nova localização...
+                </MenuItem>
+              )}
+            </Select>
+
+            {addingNewLocation && (
+              <Box display="flex" flexDirection="column" gap={1} mt={1}>
+                <TextField
+                  label="Nova Localização"
+                  value={newLocationName}
+                  onChange={(e) => setNewLocationName(e.target.value)}
+                  fullWidth
+                  required 
+                />
+                <TextField
+                  label="Bloco"
+                  value={newLocationCode}
+                  onChange={(e) => setNewLocationCode(e.target.value)}
+                  fullWidth
+                  required 
+                />
+
+                <Box display="flex" gap={1} alignItems="center">
+                  <Button
+                    variant="contained"
+                    onClick={async () => {
+                      const response = await createLocation(
+                        newLocationName,
+                        newLocationCode
+                      );
+
+                      const createdLocationId = response?.locationId;
+
+                      if (createdLocationId) {
+                        const newLocation = {
+                          idLocation: createdLocationId,
+                          place: newLocationName,
+                          code: newLocationCode,
+                        };
+
+                        setLocations((prev) => [...prev, newLocation]);
+                        setFormData({
+                          ...formData,
+                          fkIdLocation: createdLocationId,
+                        });
+                      }
+
+                      setNewLocationName("");
+                      setNewLocationCode("");
+                      setAddingNewLocation(false);
+                    }}
+                    disabled={savingNewLocation}
+                  >
+                    {savingNewLocation ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      "Salvar"
+                    )}
+                  </Button>
+
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setAddingNewLocation(false);
+                      setNewLocationName("");
+                      setNewLocationCode("");
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </FormControl>
           {/* Campo de upload estilizado */}
           <Box
             sx={{
@@ -454,14 +735,12 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
               </Typography>
             )}
           </Box>
-
-          {/* Dropdown Technical Specs */}
           <FormControl fullWidth margin="normal">
-            <InputLabel>Especificações técnicas</InputLabel>
+            <InputLabel>Especificações Técnicas</InputLabel>
             <Select
               value=""
               onChange={(e) => {
-                if (e.target.value === "new") {
+                if (e.target.value === "new" && userRole === "manager") {
                   setAddingNewSpec(true);
                 } else {
                   handleSelectSpec(e.target.value);
@@ -476,11 +755,42 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
                   {spec.technicalSpecKey}
                 </MenuItem>
               ))}
+              {userRole === "manager" && (
+                <MenuItem value="new">Adicionar nova especificação...</MenuItem>
+              )}
             </Select>
+
+            {addingNewSpec && userRole === "manager" && (
+              <Box display="flex" gap={1} alignItems="center" mt={1}>
+                <TextField
+                  label="Nova Especificação"
+                  value={newSpecName}
+                  onChange={(e) => setNewSpecName(e.target.value)}
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
+                <Button
+                  variant="contained"
+                  onClick={handleNewSpec}
+                  disabled={savingNewSpec}
+                >
+                  {savingNewSpec ? <CircularProgress size={20} /> : "Salvar"}
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setAddingNewSpec(false);
+                    setNewSpecName("");
+                  }}
+                >
+                  Cancelar
+                </Button>
+              </Box>
+            )}
           </FormControl>
 
           {/* Lista de specs selecionadas */}
-          {technicalSpecs.map((spec) => (
+          {technicalSpecs.map((spec, prevSpecs) => (
             <Box
               key={spec.idTechnicalSpec}
               display="flex"
@@ -489,7 +799,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
               mt={1}
             >
               <TextField
-                label={spec.technicalSpecKey}
+                label={ prevSpecs.technicalSpecKey}
                 value={spec.value}
                 onChange={(e) =>
                   handleTechnicalChange(spec.idTechnicalSpec, e.target.value)
@@ -504,7 +814,6 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess  }) {
               </IconButton>
             </Box>
           ))}
-
           {/* Botões de ação do form */}
           <Box mt={3} display="flex" justifyContent="flex-end" gap={1}>
             <Button onClick={onClose} variant="outlined">
