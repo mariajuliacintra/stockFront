@@ -21,6 +21,7 @@ import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
 import api from "../services/axios";
 import ModalDescription from "../components/mod/ModalDescription";
+import AddItemModal from "../components/mod/AddItemModal";
 
 function Itens() {
   const [search, setSearch] = useState("");
@@ -32,14 +33,13 @@ function Itens() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+  const [modalAddOpen, setModalAddOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
-
-  const handleSuccessMessage = (msg) => {
-    setSuccessMessage(msg);
-    setErrorModalMessage("");
-  };
+  const [errorModal, setErrorModal] = useState({
+    open: false,
+    message: "",
+  });
 
   // Buscar itens
   const fetchItens = async () => {
@@ -72,26 +72,33 @@ function Itens() {
   };
 
   // Filtrar itens pelo nome e pelas categorias selecionadas
-  const handleFilter = () => {
-    let filtered = allItens;
+  const handleFilter = async () => {
+    try {
+      const data = {
+        name: search.trim() || "",
+        idCategory: selectedCategories.map((cat) => cat.idCategory),
+      };
 
-    if (search.trim()) {
-      filtered = filtered.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
+      // senão tiver nenhum filtro para fazer renderiza o get dos itens
+      const hasFilters = data.name !== "" || data.idCategory.length > 0;
+      if (!hasFilters) {
+        fetchItens();
+        return;
+      }
+
+      const response = await api.filterItens(data);
+      const filtered = Array.isArray(response.data.items)
+        ? response.data.items
+        : [];
+
+      setItens(filtered);
+      setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.error || "Erro ao aplicar o filtro."
       );
+      setItens([]);
     }
-
-    // Filtrando pelos itens que pertencem a qualquer uma das categorias selecionadas
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((item) =>
-        selectedCategories.some(
-          (category) => item.category?.idCategory === category.idCategory
-        )
-      );
-    }
-
-    setItens(filtered);
-    setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
   };
 
   // Abre o modal de detalhes do item
@@ -117,18 +124,27 @@ function Itens() {
     });
   };
 
+  const handleOpenModalAdd = () => {
+    setDrawerOpen(false); // fecha o menu
+    setModalAddOpen(true); // abre o modal
+  };
+
+  const handleCloseModalAdd = () => {
+    setModalAddOpen(false);
+  };
+
   const idUser = localStorage.getItem("idUsuario");
-  console.log(idUser);
+  
 
   useEffect(() => {
     document.title = "Itens | SENAI";
     fetchItens();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
-    fetchCategories();
     handleFilter();
-  }, [search, selectedCategories]); // Atualizando o filtro quando as categorias selecionadas mudam
+  }, [search, selectedCategories]);
 
   const getTitle = (item) => item.name || "";
   const getSpecs = (item) =>
@@ -144,7 +160,7 @@ function Itens() {
     return (
       <Card key={item.idItem ?? index} sx={styles.card} elevation={2}>
         <CardContent sx={{ p: 0 }}>
-          <Box sx={{ display: "flex", alignItems: "row", gap: 2, mb: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 2, mb: 1 }}>
             <Box sx={styles.iconContainer}>
               <Add sx={styles.icon} />
             </Box>
@@ -264,8 +280,11 @@ function Itens() {
                 <ListItemText primary={cat.categoryValue} />
               </ListItem>
             ))}
-            <ListItem button>
-              <ListItemText primary="+ Adicionar Item" />
+            <ListItem button onClick={handleOpenModalAdd}>
+              <ListItemText
+                primary="+ Adicionar Item"
+                sx={{ fontWeight: "bold", cursor: "pointer", color: "#fff" }}
+              />
             </ListItem>
           </List>
         </Drawer>
@@ -321,6 +340,14 @@ function Itens() {
           type="error"
         />
       )}
+
+      <AddItemModal
+        open={modalAddOpen}
+        onClose={handleCloseModalAdd}
+        idUser={idUser}
+        itemId={selectedItem}
+        onSuccess={() => fetchItens()}
+      />
     </Box>
   );
 }

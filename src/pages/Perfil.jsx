@@ -382,7 +382,6 @@ function getStyles() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            // REMOVEMOS A DUPLICATA AQUI (era a linha 'position: "relative",')
         },
         modalTitle: {
             mb: 2,
@@ -414,7 +413,5 @@ function getStyles() {
             color: "rgba(255, 0, 0, 0.8)",
         },
     };
-}
-
 
 export default Perfil;
