@@ -25,8 +25,8 @@ import {
 
 import HeaderAdm from '../components/layout/HeaderAdm';
 import Footer from '../components/layout/Footer';
+import ImportModal from '../components/mod/importModal';
 
-// Estrutura dos relatórios disponíveis.
 const REPORTS = [
   {
     title: 'Relatório Geral do Estoque',
@@ -58,6 +58,12 @@ function ReportManagement() {
     message: '',
   });
 
+  const [importData, setImportData] = useState({ 
+    validRows: [], 
+    invalidRows: [] 
+  });
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false); 
+
   const styles = getStyles();
 
   useEffect(() => {
@@ -84,7 +90,6 @@ function ReportManagement() {
     return true;
   };
 
-  // FUNÇÃO DE DOWNLOAD DE RELATÓRIOS
   const handleDownload = async (reportType, format, reportTitle) => {
     handleAlert(`Preparando o download de "${reportTitle}"...`, 'info');
 
@@ -127,41 +132,44 @@ function ReportManagement() {
         console.error('Erro detalhado:', error);
     }
   };
-    
-  // FUNÇÃO DE IMPORTAÇÃO
+    
   const handleImport = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    handleAlert(`Iniciando importação do arquivo "${file.name}"...`, 'info');
+    handleAlert(`Processando arquivo "${file.name}"...`, 'info');
 
     try {
         const response = await sheets.importItemsExcel(file);
-        
-        // Limpar o input para permitir o upload do mesmo arquivo novamente
-        event.target.value = null; 
+        
+        event.target.value = null; 
 
         const { validRows, invalidRows } = response.data;
-
-        if (validRows.length > 0) {
-            handleAlert(`Importação concluída: ${validRows.length} itens válidos processados.`, 'success');
-        }
         
-        if (invalidRows.length > 0) {
-            handleAlert(`Atenção: ${invalidRows.length} itens inválidos encontrados. Verifique o console para detalhes.`, 'warning');
-            console.warn('Linhas inválidas:', invalidRows);
-        }
-        
-        if (validRows.length === 0 && invalidRows.length === 0) {
-            handleAlert('O arquivo Excel foi processado, mas nenhuma linha de item válida ou inválida foi encontrada.', 'info');
+        if (validRows.length > 0 || invalidRows.length > 0) {
+            setImportData({ validRows, invalidRows });
+            setIsImportModalOpen(true);
+            handleAlert('Pré-visualização carregada. Edite as categorias e finalize.', 'info'); 
+        } else {
+            handleAlert('O arquivo Excel não contém dados de itens válidos para processamento.', 'warning');
         }
 
     } catch (error) {
-        event.target.value = null; // Limpar input em caso de erro
-        const errorMessage = error.response?.data?.error || error.response?.data?.details || 'Erro desconhecido ao importar arquivo.';
-        handleAlert(`Falha na Importação: ${errorMessage}`, 'error');
+        event.target.value = null
+        const errorMessage = error.response?.data?.error || error.response?.data?.details || 'Erro desconhecido ao processar arquivo.';
+        handleAlert(`Falha no Processamento: ${errorMessage}`, 'error');
         console.error('Erro detalhado da Importação:', error);
     }
+  };
+
+  const handleCloseImportModal = () => {
+    setIsImportModalOpen(false);
+    setImportData({ validRows: [], invalidRows: [] });
+  };
+
+  const handleFinalImportSuccess = (message) => {
+    handleCloseImportModal();
+    handleAlert(message, 'success');
   };
 
 
@@ -181,30 +189,25 @@ function ReportManagement() {
         </Snackbar>
 
         <Box sx={styles.cardContainer}>
-          {/* Cabeçalho com os botões de Ação */}
           <Box sx={{ ...styles.header, justifyContent: 'space-between', mb: 3 }}>
             <Box sx={styles.header}>
               <AssessmentIcon sx={{ color: 'rgba(177, 16, 16, 1)', mr: 1 }} />
               <Typography variant="h6" component="h2">
-                Relatórios do Sistema
+                Gerenciamento de Relatórios
               </Typography>
             </Box>
 
-            {/* Container para os botões de importação/modelo */}
-            <Box sx={styles.importActions}>
-                {/* BOTÃO DE DOWNLOAD DO MODELO */}
-                <Button
-                    variant="outlined"
-                    startIcon={<ExcelIcon />}
-                    // Link direto para o arquivo estático na pasta public
-                    href="/excelBase.xlsx" 
-                    download="excelBase.xlsx"
-                    sx={styles.templateButton} 
-                >
-                    Baixar Modelo
-                </Button>
+            <Box sx={styles.importActions}>
+                <Button
+                    variant="contained"
+                    startIcon={<ExcelIcon />}
+                    href="/excelBase.xlsx" 
+                    download="excelBase.xlsx"
+                    sx={styles.templateButton} 
+                >
+                    Baixar Modelo
+                </Button>
 
-                {/* INPUT DE ARQUIVO ESCONDIDO */}
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -212,17 +215,16 @@ function ReportManagement() {
                     accept=".xlsx, .xls"
                     style={{ display: 'none' }}
                 />
-            
-                {/* BOTÃO DE IMPORTAÇÃO */}
+            
                 <Button
-                    variant="outlined"
+                    variant="contained"
                     startIcon={<UploadFileIcon />}
                     onClick={() => fileInputRef.current.click()}
                     sx={styles.importButton}
                 >
                     Importar Itens
                 </Button>
-            </Box>
+            </Box>
 
           </Box>
           <Divider sx={{ mb: 3 }} />
@@ -259,13 +261,22 @@ function ReportManagement() {
                     >
                       PDF
                     </Button>
-                  </Box>
-                </Paper>
-              </Grid>
+                </Box>
+              </Paper>
+            </Grid>
             ))}
           </Grid>
         </Box>
       </Container>
+      
+      <ImportModal 
+          open={isImportModalOpen}
+          onClose={handleCloseImportModal}
+          data={importData}
+          onAlert={handleAlert}
+          onSuccess={handleFinalImportSuccess}
+      />
+      
       <Footer />
     </Box>
   );
@@ -300,28 +311,26 @@ function getStyles() {
       alignItems: 'center',
       mb: 2,
     },
-    importActions: { // Novo container para os botões de importação/modelo
-        display: 'flex',
-        gap: 1,
-        flexWrap: 'wrap',
-        mt: { xs: 2, sm: 0 },
-    },
-    templateButton: { // Estilo para o botão de download do modelo (Verde)
-        borderColor: '#217346',
-        color: '#217346',
-        '&:hover': {
-            borderColor: '#217346',
-            backgroundColor: 'rgba(33, 115, 70, 0.04)',
-        },
-    },
-    importButton: { // Estilo para o botão de importação (Azul)
-        borderColor: '#1F4E79',
-        color: '#1F4E79',
-        '&:hover': {
-          borderColor: '#1F4E79',
-          backgroundColor: 'rgba(31, 78, 121, 0.04)',
-        },
-      },
+    importActions: {
+        display: 'flex',
+        gap: 1,
+        flexWrap: 'wrap',
+        mt: { xs: 2, sm: 0 },
+    },
+    templateButton: { 
+        backgroundColor: '#217346',
+        color: '#fff',
+        '&:hover': {
+            backgroundColor: '#1e623d',
+        },
+    },
+    importButton: { 
+        backgroundColor: '#1F4E79',
+        color: '#fff',
+        '&:hover': {
+          backgroundColor: '#1b456e',
+        },
+      },
     reportCard: {
       display: 'flex',
       justifyContent: 'space-between',
@@ -366,7 +375,7 @@ function getStyles() {
     pdfButton: {
       backgroundColor: 'rgba(177, 16, 16, 1)',
       '&:hover': {
-        backgroundColor: 'rgba(100, 0, 0, 1)',
+        backgroundColor: 'rgba(150, 14, 14, 1)',
       },
     },
   };

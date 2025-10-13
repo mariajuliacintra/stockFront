@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const baseURL = "http://192.168.1.69:5000/stock/"; 
+const BASE_URL = "http://10.89.240.91:5000/stock/";
 const api = axios.create({
-  baseURL: "http://10.89.240.91:5000/stock/",
+  baseURL: BASE_URL,
   headers: { accept: "application/json" },
 });
 
@@ -68,30 +68,29 @@ const sheets = {
         break;
       default:
         return null;
-    } // Retorna a URL completa para ser usada como endpoint no Axios
-    return baseURL + endpoint;
+    }
+    return endpoint;
   },
 
   downloadReport: (reportType, format) => {
-    const fullUrl = sheets.getReportUrl(reportType, format);
-    const endpoint = fullUrl.replace(baseURL, "");
+    const endpoint = sheets.getReportUrl(reportType, format);
 
     return api.get(endpoint, {
       responseType: "blob",
     });
-  }, // --- Funções Existentes ---
-
+  },
   postLogin: (user) => api.post(`user/login`, user),
   postRegister: (user) => api.post(`user/register`, user),
-  securyCodeApi: (code, email) => api.post(`user/verify-register`, { code, email }),
-  postVerifyRecoveryPassword: (email) => api.post("user/verify-recovery-password", email),
-  postValidateRecoveryCode: (data) => api.post("user/validate-recovery-code", data),
+  securyCodeApi: (code, email) =>
+    api.post(`user/verify-register`, { code, email }),
+  postVerifyRecoveryPassword: (email) =>
+    api.post("user/verify-recovery-password", email),
+  postValidateRecoveryCode: (data) =>
+    api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
   getItens: () => api.get(`items/`),
   getItensID: (id_item) => api.get(`item/${id_item}/details`, id_item),
   getLocations: () => api.get("location"),
-  postAddItem: (itemData) => api.post(`/item`, itemData),
-  getCategories: () => api.get("category"),
   getTransactionsByUser: (userId) => api.get(`transactions/user/${userId}`),
   getUserProfile: (id) => api.get(`user/${id}`),
   putUpdateProfile: (id, data) => api.put(`user/${id}`, data),
@@ -113,13 +112,17 @@ const sheets = {
     const data = new FormData();
     data.append("image", imagem); 
 
-    return api.post(`item/image/${id_item}`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Accept: "application/json",
-      },
+  postImage: (id_item, formData) => {
+    return api.post(`item/image/${id_item}`, formData, {
     });
   },
+
+  getCategories: () => api.get("category"),
+  getTechnicalSpecs: () => api.get(`technicalSpec/`),
+  createTechnicalSpec: (technicalSpecKey) =>
+    api.post(`technicalSpec/`, { technicalSpecKey }),
+  postAddItem: (itemData) => api.post(`/item`, itemData),
+  deleteItem: (idItem) => api.delete(`item/${idItem}`), 
 };
 
 export default sheets;
