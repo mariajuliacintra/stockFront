@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const BASE_URL = "http://10.89.240.91:5000/stock/";
+const URLBASE = import.meta.env.VITE_URLAPI;
+
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: URLBASE,
   headers: { accept: "application/json" },
 });
 
