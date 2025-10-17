@@ -12,6 +12,7 @@ import {
   Typography,
   Alert,
   Snackbar,
+  CircularProgress,
 } from "@mui/material";
 
 import {
@@ -21,7 +22,7 @@ import {
   Lock,
   ArrowForward,
 }
-from "@mui/icons-material";
+  from "@mui/icons-material";
 
 import CustomModal from "../components/mod/CustomModal";
 
@@ -36,6 +37,7 @@ function Login() {
   }, []);
   const [user, setUser] = useState({ email: "", password: "" });
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalInfo, setModalInfo] = useState({
@@ -84,10 +86,11 @@ function Login() {
 
   async function LoginUser() {
     try {
+      setLoading(true);
       const response = await api.postLogin(user);
       const userData = response.data.user?.[0];
 
-      if (userData) { 
+      if (userData) {
         localStorage.setItem("tokenUsuario", userData.token);
         localStorage.setItem("authenticated", true);
         localStorage.setItem("idUsuario", String(userData.idUser));
@@ -107,6 +110,7 @@ function Login() {
         error.response?.data?.error || "Ocorreu um erro ao fazer login.";
       showAlert("error", errorMessage);
     }
+    setLoading(false);
   }
 
   return (
@@ -186,8 +190,12 @@ function Login() {
             ),
           }}
         />
-        <Button type="submit" variant="contained" sx={styles.buttonLogin}>
-          Login
+        <Button type="submit" variant="contained" sx={styles.buttonLogin} disabled={loading}>
+          {loading ? (
+            <CircularProgress size={20} sx={{ color: "white" }} />
+          ) : (
+            "Login"
+          )}
         </Button>
         <Typography variant="body2" sx={styles.naoTemContaText}>
           Não tem uma conta?
