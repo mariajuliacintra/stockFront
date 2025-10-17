@@ -77,7 +77,7 @@ function Register() {
       setModalCustom({
         open: true,
         title: "Erro!",
-        message: error.response?.data?.error,
+        message: error.response?.data?.details,
         type: "error",
       });
     } finally {
