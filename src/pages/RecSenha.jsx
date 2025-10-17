@@ -17,7 +17,7 @@ import { Email } from "@mui/icons-material";
 import CustomModal from "../components/mod/CustomModal";
 import RecoveryModal from "../components/mod/RecoveryModal";
 
-import senaiLogo from '../../img/logo.png';
+import senaiLogo from '../../public/logo.png';
 
 function RecSenha() {
   const styles = getStyles();

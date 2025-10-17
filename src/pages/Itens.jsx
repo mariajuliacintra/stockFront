@@ -134,7 +134,7 @@ function Itens() {
   };
 
   const idUser = localStorage.getItem("idUsuario");
-  
+
 
   useEffect(() => {
     document.title = "Itens | SENAI";
@@ -203,7 +203,20 @@ function Itens() {
   return (
     <Box sx={styles.pageContainer}>
       <HeaderPrincipal />
-      <Box sx={styles.content}>
+      <Box
+        //scroll
+        sx={{
+          ...styles.content,
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 150px)",
+          paddingRight: "8px",
+          "&::-webkit-scrollbar": { width: "8px" },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#fff",
+            borderRadius: "8px",
+          },
+        }}
+      >
         <Typography variant="h4" gutterBottom sx={styles.headerTitle}>
           Itens
         </Typography>
