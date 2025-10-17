@@ -60,7 +60,7 @@ function getStyles() {
       minHeight: "100vh",
     },
     container: {
-      backgroundImage: `url(../../img/fundoinicial.png)`,
+      backgroundImage: `url(../../public/fundoinicial.png)`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
