@@ -274,7 +274,7 @@ function Register() {
 function getStyles() {
   return {
     container: {
-      backgroundImage: `url(../../img/fundo.png)`,
+      backgroundImage: `url('/fundo.png')`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
