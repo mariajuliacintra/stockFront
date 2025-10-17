@@ -100,6 +100,7 @@ const sheets = {
   CreateLot: (lot, idLot) => api.put(`lot/quantity/${idLot}`, lot),
   putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
   getUsers: () => api.get("users"),
+  filterItens:(data) => api.post(`items/filter`, data),
   updateUser: (id, data) => api.put(`user/${id}`, data),
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
