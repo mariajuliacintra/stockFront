@@ -17,7 +17,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff"; 
 import FooterPerfil from "../components/layout/Footer";
 import HeaderPerfil from "../components/layout/HeaderPerfil";
-import senaiLogo from "../../img/logo.png";
+import senaiLogo from "../../public/logo.png";
 
 function Perfil() {
     const navigate = useNavigate();

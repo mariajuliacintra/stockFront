@@ -3,7 +3,7 @@ import { Box, Button } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from '@mui/icons-material/Logout';
 import FolderIcon from '@mui/icons-material/Folder';
-import logo from "../../../img/logo.png";
+import logo from "../../../public/logo.png";
 import { useEffect, useState } from "react";
 
 const getUserRole = () => {
