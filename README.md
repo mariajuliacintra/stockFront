@@ -86,6 +86,8 @@ O projeto consiste em uma tela de login, cadastro. Desenvolvida com React e conf
    ```bash
    npm i react-router-dom
    ```
+### Link de Deploy
+- Vercel: `https://stock-front-pi.vercel.app/`
 
 ## Documentação Completa dos Requisitos Necessários
 
