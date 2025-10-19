@@ -4,7 +4,7 @@ import CustomModal from "../components/mod/CustomModal";
 import Header from "../components/layout/HeaderPerfil";
 import Footer from "../components/layout/Footer";
 import sheets from "../services/axios";
-import fundoImage from "../../public/fundo.png"; // Importe a imagem de fundo
+import fundoImage from "../../public/fundo.png";
 
 function Transactions() {
   const [transactions, setTransactions] = useState([]);
