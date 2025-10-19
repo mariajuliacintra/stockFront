@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Box, Button } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import HomeIcon from "@mui/icons-material/Home";
-import logo from "../../../img/logo.png";
+import logo from "../../../public/logo.png";
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const HeaderCards = ({}) => {

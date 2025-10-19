@@ -1,13 +1,19 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import logo from "../../img/logo.png";
+import logo from "../../public/logo.png";
 import { Box, Button, Container, Typography } from "@mui/material";
+import DownloadIcon from "@mui/icons-material/Download";
 
 function Home() {
   const styles = getStyles();
-    useEffect(() => {
-      document.title = "Home | SENAI";
-    }, []);
+  useEffect(() => {
+    document.title = "Home | SENAI";
+  }, []);
+
+  const downloadApk = () => {
+    window.location.href =
+      "https://senaiestoque.duckdns.org/api/download/apk/app.apk";
+  };
 
   return (
     <Box sx={styles.pageContainer}>
@@ -30,6 +36,14 @@ function Home() {
               variant="text"
             >
               Login
+            </Button>
+            <Button
+              onClick={downloadApk}
+              sx={styles.buttonToApk}
+              variant="contained"
+              startIcon={<DownloadIcon />}
+            >
+              APK
             </Button>
           </Box>
         </Box>
@@ -60,7 +74,7 @@ function getStyles() {
       minHeight: "100vh",
     },
     container: {
-      backgroundImage: `url(../../img/fundoinicial.png)`,
+      backgroundImage: `url('/fundoinicial.png')`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
@@ -113,6 +127,24 @@ function getStyles() {
       ml: { xs: 1, sm: 2 },
     },
     buttonToLogin: {
+      "&.MuiButton-root": {
+        border: "2.5px solid white",
+        "&:hover": {
+          border: "none",
+          backgroundColor: "rgba(255, 0, 0, 0.55)",
+        },
+      },
+      color: "white",
+      backgroundColor: "rgba(255, 0, 0, 1)",
+      width: { xs: 60, sm: 80 },
+      height: 35,
+      fontWeight: 600,
+      fontSize: { xs: 10, sm: 13 },
+      borderRadius: 15,
+      textTransform: "none",
+      ml: { xs: 1, sm: 3 },
+    },
+    buttonToApk: {
       "&.MuiButton-root": {
         border: "2.5px solid white",
         "&:hover": {

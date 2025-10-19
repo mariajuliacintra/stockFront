@@ -37,6 +37,7 @@ function Login() {
   }, []);
   const [user, setUser] = useState({ email: "", password: "" });
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalInfo, setModalInfo] = useState({
@@ -86,6 +87,7 @@ function Login() {
   async function LoginUser() {
     setLoading(true);
     try {
+      setLoading(true);
       const response = await api.postLogin(user);
       const userData = response.data.user?.[0];
 
@@ -112,6 +114,7 @@ function Login() {
       // 3. Define loading como false após a conclusão (sucesso ou erro)
       setLoading(false);
     }
+    setLoading(false);
   }
 
   return (
@@ -195,12 +198,12 @@ function Login() {
           type="submit"
           variant="contained"
           sx={styles.buttonLogin}
-          disabled={loading} // Desabilita o botão enquanto carrega
+          disabled={loading}
         >
           {loading ? (
             <CircularProgress size={20} sx={{ color: "white" }} /> // Exibe o spinner
           ) : (
-            "Login" // Exibe o texto normal
+            "Login"
           )}
         </Button>
         <Typography variant="body2" sx={styles.naoTemContaText}>
@@ -239,7 +242,7 @@ function Login() {
 function getStyles() {
   return {
     container: {
-      backgroundImage: `url(../../img/fundo.png)`,
+      backgroundImage: `url('/fundo.png')`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",

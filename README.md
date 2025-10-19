@@ -86,10 +86,12 @@ O projeto consiste em uma tela de login, cadastro. Desenvolvida com React e conf
    ```bash
    npm i react-router-dom
    ```
+### Link de Deploy
+- Vercel: `https://stock-front-pi.vercel.app/`
 
 ## Documentação Completa dos Requisitos Necessários
 
-Os requisitos necessários para funcionamento pleno do projeto estão em outro repositório. Acesse-os [aqui](https://github.com/MariaFernandaCintra/sprintApi/).
+Os requisitos necessários para funcionamento pleno do projeto estão em outro repositório. Acesse-os [aqui](https://github.com/mariajuliacintra/stockApi).
 
 ## Autores
 

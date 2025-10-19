@@ -17,7 +17,7 @@ import { Email } from "@mui/icons-material";
 import CustomModal from "../components/mod/CustomModal";
 import RecoveryModal from "../components/mod/RecoveryModal";
 
-import senaiLogo from '../../img/logo.png';
+import senaiLogo from '../../public/logo.png';
 
 function RecSenha() {
   const styles = getStyles();
@@ -132,7 +132,7 @@ function RecSenha() {
 function getStyles() {
   return {
     container: {
-      backgroundImage: `url(../../img/fundo.png)`,
+      backgroundImage: `url(../../public/fundo.png)`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",

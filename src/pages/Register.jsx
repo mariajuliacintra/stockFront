@@ -77,7 +77,7 @@ function Register() {
       setModalCustom({
         open: true,
         title: "Erro!",
-        message: error.response?.data?.error,
+        message: error.response?.data?.details,
         type: "error",
       });
     } finally {
@@ -274,7 +274,7 @@ function Register() {
 function getStyles() {
   return {
     container: {
-      backgroundImage: `url(../../img/fundo.png)`,
+      backgroundImage: `url('../../public/fundo.png')`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
