@@ -45,6 +45,13 @@ api.interceptors.response.use(
 );
 
 const sheets = {
+
+  downloadApk: () => {
+    return api.get("/download/apk/app.apk", {
+      responseType: "blob",
+    });
+  },
+
   importItemsExcel: (file) => {
     const formData = new FormData();
     formData.append("file", file);
