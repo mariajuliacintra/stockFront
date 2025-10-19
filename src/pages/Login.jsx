@@ -12,6 +12,7 @@ import {
   Typography,
   Alert,
   Snackbar,
+  CircularProgress,
 } from "@mui/material";
 
 import {
@@ -20,13 +21,13 @@ import {
   Person,
   Lock,
   ArrowForward,
-}
-from "@mui/icons-material";
+} from "@mui/icons-material";
 
 import CustomModal from "../components/mod/CustomModal";
 
 function Login() {
   const styles = getStyles();
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     document.title = "Login | SENAI";
     const refreshToken = localStorage.getItem("refresh_token");
@@ -83,11 +84,12 @@ function Login() {
   };
 
   async function LoginUser() {
+    setLoading(true);
     try {
       const response = await api.postLogin(user);
       const userData = response.data.user?.[0];
 
-      if (userData) { 
+      if (userData) {
         localStorage.setItem("tokenUsuario", userData.token);
         localStorage.setItem("authenticated", true);
         localStorage.setItem("idUsuario", String(userData.idUser));
@@ -104,8 +106,11 @@ function Login() {
     } catch (error) {
       console.log(error);
       const errorMessage =
-        error.response?.data?.error || "Ocorreu um erro ao fazer login.";
+        error.response?.data?.error || "Ocorreau um erro ao fazer login.";
       showAlert("error", errorMessage);
+    } finally {
+      // 3. Define loading como false após a conclusão (sucesso ou erro)
+      setLoading(false);
     }
   }
 
@@ -186,8 +191,17 @@ function Login() {
             ),
           }}
         />
-        <Button type="submit" variant="contained" sx={styles.buttonLogin}>
-          Login
+        <Button
+          type="submit"
+          variant="contained"
+          sx={styles.buttonLogin}
+          disabled={loading} // Desabilita o botão enquanto carrega
+        >
+          {loading ? (
+            <CircularProgress size={20} sx={{ color: "white" }} /> // Exibe o spinner
+          ) : (
+            "Login" // Exibe o texto normal
+          )}
         </Button>
         <Typography variant="body2" sx={styles.naoTemContaText}>
           Não tem uma conta?
