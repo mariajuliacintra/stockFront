@@ -523,7 +523,7 @@ function getStyles() {
     return {
         pageLayout: { display: "flex", flexDirection: "column", minHeight: "100vh" },
         container: {
-            backgroundImage: `url(../../img/fundo.png)`,
+            backgroundImage: `url('/fundo.png')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",

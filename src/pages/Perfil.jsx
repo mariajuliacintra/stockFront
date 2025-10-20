@@ -17,7 +17,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff"; 
 import FooterPerfil from "../components/layout/Footer";
 import HeaderPerfil from "../components/layout/HeaderPerfil";
-import fundo from "./../../public/logo.png"
+import fundo from "./../../public/fundo.png"
 import senaiLogo from "../../public/logo.png";
 
 function Perfil() {
