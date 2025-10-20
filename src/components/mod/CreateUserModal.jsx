@@ -95,10 +95,6 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
     if (success) {
       onSuccess(); 
       onClose(); 
-      
-      // 🔑 Ponto de Correção: Usa a MENSAGEM recebida. Se a API de Verificação 
-      // (dentro do SecuryCode) passar "Conta reativada com sucesso!", 
-      // o alerta irá exibir exatamente isso.
       onAlert(message || "Usuário criado e verificado com sucesso!", 'success'); 
     } else {
       onAlert(message || "Erro na verificação do código.", 'error');
