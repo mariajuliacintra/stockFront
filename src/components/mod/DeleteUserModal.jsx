@@ -8,7 +8,6 @@ import {
   import { useState } from 'react';
   import api from '../../services/axios';
   
-  // Estilos da Modal Box - Mantendo a consistência (15px de raio e box-shadow)
   const modalStyles = {
     position: 'absolute',
     top: '50%',
@@ -24,16 +23,15 @@ import {
     gap: 2,
   };
   
-  // ALTERADO: Props alteradas para usar onAlert em vez de onError
+  
   const DeleteUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
     const registerFieldStyles = getRegisterFieldStyles();
     const [loading, setLoading] = useState(false);
   
     const handleDelete = async () => {
         if (!user || !user.idUser) {
-            // CORRIGIDO: Chamando onAlert com severity 'error'
             onAlert('Não foi possível encontrar o usuário para exclusão.', 'error'); 
-            onClose(); // Fecha em caso de erro de lógica
+            onClose(); 
             return;
         }
   
@@ -42,19 +40,14 @@ import {
             const response = await api.deleteUser(user.idUser);
   
             if (response.data.success) {
-                // CORRIGIDO: 1. Chamando onAlert com severity 'success'
                 onAlert(response.data.message || 'Usuário excluído com sucesso!', 'success');
-                // CORRIGIDO: 2. Chamando onSuccess para recarregar a lista
                 onSuccess();
-                // CORRIGIDO: 3. Fechando a modal após o sucesso
                 onClose(); 
             } else {
-                // CORRIGIDO: Chamando onAlert com severity 'error'
                 onAlert(response.data.error || 'Erro ao excluir usuário.', 'error');
             }
         } catch (error) {
             console.error('Erro ao excluir usuário:', error);
-            // CORRIGIDO: Chamando onAlert com severity 'error'
             onAlert(error.response?.data?.error || 'Erro interno do servidor ao tentar excluir o usuário.', 'error');
         } finally {
             setLoading(false);
