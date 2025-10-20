@@ -42,11 +42,6 @@ const ImportModal = ({ open, onClose, data, onAlert, onSuccess }) => {
         'itemSpecs', 
         'aliases' 
     ];
-    
-    const techSpecKeyToIdMap = technicalSpecs.reduce((acc, spec) => {
-        acc[spec.technicalSpecKey] = spec.idTechnicalSpec;
-        return acc;
-    }, {});
 
 
     const getDynamicSpecKeys = () => {

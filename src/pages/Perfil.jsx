@@ -17,6 +17,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff"; 
 import FooterPerfil from "../components/layout/Footer";
 import HeaderPerfil from "../components/layout/HeaderPerfil";
+import fundo from "./../../public/logo.png"
 import senaiLogo from "../../public/logo.png";
 
 function Perfil() {
@@ -267,7 +268,7 @@ function getStyles() {
             minHeight: "100vh",
         },
         container: {
-            backgroundImage: `url(../../public/fundo.png)`,
+            backgroundImage: `url(${fundo})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
