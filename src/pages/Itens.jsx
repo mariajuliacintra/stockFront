@@ -13,6 +13,8 @@ import {
   ListItem,
   ListItemText,
   Checkbox,
+  Pagination,
+  CircularProgress,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import CustomModal from "../components/mod/CustomModal";
@@ -23,12 +25,18 @@ import api from "../services/axios";
 import ModalDescription from "../components/mod/ModalDescription";
 import AddItemModal from "../components/mod/AddItemModal";
 
+const DEFAULT_LIMIT = 15;
+
 function Itens() {
   const [search, setSearch] = useState("");
-  const [allItens, setAllItens] = useState([]);
   const [itens, setItens] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]); // Alterado para um array
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -39,26 +47,8 @@ function Itens() {
   const [errorModal, setErrorModal] = useState({
     open: false,
     message: "",
-  });
+  }); // Buscar categorias (mantido inalterado)
 
-  // Buscar itens
-  const fetchItens = async () => {
-    try {
-      const response = await api.getItens();
-      const data = Array.isArray(response.data.items)
-        ? response.data.items
-        : [];
-      setAllItens(data);
-      setItens(data);
-    } catch (error) {
-      setErrorMessage(
-        error.response?.data?.error || "Erro ao carregar a lista de itens"
-      );
-      setItens([]);
-    }
-  };
-
-  // Buscar categorias
   const fetchCategories = async () => {
     try {
       const response = await api.getCategories();
@@ -69,45 +59,61 @@ function Itens() {
     } catch (error) {
       console.error("Erro ao carregar categorias:", error);
     }
-  };
+  }; // FUNÇÃO UNIFICADA: LIDA COM BUSCA INICIAL E FILTRAGEM COM PAGINAÇÃO
 
-  // Filtrar itens pelo nome e pelas categorias selecionadas
-  const handleFilter = async () => {
+  const handleFilter = async (filterPage = 1) => {
+    setLoading(true);
+    setErrorMessage("");
+
     try {
-      const data = {
+      const filterData = {
         name: search.trim() || "",
         idCategory: selectedCategories.map((cat) => cat.idCategory),
+        page: filterPage,
+        limit: DEFAULT_LIMIT,
       };
 
-      // senão tiver nenhum filtro para fazer renderiza o get dos itens
-      const hasFilters = data.name !== "" || data.idCategory.length > 0;
-      if (!hasFilters) {
-        fetchItens();
-        return;
+      const hasFilters =
+        filterData.name !== "" || filterData.idCategory.length > 0;
+      let response;
+      if (hasFilters) {
+        response = await api.filterItens(filterData);
+      } else {
+        response = await api.getItens({
+          params: { page: filterPage, limit: DEFAULT_LIMIT },
+        });
       }
 
-      const response = await api.filterItens(data);
-      const filtered = Array.isArray(response.data.items)
-        ? response.data.items
-        : [];
+      const itensList = response.data.items || [];
+      const paginationData = response.data.pagination;
 
-      setItens(filtered);
-      setErrorMessage(filtered.length === 0 ? "Nenhum item encontrado." : "");
+      setItens(itensList);
+      setTotalPages(paginationData?.totalPages || 1);
+      setPage(filterPage);
+
+      setErrorMessage(itensList.length === 0 ? "Nenhum item encontrado." : "");
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.error || "Erro ao aplicar o filtro."
+        error.response?.data?.error ||
+          "Erro ao carregar os itens. Verifique o console."
       );
       setItens([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
     }
-  };
+  }; // Handler para mudança de página
 
-  // Abre o modal de detalhes do item
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+    handleFilter(newPage);
+  }; // Abre o modal de detalhes do item
+
   const handleOpenModal = (itemId) => {
     setSelectedItem(itemId);
     setModalOpen(true);
-  };
+  }; // Selecionar ou desmarcar uma categoria
 
-  // Selecionar ou desmarcar uma categoria
   const handleSelectCategory = (category) => {
     setSelectedCategories((prevSelectedCategories) => {
       if (
@@ -117,16 +123,16 @@ function Itens() {
       ) {
         return prevSelectedCategories.filter(
           (cat) => cat.idCategory !== category.idCategory
-        ); // Desmarca a categoria
+        );
       } else {
-        return [...prevSelectedCategories, category]; // Marca a categoria
+        return [...prevSelectedCategories, category];
       }
     });
   };
 
   const handleOpenModalAdd = () => {
-    setDrawerOpen(false); // fecha o menu
-    setModalAddOpen(true); // abre o modal
+    setDrawerOpen(false);
+    setModalAddOpen(true);
   };
 
   const handleCloseModalAdd = () => {
@@ -137,12 +143,15 @@ function Itens() {
 
   useEffect(() => {
     document.title = "Itens | SENAI";
-    fetchItens();
+    handleFilter(1);
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    handleFilter();
+    if (page !== 1) {
+      setPage(1);
+    }
+    handleFilter(1);
   }, [search, selectedCategories]);
 
   const getTitle = (item) => item.name || "";
@@ -169,6 +178,7 @@ function Itens() {
           <Typography sx={{ fontWeight: 600, mb: 0.5, mt: -5 }}>
             Especificação técnica:
           </Typography>
+
           {specsPreview ? (
             <Typography sx={styles.specs}>{specsPreview}</Typography>
           ) : (
@@ -202,8 +212,7 @@ function Itens() {
   return (
     <Box sx={styles.pageContainer}>
       <HeaderPrincipal />
-      <Box
-        //scroll
+      <Box //scroll
         sx={{
           ...styles.content,
           overflowY: "auto",
@@ -219,7 +228,6 @@ function Itens() {
         <Typography variant="h4" gutterBottom sx={styles.headerTitle}>
           Itens
         </Typography>
-
         {/* Filtro com menu hamburguer */}
         <Box
           sx={{
@@ -263,7 +271,6 @@ function Itens() {
             }}
           />
         </Box>
-
         {/* Drawer lateral para categorias */}
         <Drawer
           anchor="left"
@@ -276,6 +283,7 @@ function Itens() {
           <Typography sx={{ p: 2, fontWeight: "bold" }}>
             Filtro Avançado
           </Typography>
+
           <List>
             {categories.map((cat) => (
               <ListItem
@@ -292,6 +300,7 @@ function Itens() {
                 <ListItemText primary={cat.categoryValue} />
               </ListItem>
             ))}
+
             <ListItem button onClick={handleOpenModalAdd}>
               <ListItemText
                 primary="+ Adicionar Item"
@@ -300,10 +309,16 @@ function Itens() {
             </ListItem>
           </List>
         </Drawer>
-
         {/* Cards dos itens */}
         <Box sx={styles.cardsGrid}>
-          {itens.length > 0 ? (
+          {loading ? (
+            <Box sx={{ width: "100%", textAlign: "center", py: 4 }}>
+              <CircularProgress color="error" />
+              <Typography sx={{ mt: 1, color: "#555" }}>
+                Carregando Itens...
+              </Typography>
+            </Box>
+          ) : itens.length > 0 ? (
             itens.map((item, idx) => (
               <CardItem
                 item={item}
@@ -314,12 +329,29 @@ function Itens() {
             ))
           ) : (
             <Typography sx={{ textAlign: "center", width: "100%", mt: 4 }}>
-              {errorMessage}
+              {errorMessage || "Nenhum item encontrado."}
             </Typography>
           )}
         </Box>
+        {/* COMPONENTE DE PAGINAÇÃO */}
+        {totalPages > 1 && !loading && (
+          <Box sx={styles.paginationBox}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary" // 🛑 ESTILIZAÇÃO CORRIGIDA PARA USAR A CONSTANTE senaiRed
+              sx={{
+                "& .MuiPaginationItem-root": { color: styles.senaiRed },
+                "& .Mui-selected": {
+                  backgroundColor: styles.senaiRed,
+                  color: "white",
+                },
+              }}
+            />
+          </Box>
+        )}
       </Box>
-
       <Footer />
 
       <ModalDescription
@@ -330,7 +362,6 @@ function Itens() {
         onSuccess={(msg) => setSuccessMessage(msg)}
         onError={(msg) => setErrorModalMessage(msg)}
       />
-
       {/* Modal de sucesso */}
       {successMessage && (
         <CustomModal
@@ -341,7 +372,6 @@ function Itens() {
           type="success"
         />
       )}
-
       {/* Modal de erro */}
       {errorModalMessage && (
         <CustomModal
@@ -358,7 +388,7 @@ function Itens() {
         onClose={handleCloseModalAdd}
         idUser={idUser}
         itemId={selectedItem}
-        onSuccess={() => fetchItens()}
+        onSuccess={() => handleFilter(page)} // Chama o filtro na página atual após o sucesso
       />
     </Box>
   );
@@ -368,6 +398,9 @@ export default Itens;
 
 // Estilos
 const styles = {
+  // 🛑 Adiciona a cor de marca para ser usada na paginação
+  senaiRed: "#A31515",
+
   pageContainer: {
     minHeight: "100vh",
     display: "flex",
@@ -431,5 +464,12 @@ const styles = {
     textTransform: "none",
     borderRadius: "18px",
     padding: "6px 18px",
+  },
+  // 🛑 NOVO: Estilo para a caixa da paginação (igual ao UserManagement)
+  paginationBox: {
+    display: "flex",
+    justifyContent: "center",
+    mt: 3,
+    py: 1,
   },
 };

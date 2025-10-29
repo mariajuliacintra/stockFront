@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import sheets from "../services/axios"; 
+import sheets from "../services/axios";
 
 import {
   Box,
@@ -12,7 +12,7 @@ import {
   Divider,
   Snackbar,
   Alert,
-  Pagination, 
+  Pagination,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -27,14 +27,12 @@ import CreateUserModal from "../components/mod/CreateUserModal";
 import HeaderAdm from "../components/layout/HeaderAdm";
 
 // Define o limite de usuários por página: 25 (Sincronizado com o back-end)
-const USERS_PER_PAGE = 25; 
+const USERS_PER_PAGE = 15;
 
 function UserManagement() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  // ESTADOS DE PAGINAÇÃO
+  const [loading, setLoading] = useState(true); // ESTADOS DE PAGINAÇÃO
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -52,8 +50,8 @@ function UserManagement() {
 
   useEffect(() => {
     document.title = "Gerenciamento de Usuários";
-    fetchUsers(page); 
-  }, [page]); 
+    fetchUsers(page);
+  }, [page]);
 
   const handleAlert = (message, severity = "error") => {
     setAlert({ open: true, severity, message });
@@ -77,38 +75,35 @@ function UserManagement() {
     return true;
   };
 
-  // FUNÇÃO DE BUSCA DE USUÁRIOS CORRIGIDA PARA EXTRAÇÃO DE DADOS
   const fetchUsers = async (currentPage) => {
     if (!checkUserRole()) return;
 
     setLoading(true);
     try {
-      const response = await sheets.getUsers({ 
-          params: { page: currentPage, limit: USERS_PER_PAGE } 
-      }); 
+      const response = await sheets.getUsers({
+        params: { page: currentPage, limit: USERS_PER_PAGE },
+      });
 
-      // CORREÇÃO: Acessa o índice [0] do array 'data' para obter os dados de paginação
-      const responseDataWrapper = response.data.data;
-      const paginationData = responseDataWrapper?.[0]; // Pega o objeto {users, totalPages}
+      const usersList = response.data.users || [];
+      const paginationData = response.data.pagination;
 
-      const usersList = paginationData?.users || [];
       const totalPagesCount = paginationData?.totalPages || 1;
 
       setUsers(usersList);
       setTotalPages(totalPagesCount);
-      
     } catch (error) {
       console.error("Erro ao carregar usuários:", error);
-      const errorMsg = error.response?.data?.error || "Erro ao carregar usuários. Tente novamente.";
+      const errorMsg =
+        error.response?.data?.error ||
+        "Erro ao carregar usuários. Tente novamente.";
       handleAlert(errorMsg, "error");
       setUsers([]);
       setTotalPages(1);
     } finally {
       setLoading(false);
     }
-  };
+  }; // Handler para a mudança de página no componente Pagination
 
-  // Handler para a mudança de página no componente Pagination
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
   };
@@ -147,15 +142,14 @@ function UserManagement() {
 
   const handleUserDeleted = () => {
     if (users.length === 1 && page > 1) {
-        setPage(page - 1); 
+      setPage(page - 1);
     } else {
-        fetchUsers(page);
+      fetchUsers(page);
     }
     handleCloseDeleteModal();
   };
-  
   const handleUserCreated = () => {
-    fetchUsers(page); 
+    fetchUsers(page);
     handleCloseCreateModal();
   };
 
@@ -189,12 +183,12 @@ function UserManagement() {
             <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
               Gerenciamento de Usuários
             </Typography>
+
             <IconButton onClick={handleOpenCreateModal} sx={styles.addButton}>
               <AddIcon sx={{ fontSize: 24 }} />
             </IconButton>
           </Box>
-          <Divider sx={{ mb: 2, borderColor: '#ccc' }} />
-          
+          <Divider sx={{ mb: 2, borderColor: "#ccc" }} />
           {/* Conteúdo Principal */}
           {loading ? (
             <Box sx={styles.loadingBox}>
@@ -214,13 +208,18 @@ function UserManagement() {
                     <Typography variant="body2" sx={styles.userName}>
                       {user.name}
                     </Typography>
+
                     <Typography variant="body2" sx={styles.userRole}>
-                      Cargo: 
-                      <Box component="span" sx={{ fontWeight: 'bold', ml: 0.5 }}>
-                          {getRoleDisplayName(user.role)}
+                      Cargo:
+                      <Box
+                        component="span"
+                        sx={{ fontWeight: "bold", ml: 0.5 }}
+                      >
+                        {getRoleDisplayName(user.role)}
                       </Box>
                     </Typography>
                   </Box>
+
                   <Box sx={styles.actionIcons}>
                     <IconButton
                       aria-label="edit"
@@ -229,6 +228,7 @@ function UserManagement() {
                     >
                       <EditIcon fontSize="small" />
                     </IconButton>
+
                     <IconButton
                       aria-label="delete"
                       onClick={() => handleOpenDeleteModal(user)}
@@ -241,6 +241,7 @@ function UserManagement() {
               ))}
 
               {/* Componente de Paginação (visível apenas se houver mais de 1 página) */}
+
               {totalPages > 1 && (
                 <Box sx={styles.paginationBox}>
                   <Pagination
@@ -248,9 +249,12 @@ function UserManagement() {
                     page={page}
                     onChange={handlePageChange}
                     color="primary"
-                    sx={{ 
-                      "& .MuiPaginationItem-root": { color: styles.senaiRed }, 
-                      "& .Mui-selected": { backgroundColor: styles.senaiRed, color: 'white' }
+                    sx={{
+                      "& .MuiPaginationItem-root": { color: styles.senaiRed },
+                      "& .Mui-selected": {
+                        backgroundColor: styles.senaiRed,
+                        color: "white",
+                      },
                     }}
                   />
                 </Box>
@@ -258,8 +262,8 @@ function UserManagement() {
             </>
           )}
         </Box>
-
         {/* Modals (mantidos) */}
+
         <EditUserModal
           open={openEditModal}
           onClose={handleCloseEditModal}
@@ -289,12 +293,12 @@ function UserManagement() {
 }
 
 function getStyles() {
-  const senaiRed = "#A31515"; 
+  const senaiRed = "#A31515";
   const primaryBlue = "#1976d2";
   const errorRed = "#d32f2f";
 
   return {
-    senaiRed: senaiRed, 
+    senaiRed: senaiRed,
     pageLayout: {
       display: "flex",
       flexDirection: "column",
@@ -317,7 +321,7 @@ function getStyles() {
       width: "100%",
       maxWidth: "480px",
       padding: "20px",
-      backgroundColor: "#FFFFFF", 
+      backgroundColor: "#FFFFFF",
     },
     header: {
       display: "flex",
@@ -329,12 +333,12 @@ function getStyles() {
       color: senaiRed,
       p: 1,
       border: `2px solid ${senaiRed}`,
-      borderRadius: '50%',
-      transition: 'all 0.3s',
-      '&:hover': {
+      borderRadius: "50%",
+      transition: "all 0.3s",
+      "&:hover": {
         backgroundColor: senaiRed,
-        color: '#fff',
-      }
+        color: "#fff",
+      },
     },
     loadingBox: {
       display: "flex",
@@ -355,29 +359,29 @@ function getStyles() {
       p: 1.5,
       mt: 1.5,
       borderRadius: "8px",
-      border: "1px solid #f0f0f0", 
-      transition: 'box-shadow 0.3s',
-      '&:hover': {
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-      }
+      border: "1px solid #f0f0f0",
+      transition: "box-shadow 0.3s",
+      "&:hover": {
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+      },
     },
     userInfo: {
       display: "flex",
       flexDirection: "column",
-      flex: 1, 
+      flex: 1,
       minWidth: 0,
     },
     userName: {
-      fontWeight: 'bold',
-      color: '#333',
-      fontSize: '1rem',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
+      fontWeight: "bold",
+      color: "#333",
+      fontSize: "1rem",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
     },
     userRole: {
-      color: '#444',
-      fontSize: '0.85rem',
+      color: "#444",
+      fontSize: "0.85rem",
       fontWeight: 400,
     },
     actionIcons: {
@@ -389,23 +393,23 @@ function getStyles() {
     editButton: {
       color: primaryBlue,
       p: 0.5,
-      '&:hover': {
+      "&:hover": {
         backgroundColor: `${primaryBlue}10`,
-      }
+      },
     },
     deleteButton: {
       color: errorRed,
       p: 0.5,
-      '&:hover': {
+      "&:hover": {
         backgroundColor: `${errorRed}10`,
-      }
+      },
     },
     paginationBox: {
-        display: 'flex',
-        justifyContent: 'center',
-        mt: 3,
-        py: 1,
-    }
+      display: "flex",
+      justifyContent: "center",
+      mt: 3,
+      py: 1,
+    },
   };
 }
 
