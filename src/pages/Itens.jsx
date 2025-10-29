@@ -135,7 +135,6 @@ function Itens() {
 
   const idUser = localStorage.getItem("idUsuario");
 
-
   useEffect(() => {
     document.title = "Itens | SENAI";
     fetchItens();
