@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://10.89.240.83:5000/api";
+const BASE_URL = "http://10.89.240.82:5000/api";
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -35,8 +35,8 @@ api.interceptors.response.use(
         localStorage.removeItem("tokenUsuario");
         localStorage.removeItem("authenticated");
 
-        if (window.location.pathname !== "/") {
-          window.location.href = "/";
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
         }
       }
     }
@@ -45,7 +45,6 @@ api.interceptors.response.use(
 );
 
 const sheets = {
-
   downloadApk: () => {
     return api.get("/download/apk/app.apk", {
       responseType: "blob",
@@ -106,23 +105,23 @@ const sheets = {
   deleteProfile: (id) => api.delete(`user/${id}`),
   CreateLot: (lot, idLot) => api.put(`lot/quantity/${idLot}`, lot),
   putUpdatePassword: (id, data) => api.put(`user/${id}`, data),
-  getUsers: () => api.get("users"),
-  filterItens:(data) => api.post(`items/filter`, data),
+  getUsers: (config) => api.get("users", config),
+  filterItens: (data) => api.post(`items/filter`, data),
   updateUser: (id, data) => api.put(`user/${id}`, data),
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
   deleteUser: (id) => api.delete(`user/${id}`),
   postImage: (id_item, formData) => {
-    return api.post(`item/image/${id_item}`, formData, {
-    });
+    return api.post(`item/image/${id_item}`, formData, {});
   },
-
+  createCategory: (data) => api.post("category", data),
+  createLocation: (data) => api.post("location", data),
   getCategories: () => api.get("category"),
   getTechnicalSpecs: () => api.get(`technicalSpec/`),
   createTechnicalSpec: (technicalSpecKey) =>
     api.post(`technicalSpec/`, { technicalSpecKey }),
   postAddItem: (itemData) => api.post(`/item`, itemData),
-  deleteItem: (idItem) => api.delete(`item/${idItem}`), 
+  deleteItem: (idItem) => api.delete(`item/${idItem}`),
 };
 
 export default sheets;
