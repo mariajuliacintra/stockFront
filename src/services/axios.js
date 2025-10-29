@@ -119,7 +119,7 @@ const sheets = {
   getCategories: () => api.get("category"),
   getTechnicalSpecs: () => api.get(`technicalSpec/`),
   createTechnicalSpec: (technicalSpecKey) =>
-    api.post(`technicalSpec/`, { technicalSpecKey }),
+    api.post(`technicalSpec/`, technicalSpecKey),
   postAddItem: (itemData) => api.post(`/item`, itemData),
   deleteItem: (idItem) => api.delete(`item/${idItem}`),
 };
