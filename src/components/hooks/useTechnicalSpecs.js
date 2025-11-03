@@ -48,8 +48,6 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
       setSavingNewSpec(true);
 
       const response = await sheets.createTechnicalSpec({ technicalSpecKey });
-      console.log(technicalSpecKey); //teste
-      console.log(response.data); //
 
       const data = response.data;
 

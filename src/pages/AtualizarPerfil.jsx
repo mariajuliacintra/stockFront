@@ -70,7 +70,6 @@ function AtualizarPerfil() {
                     navigate("/perfil");
                 }
             } catch (e) {
-                console.error("Erro na requisição da API:", e);
                 const errorMessage = e.response?.data?.error || "Erro ao carregar perfil. Verifique sua conexão ou sessão.";
                 showSnackbar(errorMessage, "error");
 
@@ -139,7 +138,6 @@ function AtualizarPerfil() {
                 setModalOpen(true);
             }
         } catch (error) {
-            console.error("Erro ao atualizar perfil:", error);
             const errorMessage = error.response?.data?.details || error.response?.data?.error || "Erro desconhecido ao atualizar perfil.";
             setModalInfo({
                 title: "Erro!",
@@ -172,7 +170,6 @@ function AtualizarPerfil() {
             setIsPasswordModalOpen(false);
             setPasswordForm({ novaSenha: "", confirmarSenha: "" });
         } catch (error) {
-            console.error("Erro ao atualizar senha:", error);
             const errorMessage = error.response?.data?.error || "Erro desconhecido ao atualizar senha.";
             showSnackbar(errorMessage, "error");
         } finally {
@@ -191,7 +188,6 @@ function AtualizarPerfil() {
             localStorage.removeItem("idUsuario");
             navigate("/");
         } catch (error) {
-            console.error("Erro ao deletar o perfil:", error);
             const errorMessage = error.response?.data?.error || "Erro desconhecido ao deletar perfil.";
             showSnackbar(errorMessage, "error");
         } finally {
@@ -213,7 +209,6 @@ function AtualizarPerfil() {
             setIsVerifyUpdateModalOpen(false);
             setVerificationCode("");
         } catch (error) {
-            console.error("Erro ao verificar o código:", error);
             const errorMessage = error.response?.data?.details || error.response?.data?.error || "Erro desconhecido ao verificar código.";
             showSnackbar(errorMessage, "error");
         } finally {

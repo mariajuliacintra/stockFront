@@ -124,7 +124,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
             setModalInfo({
                 open: true,
                 title: "Erro!",
-                message: "Informe ao menos uma TechnicalSpec",
+                message: "Informe ao menos uma especificação técnica",
                 type: "error",
             });
             setLoading(false);

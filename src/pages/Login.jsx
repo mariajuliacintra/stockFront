@@ -106,7 +106,6 @@ function Login() {
       });
       setModalOpen(true);
     } catch (error) {
-      console.log(error);
       const errorMessage =
         error.response?.data?.error || "Ocorreu um erro ao fazer login.";
       showAlert("error", errorMessage);

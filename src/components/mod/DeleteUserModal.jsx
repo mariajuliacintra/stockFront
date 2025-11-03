@@ -47,7 +47,6 @@ import {
                 onAlert(response.data.error || 'Erro ao excluir usuário.', 'error');
             }
         } catch (error) {
-            console.error('Erro ao excluir usuário:', error);
             onAlert(error.response?.data?.error || 'Erro interno do servidor ao tentar excluir o usuário.', 'error');
         } finally {
             setLoading(false);

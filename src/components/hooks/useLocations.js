@@ -61,7 +61,6 @@ export const useLocations = (isOpen, setModalInfo) => {
             }
 
         } catch (error) {
-            console.error("Erro ao criar localização:", error);
             const errorMessage = error.response?.data?.error || "Falha ao criar localização";
             setModalInfo({
                 open: true,
