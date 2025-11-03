@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://senaiestoque.duckdns.org/api/";
+const BASE_URL = "VITE_URLAPI";
 
 const api = axios.create({
   baseURL: BASE_URL,
