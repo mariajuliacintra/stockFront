@@ -75,8 +75,6 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
                 onAlert(response.data.error || 'Erro ao tentar criar usuário.', 'error');
             }
         } catch (error) {
-            console.error('Erro de API na criação de usuário:', error);
-
             const apiErrorMessage = error.response?.data?.error || error.response?.data?.message;
             const apiDetailsMessage = error.response?.data?.details;
             

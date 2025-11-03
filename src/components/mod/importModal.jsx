@@ -93,8 +93,7 @@ const ImportModal = ({ open, onClose, data, onAlert, onSuccess }) => {
                 setEditableRows(initialRows);
 
             } catch (error) {
-                onAlert('Erro ao carregar dados auxiliares. Verifique o console.', 'error');
-                console.error("Erro na busca de dados auxiliares:", error.response || error);
+                onAlert('Erro ao carregar dados auxiliares.');
                 onClose();
             } finally {
                 setLoading(false);
@@ -253,8 +252,6 @@ const ImportModal = ({ open, onClose, data, onAlert, onSuccess }) => {
                 failedImports.push({ name: row.name, error: alertMessage });
                 
                 onAlert(alertMessage, 'error');
-
-                console.error(`Falha ao importar ${row.name}:`, responseData || error);
             }
         }
 

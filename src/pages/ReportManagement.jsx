@@ -127,7 +127,7 @@ function ReportManagement() {
         if (error.response && error.response.status === 404) {
              handleAlert('Erro: Endpoint não encontrado (404). Verifique as rotas da API.', 'error');
         } else {
-             handleAlert('Erro ao baixar relatório. Verifique o console.', 'error');
+             handleAlert('Erro ao baixar relatório.');
         }
         console.error('Erro detalhado:', error);
     }
@@ -158,7 +158,6 @@ function ReportManagement() {
         event.target.value = null
         const errorMessage = error.response?.data?.error || error.response?.data?.details || 'Erro desconhecido ao processar arquivo.';
         handleAlert(`Falha no Processamento: ${errorMessage}`, 'error');
-        console.error('Erro detalhado da Importação:', error);
     }
   };
 

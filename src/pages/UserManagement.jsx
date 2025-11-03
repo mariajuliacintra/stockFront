@@ -92,7 +92,6 @@ function UserManagement() {
       setUsers(usersList);
       setTotalPages(totalPagesCount);
     } catch (error) {
-      console.error("Erro ao carregar usuários:", error);
       const errorMsg =
         error.response?.data?.error ||
         "Erro ao carregar usuários. Tente novamente.";

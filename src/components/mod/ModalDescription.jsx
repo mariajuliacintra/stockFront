@@ -127,7 +127,6 @@ export default function ModalDescription({
         onError?.(response.data?.details || "Falha ao enviar a imagem.");
       }
     } catch (err) {
-        console.error("Erro no upload da imagem:", err); 
         const status = err.response?.status;
         let errorMessage = "Erro de conexão ao enviar a imagem.";
 
@@ -170,7 +169,6 @@ export default function ModalDescription({
     }
   };
 
-  // 🛑 Lógica handleConfirm AJUSTADA para Reajuste, Adicionar e Retirar
   const handleConfirm = async () => {
     const quantityInput = parseInt(form.quantity, 10);
     if (!form.action || !quantityInput || quantityInput <= 0) {
