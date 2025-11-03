@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://10.89.240.82:5000/api";
+const BASE_URL = "https://senaiestoque.duckdns.org/api/";
 
 const api = axios.create({
   baseURL: BASE_URL,
