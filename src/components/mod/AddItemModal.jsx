@@ -366,7 +366,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
                                     size="small"
                                 />
                                 <TextField
-                                    label="Código/Bloco (Ex: BL-01)"
+                                    label="Código/Bloco (Ex: B1)"
                                     value={newLocationCode}
                                     onChange={(e) => setNewLocationCode(e.target.value)}
                                     fullWidth

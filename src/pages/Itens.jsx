@@ -16,14 +16,13 @@ import {
   Pagination,
   CircularProgress,
 } from "@mui/material";
-import { Add } from "@mui/icons-material";
-import CustomModal from "../components/mod/CustomModal";
 import MenuIcon from "@mui/icons-material/Menu";
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
 import Footer from "../components/layout/Footer";
 import api from "../services/axios";
 import ModalDescription from "../components/mod/ModalDescription";
 import AddItemModal from "../components/mod/AddItemModal";
+import CustomModal from "../components/mod/CustomModal"; // Certifique-se de que este import está correto
 
 const DEFAULT_LIMIT = 15;
 
@@ -47,7 +46,7 @@ function Itens() {
   const [errorModal, setErrorModal] = useState({
     open: false,
     message: "",
-  }); // Buscar categorias (mantido inalterado)
+  });
 
   const fetchCategories = async () => {
     try {
@@ -59,7 +58,7 @@ function Itens() {
     } catch (error) {
       console.error("Erro ao carregar categorias:", error);
     }
-  }; // FUNÇÃO UNIFICADA: LIDA COM BUSCA INICIAL E FILTRAGEM COM PAGINAÇÃO
+  };
 
   const handleFilter = async (filterPage = 1) => {
     setLoading(true);
@@ -102,17 +101,17 @@ function Itens() {
     } finally {
       setLoading(false);
     }
-  }; // Handler para mudança de página
+  };
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
     handleFilter(newPage);
-  }; // Abre o modal de detalhes do item
+  };
 
   const handleOpenModal = (itemId) => {
     setSelectedItem(itemId);
     setModalOpen(true);
-  }; // Selecionar ou desmarcar uma categoria
+  };
 
   const handleSelectCategory = (category) => {
     setSelectedCategories((prevSelectedCategories) => {
@@ -137,6 +136,12 @@ function Itens() {
 
   const handleCloseModalAdd = () => {
     setModalAddOpen(false);
+  };
+
+  // Função de sucesso do modal, atualizada para recarregar tudo
+  const handleAddModalSuccess = () => {
+    handleFilter(page); // Recarrega a lista principal de itens
+    fetchCategories(); // Recarrega as categorias para o Drawer/Filtro
   };
 
   const idUser = localStorage.getItem("idUsuario");
@@ -168,14 +173,9 @@ function Itens() {
     return (
       <Card key={item.idItem ?? index} sx={styles.card} elevation={2}>
         <CardContent sx={{ p: 0 }}>
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 2, mb: 1 }}>
-            <Box sx={styles.iconContainer}>
-              <Add sx={styles.icon} />
-            </Box>
-            <Typography sx={styles.cardTitle}>{title}</Typography>
-          </Box>
+          <Typography sx={styles.cardTitleCentered}>{title}</Typography>
 
-          <Typography sx={{ fontWeight: 600, mb: 0.5, mt: -5 }}>
+          <Typography sx={{ fontWeight: 600, mb: 0.5, mt: 1 }}>
             Especificação técnica:
           </Typography>
 
@@ -388,7 +388,8 @@ function Itens() {
         onClose={handleCloseModalAdd}
         idUser={idUser}
         itemId={selectedItem}
-        onSuccess={() => handleFilter(page)} // Chama o filtro na página atual após o sucesso
+        // 👇 AQUI ESTÁ A CHAVE: Recarrega a lista de itens E as categorias
+        onSuccess={handleAddModalSuccess}
       />
     </Box>
   );
@@ -433,23 +434,12 @@ const styles = {
     padding: "18px",
     backgroundColor: "#fff",
   },
-  iconContainer: {
-    display: "inline-flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: 50,
-    width: 50,
-    borderRadius: "50%",
-    backgroundColor: "rgba(0,0,0,0.05)",
-    marginBottom: 10,
-  },
-  icon: { fontSize: 34, color: "#6c757d" },
-  cardTitle: {
+  cardTitleCentered: {
     fontSize: "1.4rem",
     fontWeight: 700,
     color: "#222",
-    mt: 0.5,
-    ml: 5,
+    textAlign: "center",
+    marginBottom: 2,
   },
   specs: {
     fontSize: "0.95rem",
@@ -465,7 +455,6 @@ const styles = {
     borderRadius: "18px",
     padding: "6px 18px",
   },
-  // 🛑 NOVO: Estilo para a caixa da paginação (igual ao UserManagement)
   paginationBox: {
     display: "flex",
     justifyContent: "center",
