@@ -95,7 +95,7 @@ function Itens() {
     } catch (error) {
       setErrorMessage(
         error.response?.data?.error ||
-          "Erro ao carregar os itens. Verifique o console."
+          "Erro ao carregar os itens."
       );
       setItens([]);
       setTotalPages(1);
