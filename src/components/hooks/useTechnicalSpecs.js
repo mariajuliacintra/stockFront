@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import sheets from "../../services/axios";
 
-/**
- * Hook para gerenciar especificações técnicas (fetch e criação).
- */
+//  * Hook para gerenciar especificações técnicas (fetch e criação).
+
 export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
   const [availableSpecs, setAvailableSpecs] = useState([]);
   const [savingNewSpec, setSavingNewSpec] = useState(false);
   const [newSpecName, setNewSpecName] = useState("");
+  const [refresh, setRefresh] = useState(0);
 
   const fetchTechnicalSpecs = async () => {
     try {
@@ -24,10 +24,9 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
   };
 
   const handleNewSpec = async () => {
-    if (!newSpecName.trim()) return;
+    if (!newSpecName.trim()) return null;
 
     const technicalSpecKey = newSpecName.trim();
-
     const exists = availableSpecs.some(
       (spec) =>
         spec.technicalSpecKey.toLowerCase() === technicalSpecKey.toLowerCase()
@@ -41,7 +40,7 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
         type: "error",
       });
       setNewSpecName("");
-      return;
+      return null;
     }
 
     try {
@@ -52,20 +51,25 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
       const data = response.data;
 
       if (response.data.success) {
-        setNewSpecName("");
+        // NOTA: Deixamos o setNewSpecName para o final, mas movemos ele para aqui
+        // para garantir que o input de criação seja limpo.
+        setNewSpecName(""); // IMPORTANTE: Chamar fetchTechnicalSpecs APÓS limpar newSpecName
 
+        // e APÓS a criação bem-sucedida.
         await fetchTechnicalSpecs();
 
-        // Esperando a chave 'idTechnicalSpec' do backend
         const createdSpec = data.technicalSpec?.[0];
         const createdId = createdSpec?.technicalSpecId;
-;
+
+        // Ajuste na Lógica de Adicionar à lista `technicalSpecs`
+        // Se a API não retornar a chave (problema no backend), usamos a chave que criamos (local).
+        const keyForDisplay = createdSpec?.technicalSpecKey || technicalSpecKey;
         if (createdId && createdId > 0) {
           setTechnicalSpecs((prevSpecs) => [
             ...prevSpecs,
             {
               idTechnicalSpec: createdId,
-              technicalSpecKey: createdSpec.technicalSpecKey,
+              technicalSpecKey: keyForDisplay, // <--- USANDO A CHAVE GARANTIDA
               value: "",
             },
           ]);
@@ -77,15 +81,15 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
           });
           return createdSpec;
         } else {
-          // Este erro captura problemas de AUTO_INCREMENT ou retorno incorreto do ID
           setModalInfo({
             open: true,
             title: "Erro de Retorno de ID!",
             message:
-              error.response.data.details ||
-              "Erro ao criar especificação técnica",
+              data.message ||
+              "Erro ao criar especificação técnica: ID não retornado.",
             type: "error",
           });
+          return null;
         }
       } else {
         setModalInfo({
@@ -94,9 +98,9 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
           message: data.message || "Falha ao criar especificação.",
           type: "error",
         });
+        return null;
       }
     } catch (erro) {
-      // Tratamento de erro aprimorado para exibir detalhes do erro SQL, se disponíveis
       const serverErrorDetail =
         erro.response?.data?.details ||
         "Erro de Internal Server (500). Verifique o log do seu servidor.";
@@ -106,8 +110,10 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
         message: `Falha ao criar especificação: ${serverErrorDetail}`,
         type: "error",
       });
+      return null;
     } finally {
       setSavingNewSpec(false);
+      setRefresh(refresh + 1);
     }
   };
 
@@ -115,7 +121,7 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
     if (isOpen) {
       fetchTechnicalSpecs();
     }
-  }, [isOpen]);
+  }, [isOpen, refresh]);
 
   return {
     availableSpecs,

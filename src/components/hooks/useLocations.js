@@ -11,6 +11,7 @@ export const useLocations = (isOpen, setModalInfo) => {
     const [locations, setLocations] = useState([]);
     const [loadingLocations, setLoadingLocations] = useState(true);
     const [savingNewLocation, setSavingNewLocation] = useState(false);
+    const [refresh, setRefresh] = useState(0);
 
     const fetchLocations = async () => {
         try {
@@ -71,6 +72,7 @@ export const useLocations = (isOpen, setModalInfo) => {
             return null;
         } finally {
             setSavingNewLocation(false);
+            setRefresh(refresh+1)
         }
     };
 
@@ -78,7 +80,7 @@ export const useLocations = (isOpen, setModalInfo) => {
         if (isOpen) {
             fetchLocations();
         }
-    }, [isOpen]);
+    }, [isOpen,refresh]);
 
     return { locations, loadingLocations, savingNewLocation, fetchLocations, createLocation };
 };

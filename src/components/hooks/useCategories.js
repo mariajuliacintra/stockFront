@@ -11,6 +11,7 @@ export const useCategories = (isOpen, setModalInfo) => {
     const [categories, setCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [savingNewCategory, setSavingNewCategory] = useState(false);
+    const [refresh, setRefresh] = useState(0);
 
     const fetchCategories = async () => {
         try {
@@ -68,6 +69,7 @@ export const useCategories = (isOpen, setModalInfo) => {
             return null;
         } finally {
             setSavingNewCategory(false);
+            setRefresh(refresh+1);
         }
     };
 
@@ -75,7 +77,7 @@ export const useCategories = (isOpen, setModalInfo) => {
         if (isOpen) {
             fetchCategories();
         }
-    }, [isOpen]);
+    }, [isOpen,refresh]);
 
     return { categories, loadingCategories, savingNewCategory, fetchCategories, createCategory };
 };

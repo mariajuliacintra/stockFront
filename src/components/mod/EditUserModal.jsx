@@ -60,7 +60,7 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
     const [editedUser, setEditedUser] = useState(user);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {   
+    useEffect(() => {   
         setEditedUser(user);
     }, [user]);
 
@@ -74,6 +74,10 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
             onAlert('Não foi possível encontrar o usuário para atualização.', 'error');
             return;
         }
+        
+        const originalRole = user.role;
+        const newRole = editedUser.role;
+        const roleWasChanged = originalRole !== newRole;
 
         setLoading(true);
         try {
@@ -85,13 +89,21 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
             const response = await sheets.updateUser(editedUser.idUser, dataToUpdate);
 
             if (response.data.success) {
-                onAlert(response.data.message || 'Usuário atualizado com sucesso!', 'success'); 
                 
                 const updatedUserData = {
                     idUser: editedUser.idUser,
                     name: editedUser.name,
                     role: editedUser.role,
                 };
+                onAlert(response.data.message || 'Usuário atualizado com sucesso!', 'success'); 
+                if (roleWasChanged) {
+                    setTimeout(() => {
+                        onAlert(
+                            'Privilégios do usuário foram atualizados! Por favor, deslogue e logue novamente no sistema para que os novos privilégios sejam aplicados.', 
+                            'warning'
+                        );
+                    }, 2000);
+                }
                 
                 updateLocalStorageRole(updatedUserData); 
                 
