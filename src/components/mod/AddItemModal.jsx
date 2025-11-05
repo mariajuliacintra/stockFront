@@ -73,7 +73,6 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
     const {
         availableSpecs, savingNewSpec, newSpecName, setNewSpecName, fetchTechnicalSpecs, handleNewSpec
     } = useTechnicalSpecs(open, setModalInfo, setTechnicalSpecs);
-    // ------------------------------------------
 
 
     useEffect(() => {
@@ -455,7 +454,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
                     {addingNewSpec && userRole === "manager" && (
                         <Box display="flex" gap={1} alignItems="center" mt={2} p={1} sx={{ border: '1px solid #ccc', borderRadius: '4px' }}>
                             <TextField
-                                label="Nova Especificação"
+                                label={"Nova Especificação"}
                                 value={newSpecName}
                                 onChange={(e) => setNewSpecName(e.target.value)}
                                 fullWidth
