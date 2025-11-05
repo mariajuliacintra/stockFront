@@ -399,7 +399,6 @@ export default Itens;
 
 // Estilos
 const styles = {
-  // 🛑 Adiciona a cor de marca para ser usada na paginação
   senaiRed: "#A31515",
 
   pageContainer: {
