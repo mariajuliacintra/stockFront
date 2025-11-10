@@ -12,7 +12,7 @@ function Home() {
 
   const downloadApk = () => {
     window.location.href =
-      "https://senaiestoque.duckdns.org/api/download/apk/app.apk";
+      "https://expo.dev/accounts/mariafernandacintra/projects/senai-estoque-v1/builds/01fc6d25-9768-4cf7-912b-2332226834f0";
   };
 
   return (
