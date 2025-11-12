@@ -4,15 +4,11 @@ import {
     InputLabel, Select, MenuItem, CircularProgress, IconButton, Divider,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-// Assumindo que você corrigirá o caminho abaixo:
 import CustomModal from "./CustomModal"; 
 import sheets from "../../services/axios"; 
-
-// --- Importa os Hooks ---
 import { useCategories } from "../hooks/useCategories";
 import { useLocations } from "../hooks/useLocations";
 import { useTechnicalSpecs } from "../hooks/useTechnicalSpecs";
-// -----------------------
 
 // --- Estilos Globais para o Modal ---
 const modalStyle = {
@@ -34,11 +30,9 @@ const primaryButtonStyles = {
     "&:hover": { backgroundColor: "#7c0f0f" },
 };
 
-// Placeholder para o seu CustomModal importado
 const CustomModalComponent = ({ open, onClose, title, message, type = "info" }) => {
     return <CustomModal open={open} onClose={onClose} title={title} message={message} type={type} />;
 };
-// -----------------------------------------------------------------
 
 export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
     const [formData, setFormData] = useState({});
@@ -53,7 +47,6 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
     const [imagem, setImagem] = useState(null);
     const [userRole, setUserRole] = useState("");
 
-    // --- Estados para Modais de Criação ---
     const [addingNewCategory, setAddingNewCategory] = useState(false);
     const [addingNewLocation, setAddingNewLocation] = useState(false);
     const [newLocationName, setNewLocationName] = useState("");
@@ -61,7 +54,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
     const [addingNewSpec, setAddingNewSpec] = useState(false);
 
 
-    // --- Uso dos Hooks para Lógica de Dados ---
+    // Uso dos Hooks para Lógica de Dados
     const { 
         categories, loadingCategories, savingNewCategory, fetchCategories, createCategory 
     } = useCategories(open, setModalInfo);
@@ -80,13 +73,12 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
         setUserRole(role);
     }, []);
 
-    // Função de alteração de formulário (mantida)
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    // Função de seleção de Specs (mantida)
+    // Função de seleção de Specs
     const handleSelectSpec = (id) => {
         const spec = availableSpecs.find((s) => s.idTechnicalSpec === id);
         if (spec && !technicalSpecs.some((s) => s.idTechnicalSpec === id)) {
@@ -94,7 +86,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
         }
     };
 
-    // Funções de specs selecionadas (mantidas)
+    // Funções de specs selecionadas
     const handleTechnicalChange = (id, value) => {
         setTechnicalSpecs((prev) =>
             prev.map((spec) =>
@@ -108,7 +100,6 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
 
     const handleFileChange = (e) => setImagem(e.target.files[0]);
 
-    // Função de Submissão (mantida)
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);

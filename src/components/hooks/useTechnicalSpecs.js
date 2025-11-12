@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import sheets from "../../services/axios";
 
-//  * Hook para gerenciar especificações técnicas (fetch e criação).
 
 export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
   const [availableSpecs, setAvailableSpecs] = useState([]);
@@ -51,25 +50,19 @@ export const useTechnicalSpecs = (isOpen, setModalInfo, setTechnicalSpecs) => {
       const data = response.data;
 
       if (response.data.success) {
-        // NOTA: Deixamos o setNewSpecName para o final, mas movemos ele para aqui
-        // para garantir que o input de criação seja limpo.
-        setNewSpecName(""); // IMPORTANTE: Chamar fetchTechnicalSpecs APÓS limpar newSpecName
+        setNewSpecName("");
 
-        // e APÓS a criação bem-sucedida.
         await fetchTechnicalSpecs();
 
         const createdSpec = data.technicalSpec?.[0];
         const createdId = createdSpec?.technicalSpecId;
-
-        // Ajuste na Lógica de Adicionar à lista `technicalSpecs`
-        // Se a API não retornar a chave (problema no backend), usamos a chave que criamos (local).
         const keyForDisplay = createdSpec?.technicalSpecKey || technicalSpecKey;
         if (createdId && createdId > 0) {
           setTechnicalSpecs((prevSpecs) => [
             ...prevSpecs,
             {
               idTechnicalSpec: createdId,
-              technicalSpecKey: keyForDisplay, // <--- USANDO A CHAVE GARANTIDA
+              technicalSpecKey: keyForDisplay,
               value: "",
             },
           ]);

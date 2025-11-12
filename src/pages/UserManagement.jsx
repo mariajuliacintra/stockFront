@@ -26,13 +26,12 @@ import DeleteUserModal from "../components/mod/DeleteUserModal";
 import CreateUserModal from "../components/mod/CreateUserModal";
 import HeaderAdm from "../components/layout/HeaderAdm";
 
-// Define o limite de usuários por página: 25 (Sincronizado com o back-end)
 const USERS_PER_PAGE = 15;
 
 function UserManagement() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true); // ESTADOS DE PAGINAÇÃO
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -101,7 +100,7 @@ function UserManagement() {
     } finally {
       setLoading(false);
     }
-  }; // Handler para a mudança de página no componente Pagination
+  };
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);

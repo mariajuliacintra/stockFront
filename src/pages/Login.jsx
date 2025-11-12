@@ -26,9 +26,9 @@ import {
 import CustomModal from "../components/mod/CustomModal";
 
 function Login() {
-  const styles = getStyles(); // CORREÇÃO 1: Removida a declaração redundante/duplicada do estado 'loading'
+  const styles = getStyles();
   const [user, setUser] = useState({ email: "", password: "" });
-  const [mostrarSenha, setMostrarSenha] = useState(false); // CORREÇÃO 2: Mantida APENAS a declaração correta do estado 'loading'
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
@@ -85,9 +85,8 @@ function Login() {
   };
 
   async function LoginUser() {
-    setLoading(true); // 1. Ativa o loading
+    setLoading(true);
     try {
-      // Linha redundante removida: setLoading(true);
       const response = await api.postLogin(user);
       const userData = response.data.user?.[0];
 
@@ -110,9 +109,8 @@ function Login() {
         error.response?.data?.error || "Ocorreu um erro ao fazer login.";
       showAlert("error", errorMessage);
     } finally {
-      // 2. Desativa o loading após a conclusão (sucesso ou erro)
       setLoading(false);
-    } // Linha redundante removida: setLoading(false);
+    }
   }
 
   return (

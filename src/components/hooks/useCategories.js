@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import sheets from '../../services/axios'; // Assumindo que o arquivo axios está em '../services/axios'
+import sheets from '../../services/axios';
 
 /**
  * Hook para gerenciar categorias (fetch e criação).
@@ -36,7 +36,6 @@ export const useCategories = (isOpen, setModalInfo) => {
         try {
             setSavingNewCategory(true);
 
-            // A chamada agora está correta, enviando o objeto que o backend espera: { categoryValue: "Nome" }
             const response = await sheets.createCategory({
                 categoryValue: categoryName.trim(),
             });
@@ -49,7 +48,7 @@ export const useCategories = (isOpen, setModalInfo) => {
                     message: "Categoria criada com sucesso!",
                     type: "success",
                 });
-                return data.data?.[0]; // Retorna o objeto da categoria criada
+                return data.data?.[0];
             } else {
                 setModalInfo({
                     open: true,

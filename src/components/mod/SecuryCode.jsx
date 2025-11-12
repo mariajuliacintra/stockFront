@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, TextField, CircularProgress, Box, IconButton, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import { Lock } from "@mui/icons-material"; // Ícone para o campo de código
+import { Lock } from "@mui/icons-material"; 
 import sheets from "../../services/axios";
 
 export default function SecuryCode({ email, onResult, onClose }) {
@@ -15,7 +15,7 @@ export default function SecuryCode({ email, onResult, onClose }) {
             const response = await sheets.securyCodeApi(code, email);
             const mensagem = response.data?.message;
 
-            if (response.data?.success) { // Assumindo que sua API retorna 'success' em vez de apenas 'message'
+            if (response.data?.success) {
                 onResult(true, mensagem);
             } else {
                 onResult(false, mensagem);
@@ -33,11 +33,11 @@ export default function SecuryCode({ email, onResult, onClose }) {
             sx={{
                 width: 400,
                 bgcolor: "white",
-                borderRadius: '15px', // Coerente com as outras modais
+                borderRadius: '15px',
                 p: 4,
                 position: "relative",
                 textAlign: "center",
-                boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)", // Coerente com as outras modais
+                boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)", 
             }}
         >
             <IconButton
@@ -46,7 +46,7 @@ export default function SecuryCode({ email, onResult, onClose }) {
                     position: "absolute", 
                     top: 8, 
                     right: 8, 
-                    color: "rgba(255, 0, 0, 1)", // Cor vermelha consistente
+                    color: "rgba(255, 0, 0, 1)", 
                     "&:hover": {
                         bgcolor: "rgba(255, 0, 0, 0.05)",
                     }
@@ -70,7 +70,7 @@ export default function SecuryCode({ email, onResult, onClose }) {
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, '').substring(0, 6))} // Limita a 6 dígitos numéricos
                 sx={registerFieldStyles.textField}
-                inputProps={{ style: { textAlign: 'center', letterSpacing: '3px', marginLeft:"-30px"} }} // Estilização para o código
+                inputProps={{ style: { textAlign: 'center', letterSpacing: '3px', marginLeft:"-30px"} }}
                 InputProps={{
                     startAdornment: (
                         <Box sx={{display: 'flex', alignItems: 'center' }}>
@@ -85,11 +85,10 @@ export default function SecuryCode({ email, onResult, onClose }) {
                 variant="contained"
                 fullWidth
                 onClick={handleVerify}
-                disabled={loading || code.length < 6} // Desabilita se não tiver 6 dígitos
-                // Estilos do buttonCadastro (vermelho principal)
+                disabled={loading || code.length < 6}
                 sx={{
                     ...registerFieldStyles.buttonCadastro,
-                    height: 40, // Altura um pouco maior
+                    height: 40, 
                     mt: 1,
                 }}
             >

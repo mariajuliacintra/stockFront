@@ -21,7 +21,6 @@ import {
 import sheets from '../../services/axios';
 import SecuryCode from './SecuryCode';
 
-// Defina as opções de cargo fora do componente para melhor organização
 const ROLES = [
     { value: 'user', label: 'Comum' },
     { value: 'manager', label: 'Admin' },
@@ -29,7 +28,6 @@ const ROLES = [
 
 function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
     const registerFieldStyles = getRegisterFieldStyles();
-    // Cor primária do seu tema
     const PRIMARY_RED = "rgba(255, 0, 0, 1)"; 
     
     const [name, setName] = useState('');
@@ -45,21 +43,10 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
 
 
     const handleCreateUser = async () => {
-        // Validação básica no front
-        if (!name || !email || !password || !confirmPassword || !role) {
-            onAlert('Por favor, preencha todos os campos obrigatórios.', 'error');
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            onAlert('As senhas digitadas não coincidem.', 'error');
-            return;
-        }
 
         setLoading(true);
 
         try {
-            // Chamando o método de registro/criação
             const response = await sheets.registerUserByManager({
                 name,
                 email,
@@ -71,7 +58,6 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
             if (response.data.success) {
                 setShowCodeModal(true);
             } else {
-                // Se a API retornar sucesso=false
                 onAlert(response.data.error || 'Erro ao tentar criar usuário.', 'error');
             }
         } catch (error) {
@@ -102,7 +88,6 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
     };
     
     const handleClose = () => {
-        // Resetar todos os estados ao fechar a modal
         setName('');
         setEmail('');
         setPassword('');
@@ -235,9 +220,6 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
                     required 
                     sx={{
                         ...registerFieldStyles.textField,
-                        // ALTERAÇÃO 2: Estilo específico para o Select. 
-                        // O Select Icon (a seta) não tem uma prop 'sx' direta,
-                        // mas podemos estilizar o componente através do `SelectProps` e do `className` no `getStyles`.
                     }}
                     InputProps={{
                         startAdornment: (
@@ -248,21 +230,18 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
                     }}
                     SelectProps={{
                         MenuProps: {
-                            // Estilo para o menu suspenso (opcional)
                             PaperProps: {
                                 sx: {
                                     borderRadius: '8px',
                                 }
                             }
                         },
-                        // Usando InputProps para garantir que o estilo do TextField seja aplicado
-                        // e que a cor da seta use a cor de foco do seu tema.
                         sx: {
                             "& .MuiSelect-icon": {
-                                color: "gray", // Cor do ícone padrão
+                                color: "gray",
                             },
                             "&.Mui-focused .MuiSelect-icon": {
-                                color: PRIMARY_RED, // Cor do ícone quando focado
+                                color: PRIMARY_RED,
                             }
                         }
                     }}
@@ -309,7 +288,7 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
                             width: 'auto', 
                             padding: '0 16px', 
                             mt: 0,
-                            height: 30, // Consistente com o botão Cancelar
+                            height: 30, 
                         }}
                         disabled={loading || !name || !email || !password || !confirmPassword || !role} 
                     >
@@ -339,7 +318,6 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
     );
 }
 
-// Estilos específicos do Modal (a caixa que envolve o formulário)
 const modalStyles = {
     position: 'absolute',
     top: '50%',
@@ -354,7 +332,6 @@ const modalStyles = {
     flexDirection: 'column',
 };
 
-// Função para extrair e adaptar os estilos de TextField e Button do seu componente Register
 function getRegisterFieldStyles() {
     const PRIMARY_RED = "rgba(255, 0, 0, 1)";
     const FOCUS_RED_HALF = "rgba(255, 0, 0, 0.5)";

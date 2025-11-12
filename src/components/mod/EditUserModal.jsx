@@ -17,7 +17,6 @@ import {
 import sheets from '../../services/axios';
 
 
-// --- Função de Utilidade para o LocalStorage (Sincronização do Header) ---
 const updateLocalStorageRole = (updatedUser) => {
     try {
         const currentUserString = localStorage.getItem('user');
@@ -40,7 +39,7 @@ const updateLocalStorageRole = (updatedUser) => {
 };
 
 
-// Definição dos estilos baseados no seu Register/CreateUserModal
+
 const modalStyles = {
     position: 'absolute',
     top: '50%',

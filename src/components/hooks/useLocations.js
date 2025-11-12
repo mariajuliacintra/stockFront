@@ -35,7 +35,6 @@ export const useLocations = (isOpen, setModalInfo) => {
         try {
             setSavingNewLocation(true); 
 
-            // A chamada agora está correta, enviando o objeto que o backend espera: { place: "Nome", code: "Código" }
             const response = await sheets.createLocation({ 
                 place: locationName.trim(), 
                 code: locationCode.trim(),   

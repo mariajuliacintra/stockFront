@@ -42,14 +42,12 @@ export default function ModalDescription({
   const [isDeleting, setIsDeleting] = useState(false);
   const userRole = localStorage.getItem("userRole");
 
-  // 🛑 NOVO: Define as ações disponíveis baseado no role
   const getAvailableActions = () => {
     let acoes = [
       { label: "Entrada", value: "adicionar" },
       { label: "Retirar", value: "retirar" },
     ];
     if (userRole === 'manager') {
-      // Adiciona a opção de reajuste apenas para gerentes
       acoes.push({ label: "Reajustar Total", value: "reajustar" });
     }
     return acoes;
@@ -64,13 +62,11 @@ export default function ModalDescription({
       if (item) {
         setItemDetails(item);
         
-        // Lógica para obter o idLot principal
-        // Assumindo que o primeiro lote é o principal ou o único usado para ações
         const mainLot = (Array.isArray(item.lots) && item.lots.length > 0) 
           ? item.lots[0] 
           : (item.lots?.idLot ? item.lots : null);
         
-        setIdLot(mainLot?.idLot ?? mainLot?.id ?? ""); // Garantindo que pega o ID correto
+        setIdLot(mainLot?.idLot ?? mainLot?.id ?? "");
       } else {
         onError?.("Item não encontrado.");
       }
@@ -185,7 +181,6 @@ export default function ModalDescription({
       let isAjustAction = false;
 
       if (form.action === "reajustar") {
-        // Para reajuste, a quantidade é o novo total desejado
         finalQuantityToSend = quantityInput;
         isAjustAction = true;
         if (userRole !== 'manager') {
@@ -193,18 +188,16 @@ export default function ModalDescription({
           return;
         }
       } else if (form.action === "retirar") {
-        // Para retirada, a quantidade é negativa para o backend
         finalQuantityToSend = quantityInput * -1;
         isAjustAction = false;
-      } else { // "adicionar" (Entrada)
-        // Para adição, a quantidade é positiva
+      } else { 
         finalQuantityToSend = quantityInput;
         isAjustAction = false;
       }
 
       const payload = {
         quantity: finalQuantityToSend,
-        isAjust: isAjustAction, // 🛑 Sinaliza se é um reajuste total
+        isAjust: isAjustAction,
         fkIdUser: idUser,
       };
 
@@ -331,7 +324,7 @@ export default function ModalDescription({
                   inputProps={{ min: 1 }}
                   size="small"
                   variant="outlined"
-                  sx={{ mb: 2 }} // Espaçamento extra abaixo
+                  sx={{ mb: 2 }}
                 />
 
                 {/* Campo 2: Tipo da Ação */}
