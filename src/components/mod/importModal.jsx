@@ -154,12 +154,6 @@ const ImportModal = ({ open, onClose, data, onAlert, onSuccess }) => {
     const handleSubmitImport = async () => {
         const userId = getUserId();
         
-        // VALIDAÇÕES CRÍTICAS
-        if (!userId) {
-             onAlert('Sessão expirada. Por favor, faça login novamente.', 'error');
-             onClose();
-             return;
-        }
         if (editableRows.some(row => row.isMissingCategory)) {
             onAlert('Por favor, selecione uma Categoria para todos os itens pendentes.', 'warning');
             return;
@@ -211,7 +205,6 @@ const ImportModal = ({ open, onClose, data, onAlert, onSuccess }) => {
                 }
             });
 
-            // Envia null se não houver technicalSpecs
             const finalTechnicalSpecs = Object.keys(technicalSpecsObject).length > 0 
                                             ? technicalSpecsObject 
                                             : null; 
@@ -428,7 +421,7 @@ const ImportModal = ({ open, onClose, data, onAlert, onSuccess }) => {
                                                         <MenuItem 
                                                             key={spec.idTechnicalSpec} 
                                                             value={spec.idTechnicalSpec}
-                                                            // Verifica se a Spec já existe na linha (se existe, desabilita)
+                                                            // Verifica se a Spec já existe na linha
                                                             disabled={row[spec.technicalSpecKey] !== undefined}
                                                         >
                                                             {spec.technicalSpecKey}

@@ -22,7 +22,7 @@ import Footer from "../components/layout/Footer";
 import api from "../services/axios";
 import ModalDescription from "../components/mod/ModalDescription";
 import AddItemModal from "../components/mod/AddItemModal";
-import CustomModal from "../components/mod/CustomModal"; // Certifique-se de que este import está correto
+import CustomModal from "../components/mod/CustomModal";
 
 const DEFAULT_LIMIT = 15;
 
@@ -138,7 +138,6 @@ function Itens() {
     setModalAddOpen(false);
   };
 
-  // Função de sucesso do modal, atualizada para recarregar tudo
   const handleAddModalSuccess = () => {
     handleFilter(page); // Recarrega a lista principal de itens
     fetchCategories(); // Recarrega as categorias para o Drawer/Filtro
@@ -212,7 +211,7 @@ function Itens() {
   return (
     <Box sx={styles.pageContainer}>
       <HeaderPrincipal />
-      <Box //scroll
+      <Box
         sx={{
           ...styles.content,
           overflowY: "auto",
@@ -340,7 +339,7 @@ function Itens() {
               count={totalPages}
               page={page}
               onChange={handlePageChange}
-              color="primary" // 🛑 ESTILIZAÇÃO CORRIGIDA PARA USAR A CONSTANTE senaiRed
+              color="primary"
               sx={{
                 "& .MuiPaginationItem-root": { color: styles.senaiRed },
                 "& .Mui-selected": {
@@ -388,7 +387,6 @@ function Itens() {
         onClose={handleCloseModalAdd}
         idUser={idUser}
         itemId={selectedItem}
-        // 👇 AQUI ESTÁ A CHAVE: Recarrega a lista de itens E as categorias
         onSuccess={handleAddModalSuccess}
       />
     </Box>

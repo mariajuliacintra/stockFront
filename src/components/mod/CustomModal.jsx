@@ -182,7 +182,6 @@ export default function CustomModal({
       BackdropProps={{
         timeout: 300,
       }}
-      // Apply overlay styles only when it's not a small message (toast)
       sx={isSmallMessage ? {} : styles.overlay}
     >
       {isSmallMessage ? (
@@ -204,7 +203,6 @@ export default function CustomModal({
           </Box>
         </Fade>
       ) : (
-        // For standard modals
         <Fade in={open} timeout={{ enter: 300, exit: 300 }}>
           <Box sx={styles.container}>
             {IconComponent && (
