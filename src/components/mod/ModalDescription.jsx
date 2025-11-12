@@ -89,7 +89,7 @@ export default function ModalDescription({
   }, [open]);
 
   useEffect(() => {
-    if (open && itemId) fetchItemById(itemId);
+    if (open && itemId) fetchItemById(itemId); 
   }, [open, itemId, fetchItemById]);
 
   const handleChange = (e) => {
@@ -153,7 +153,7 @@ export default function ModalDescription({
 
       if (response.data?.success) {
         onSuccess?.(response.data.message || `Item "${itemDetails.name}" excluído com sucesso!`);
-        onItemDeleteSuccess?.(); 
+        onItemDeleteSuccess?.();
         onClose?.();
       } else {
         onError?.(response.data?.details || "Ocorreu um erro na exclusão.");

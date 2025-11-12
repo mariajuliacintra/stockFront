@@ -107,6 +107,9 @@ function Itens() {
     setPage(newPage);
     handleFilter(newPage);
   };
+  const handleItemDeleteSuccess = () => {
+    handleFilter(page); 
+  };
 
   const handleOpenModal = (itemId) => {
     setSelectedItem(itemId);
@@ -360,6 +363,7 @@ function Itens() {
         idUser={idUser}
         onSuccess={(msg) => setSuccessMessage(msg)}
         onError={(msg) => setErrorModalMessage(msg)}
+        onItemDeleteSuccess={handleItemDeleteSuccess}
       />
       {/* Modal de sucesso */}
       {successMessage && (
