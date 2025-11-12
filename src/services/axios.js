@@ -90,8 +90,7 @@ const sheets = {
   postRegister: (user) => api.post(`user/register`, user),
   securyCodeApi: (code, email) =>
     api.post(`user/verify-register`, { code, email }),
-  postVerifyRecoveryPassword: (email) =>
-    api.post("user/verify-recovery-password", email),
+    postVerifyUpdate: (data) => api.post(`user/verify-update`, data), // ESTE É O CORRETO PARA ATUALIZAÇÃO
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),

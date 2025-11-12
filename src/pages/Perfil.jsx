@@ -51,6 +51,7 @@ function Perfil() {
                 const userData = response.data.user[0];
                 setUserProfile({ name: userData.name, email: userData.email });
             } else {
+                // Lógica de tratamento se o usuário não for encontrado ou resposta inesperada
             }
         } catch (e) {
             console.error("Erro na requisição da API:", e.response?.data?.error || "Erro desconhecido");
@@ -61,6 +62,7 @@ function Perfil() {
         document.title = "Perfil | SENAI";
         fetchUserProfile();
     }, [fetchUserProfile]);
+
 
     const handleOpenModal = () => {
         setStatus({ message: "", error: "", loading: false });
@@ -118,7 +120,7 @@ function Perfil() {
                 navigate("/atualizarperfil");
             } else {
                 setStatus({
-                    error: response.data.message || response.data.error,
+                    error: response.data.message || response.data.error || "Login falhou. Senha incorreta.",
                     loading: false,
                 });
             }
@@ -304,20 +306,14 @@ function getStyles() {
             fontSize: "20px",
             fontWeight: "bold",
             mb: 1.5,
-            color: "#333",
-            textAlign: "center",
         },
         textField: {
-            mb: 1,
+            mb: 1.5,
             "& .MuiOutlinedInput-root": {
                 borderRadius: "8px",
                 backgroundColor: "#f5f5f5",
-                "& fieldset": {
-                    borderColor: "transparent",
-                },
-                "&:hover fieldset": {
-                    borderColor: "transparent",
-                },
+                "& fieldset": { borderColor: "transparent" },
+                "&:hover fieldset": { borderColor: "transparent" },
                 "&.Mui-focused fieldset": {
                     borderColor: "rgba(255, 0, 0, 0.5)",
                     borderWidth: "1px",
@@ -331,20 +327,12 @@ function getStyles() {
             "& .MuiInputLabel-root": {
                 fontSize: "15px",
                 color: "gray",
-                "&.Mui-focused": {
-                    color: "rgba(255, 0, 0, 1)",
-                },
+                "&.Mui-focused": { color: "rgba(255, 0, 0, 1)" },
             },
         },
         button: {
-            "&.MuiButton-root": {
-                border: "none",
-                boxShadow: "none",
-                "&:hover": {
-                    backgroundColor: "rgba(200, 0, 0, 1)",
-                },
-            },
             mt: 2,
+            mb: 1,
             color: "white",
             backgroundColor: "rgba(255, 0, 0, 1)",
             width: "100%",
@@ -353,18 +341,18 @@ function getStyles() {
             fontSize: 14,
             borderRadius: 8,
             textTransform: "none",
+            "&.MuiButton-root": {
+                border: "none",
+                boxShadow: "none",
+                "&:hover": { backgroundColor: "rgba(200, 0, 0, 1)" },
+            },
         },
         linkButton: {
-            color: "rgba(255, 0, 0, 1)",
-            backgroundColor: "transparent",
-            fontWeight: "bold",
-            fontSize: 13,
-            textDecoration: "none",
-            mt: 0.5,
             textTransform: "none",
+            fontSize: "14px",
+            color: "rgba(255, 0, 0, 1)",
             "&:hover": {
                 backgroundColor: "transparent",
-                color: "rgba(200, 0, 0, 1)",
                 textDecoration: "underline",
             },
         },
@@ -373,31 +361,49 @@ function getStyles() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "300px",
+            width: 300,
             bgcolor: "background.paper",
-            border: "1px solid #c0c0c0",
             boxShadow: 24,
             p: 4,
             borderRadius: "15px",
-            textAlign: "center",
+            border: "1px solid #c0c0c0",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            position: "relative",
         },
         modalTitle: {
             mb: 2,
             fontWeight: "bold",
             color: "#333",
+            textAlign: "center",
         },
         modalTextField: {
             mb: 2,
+            width: "100%",
             "& .MuiOutlinedInput-root": {
                 borderRadius: "8px",
                 backgroundColor: "#f5f5f5",
+                "& fieldset": { borderColor: "transparent" },
+                "&:hover fieldset": { borderColor: "transparent" },
+                "&.Mui-focused fieldset": {
+                    borderColor: "rgba(255, 0, 0, 0.5)",
+                    borderWidth: "1px",
+                },
+            },
+            "& .MuiInputBase-input": {
+                padding: "8px 10px",
+                fontSize: "14px",
+                color: "#333",
+            },
+            "& .MuiInputLabel-root": {
+                fontSize: "15px",
+                color: "gray",
+                "&.Mui-focused": { color: "rgba(255, 0, 0, 1)" },
             },
         },
         modalButton: {
-            mt: 1,
+            mt: 3,
             color: "white",
             backgroundColor: "rgba(255, 0, 0, 1)",
             width: "100%",
@@ -406,6 +412,11 @@ function getStyles() {
             fontSize: 14,
             borderRadius: 8,
             textTransform: "none",
+            "&.MuiButton-root": {
+                border: "none",
+                boxShadow: "none",
+                "&:hover": { backgroundColor: "rgba(200, 0, 0, 1)" },
+            },
         },
         closeButton: {
             position: "absolute",
@@ -415,4 +426,5 @@ function getStyles() {
         },
     };
 }
+
 export default Perfil;
