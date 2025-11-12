@@ -4,8 +4,8 @@ import {
     InputLabel, Select, MenuItem, CircularProgress, IconButton, Divider,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CustomModal from "./CustomModal"; 
-import sheets from "../../services/axios"; 
+import CustomModal from "./CustomModal";
+import sheets from "../../services/axios"; // Assumindo que este é seu cliente axios/sheets
 import { useCategories } from "../hooks/useCategories";
 import { useLocations } from "../hooks/useLocations";
 import { useTechnicalSpecs } from "../hooks/useTechnicalSpecs";
@@ -55,12 +55,12 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
 
 
     // Uso dos Hooks para Lógica de Dados
-    const { 
-        categories, loadingCategories, savingNewCategory, fetchCategories, createCategory 
+    const {
+        categories, loadingCategories, savingNewCategory, fetchCategories, createCategory
     } = useCategories(open, setModalInfo);
 
-    const { 
-        locations, loadingLocations, savingNewLocation, fetchLocations, createLocation 
+    const {
+        locations, loadingLocations, savingNewLocation, fetchLocations, createLocation
     } = useLocations(open, setModalInfo);
 
     const {
@@ -143,6 +143,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
         let newItemId = null;
 
         try {
+            // 1. Criação do Item principal (JSON)
             const response = await sheets.postAddItem(payload);
             const data = response.data;
 
@@ -181,7 +182,11 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
 
         if (imagem && newItemId) {
             try {
-                await sheets.insertImage(newItemId, imagem);
+                const imageData = new FormData();
+                imageData.append('image', imagem); 
+                await sheets.insertImageWithFormData(newItemId, imageData); 
+                await sheets.insertImage(newItemId, imagem); 
+
             } catch (err) {
                 setModalInfo({
                     open: true,
