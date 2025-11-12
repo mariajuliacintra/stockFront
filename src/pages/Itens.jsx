@@ -93,8 +93,7 @@ function Itens() {
       setErrorMessage(itensList.length === 0 ? "Nenhum item encontrado." : "");
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.error ||
-          "Erro ao carregar os itens."
+        error.response?.data?.error || "Erro ao carregar os itens."
       );
       setItens([]);
       setTotalPages(1);
@@ -405,23 +404,43 @@ const styles = {
     flexDirection: "column",
     backgroundColor: "#E4E4E4",
   },
-  content: { flex: 1, p: { xs: 2, md: 3 } },
+  // Ajuste o padding do conteúdo principal para ser responsivo
+  content: {
+    flex: 1,
+    p: { xs: 2, md: 3 },
+  },
   headerTitle: { textAlign: "center", mb: 4 },
+
+  // --- Ajuste Principal: Cards Grid Responsivo ---
   cardsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
-    gap: "28px 60px",
-    paddingLeft: "30px",
-    paddingRight: "30px",
+    // Padrão: 1 coluna em telas pequenas (xs), depois adapta para 2 ou mais
+    gridTemplateColumns: {
+      xs: "1fr", // Uma coluna inteira para telas pequenas (menos de 600px)
+      sm: "repeat(auto-fit, minmax(280px, 1fr))", // Começa a encaixar mais de um item
+    },
+    // Ajuste de gap para ser menor no mobile
+    gap: { xs: "20px", sm: "28px 40px", md: "28px 60px" },
+
+    // Removido paddings fixos e usado paddings responsivos do MUI
+    paddingLeft: { xs: "16px", sm: "30px" },
+    paddingRight: { xs: "16px", sm: "30px" },
+
     marginTop: "24px",
     width: "100%",
     boxSizing: "border-box",
     justifyItems: "center",
   },
+
+  // --- Ajuste Principal: Card Item Responsivo ---
   card: {
-    width: "100%",
+    width: "100%", // Ocupa a largura total na coluna do grid
     minHeight: 150,
-    maxWidth: "30vw",
+    // Limita a largura do card em desktop/tablet para não ficar muito largo
+    maxWidth: {
+      xs: "100%", // Mobile: ocupa a largura total da coluna (100% da 1 coluna)
+      sm: "400px", // Limita a largura do card em desktop/tablet
+    },
     borderRadius: "10px",
     boxShadow: "0 6px 10px rgba(0,0,0,0.12)",
     display: "flex",
@@ -431,15 +450,16 @@ const styles = {
     padding: "18px",
     backgroundColor: "#fff",
   },
+
   cardTitleCentered: {
-    fontSize: "1.4rem",
+    fontSize: { xs: "1.2rem", sm: "1.4rem" }, // Fonte um pouco menor no mobile
     fontWeight: 700,
     color: "#222",
     textAlign: "center",
     marginBottom: 2,
   },
   specs: {
-    fontSize: "0.95rem",
+    fontSize: { xs: "0.9rem", sm: "0.95rem" }, // Fonte ajustada
     color: "#444",
     textAlign: "left",
     lineHeight: 1.3,

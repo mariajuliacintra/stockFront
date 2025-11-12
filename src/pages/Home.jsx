@@ -67,6 +67,9 @@ function Home() {
 }
 
 function getStyles() {
+  // Variável para a Media Query de celular (max-width: 600px)
+  const mobile = '@media (max-width: 600px)';
+
   return {
     pageContainer: {
       display: "flex",
@@ -84,8 +87,9 @@ function getStyles() {
       justifyContent: "space-between",
       minHeight: "100vh",
       width: "100%",
-      pl: { sm: 0 },
-      pr: { sm: 0 },
+
+      paddingLeft: '0 !important',
+      paddingRight: '0 !important',
     },
     header: {
       backgroundColor: "rgba(177, 16, 16, 1)",
@@ -100,7 +104,10 @@ function getStyles() {
       height: "35px",
       border: "4.5px solid white",
       borderRadius: 15,
-      marginLeft: 30,
+      marginLeft: 30, // Desktop padrão
+      [mobile]: {
+        marginLeft: 10, // Menor margem em mobile
+      },
     },
     buttonsContainer: {
       display: "flex",
@@ -108,6 +115,7 @@ function getStyles() {
       ml: { xs: 0, sm: "auto" },
       mr: { xs: 1, sm: 5 },
     },
+    // --- Estilos de Botão com Media Query para Mobile ---
     buttonToCadastro: {
       "&.MuiButton-root": {
         border: "2.5px solid white",
@@ -118,13 +126,19 @@ function getStyles() {
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: { xs: 85, sm: 100 },
+      width: 100, // Desktop padrão
       height: 35,
       fontWeight: 600,
-      fontSize: { xs: 10, sm: 13 },
+      fontSize: 13, // Desktop padrão
       borderRadius: 15,
       textTransform: "none",
-      ml: { xs: 1, sm: 2 },
+      ml: 2, // Desktop padrão
+      
+      [mobile]: {
+        width: 80, // Ajusta a largura para mobile
+        fontSize: 10, // Ajusta a fonte para mobile
+        ml: 0.5, // Reduz a margem entre botões
+      },
     },
     buttonToLogin: {
       "&.MuiButton-root": {
@@ -136,13 +150,19 @@ function getStyles() {
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: { xs: 60, sm: 80 },
+      width: 80,
       height: 35,
       fontWeight: 600,
-      fontSize: { xs: 10, sm: 13 },
+      fontSize: 13,
       borderRadius: 15,
       textTransform: "none",
-      ml: { xs: 1, sm: 3 },
+      ml: 3,
+      
+      [mobile]: {
+        width: 55, // Ajusta a largura para mobile
+        fontSize: 10, // Ajusta a fonte para mobile
+        ml: 0.5, // Reduz a margem entre botões
+      },
     },
     buttonToApk: {
       "&.MuiButton-root": {
@@ -154,13 +174,19 @@ function getStyles() {
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: { xs: 60, sm: 80 },
+      width: 80,
       height: 35,
       fontWeight: 600,
-      fontSize: { xs: 10, sm: 13 },
+      fontSize: 13,
       borderRadius: 15,
       textTransform: "none",
-      ml: { xs: 1, sm: 3 },
+      ml: 3,
+      
+      [mobile]: {
+        width: 55, // Ajusta a largura para mobile
+        fontSize: 10, // Ajusta a fonte para mobile
+        ml: 0.5, // Reduz a margem entre botões
+      },
     },
     body: {
       display: "flex",
@@ -168,14 +194,23 @@ function getStyles() {
       justifyContent: "center",
       flex: 1,
       textAlign: "left",
-      paddingLeft: { xs: "20px", sm: "40px", md: "80px", lg: "35px" },
+      paddingLeft: "80px", // Desktop padrão
       marginRight: "auto",
+      
+      [mobile]: {
+        paddingLeft: "20px", // Reduz o padding esquerdo em mobile
+      },
     },
     bodyText: {
       color: "white",
-      fontSize: { xs: 35, sm: 50, md: 60, lg: 70 },
+      fontSize: 70, // Desktop padrão
       fontWeight: "bold",
+      
+      [mobile]: {
+        fontSize: 30, // Reduz o tamanho da fonte para mobile
+      },
     },
+    // --- Footer ---
     footer: {
       backgroundColor: "rgba(177, 16, 16, 1)",
       width: "100%",
