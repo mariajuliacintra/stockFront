@@ -50,6 +50,7 @@ function Itens() {
 
   const fetchCategories = async () => {
     try {
+      // Assumindo que api.getCategories está definido no seu serviço axios
       const response = await api.getCategories();
       const data = Array.isArray(response.data.categories)
         ? response.data.categories
@@ -76,8 +77,10 @@ function Itens() {
         filterData.name !== "" || filterData.idCategory.length > 0;
       let response;
       if (hasFilters) {
+        // Assumindo que api.filterItens está definido
         response = await api.filterItens(filterData);
       } else {
+        // Assumindo que api.getItens está definido
         response = await api.getItens({
           params: { page: filterPage, limit: DEFAULT_LIMIT },
         });
@@ -394,7 +397,7 @@ function Itens() {
 
 export default Itens;
 
-// Estilos
+// Estilos Otimizados para Responsividade
 const styles = {
   senaiRed: "#A31515",
 
@@ -432,14 +435,12 @@ const styles = {
     justifyItems: "center",
   },
 
-  // --- Ajuste Principal: Card Item Responsivo ---
   card: {
-    width: "100%", // Ocupa a largura total na coluna do grid
+    width: "100%",
     minHeight: 150,
-    // Limita a largura do card em desktop/tablet para não ficar muito largo
     maxWidth: {
-      xs: "100%", // Mobile: ocupa a largura total da coluna (100% da 1 coluna)
-      sm: "400px", // Limita a largura do card em desktop/tablet
+      xs: "100%",
+      sm: "400px",
     },
     borderRadius: "10px",
     boxShadow: "0 6px 10px rgba(0,0,0,0.12)",
