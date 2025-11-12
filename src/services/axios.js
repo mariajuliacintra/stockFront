@@ -112,8 +112,12 @@ const sheets = {
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
   deleteUser: (id) => api.delete(`user/${id}`),
   postImage: (id_item, formData) => {
-    return api.post(`item/image/${id_item}`, formData, {});
-  },
+    return api.post(`item/image/${id_item}`, formData, {
+         headers: {
+             'Content-Type': 'multipart/form-data',
+         },
+    });
+},
   createCategory: (data) => api.post("category", data),
   createLocation: (data) => api.post("location", data),
   getCategories: () => api.get("category"),
