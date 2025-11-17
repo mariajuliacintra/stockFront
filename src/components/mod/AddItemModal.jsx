@@ -275,6 +275,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
       try {
         const imageData = new FormData();
         imageData.append("image", imagem);
+        await sheets.insertImageWithFormData(newItemId, imageData);
         await sheets.insertImage(newItemId, imagem);
       } catch (err) {
         setModalInfo({
