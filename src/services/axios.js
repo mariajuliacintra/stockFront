@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_URLAPI;
+const BASE_URL =  import.meta.env.VITE_URLAPI;
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -28,7 +28,8 @@ api.interceptors.response.use(
       const isAuthError = status === 401 || status === 403;
       const isLoginOrVerify =
         config.url.includes("user/login") ||
-        config.url.includes("verify-register");
+        config.url.includes("verify-register") ||
+        config.url.includes("verify-update");
 
       if (isAuthError && !isLoginOrVerify) {
         localStorage.setItem("refresh_token", true);
@@ -111,8 +112,12 @@ const sheets = {
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
   deleteUser: (id) => api.delete(`user/${id}`),
   postImage: (id_item, formData) => {
-    return api.post(`item/image/${id_item}`, formData, {});
-  },
+    return api.post(`item/image/${id_item}`, formData, {
+         headers: {
+             'Content-Type': 'multipart/form-data',
+         },
+    });
+},
   createCategory: (data) => api.post("category", data),
   createLocation: (data) => api.post("location", data),
   getCategories: () => api.get("category"),

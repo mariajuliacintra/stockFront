@@ -4,11 +4,12 @@ import {
     InputLabel, Select, MenuItem, CircularProgress, IconButton, Divider,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CustomModal from "./CustomModal"; 
-import sheets from "../../services/axios"; 
+import CustomModal from "./CustomModal";
+import sheets from "../../services/axios";
 import { useCategories } from "../hooks/useCategories";
 import { useLocations } from "../hooks/useLocations";
 import { useTechnicalSpecs } from "../hooks/useTechnicalSpecs";
+import heic2any from "heic2any"; 
 
 // --- Estilos Globais para o Modal ---
 const modalStyle = {
@@ -53,20 +54,18 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
     const [newLocationCode, setNewLocationCode] = useState("");
     const [addingNewSpec, setAddingNewSpec] = useState(false);
 
-
-    // Uso dos Hooks para Lógica de Dados
-    const { 
-        categories, loadingCategories, savingNewCategory, fetchCategories, createCategory 
+    // Hooks
+    const {
+        categories, loadingCategories, savingNewCategory, fetchCategories, createCategory
     } = useCategories(open, setModalInfo);
 
-    const { 
-        locations, loadingLocations, savingNewLocation, fetchLocations, createLocation 
+    const {
+        locations, loadingLocations, savingNewLocation, fetchLocations, createLocation
     } = useLocations(open, setModalInfo);
 
     const {
         availableSpecs, savingNewSpec, newSpecName, setNewSpecName, fetchTechnicalSpecs, handleNewSpec
     } = useTechnicalSpecs(open, setModalInfo, setTechnicalSpecs);
-
 
     useEffect(() => {
         const role = localStorage.getItem("userRole");
@@ -98,7 +97,41 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
     const handleRemoveSpec = (id) =>
         setTechnicalSpecs(technicalSpecs.filter((s) => s.idTechnicalSpec !== id));
 
-    const handleFileChange = (e) => setImagem(e.target.files[0]);
+    // ✅ Função atualizada para converter HEIC automaticamente
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Detecta imagem HEIC (de iPhone)
+        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+            try {
+                console.log("Convertendo imagem HEIC para JPEG...");
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.9,
+                });
+
+                const convertedFile = new File(
+                    [convertedBlob],
+                    file.name.replace(/\.heic$/i, ".jpg"),
+                    { type: "image/jpeg" }
+                );
+
+                setImagem(convertedFile);
+            } catch (error) {
+                console.error("Erro ao converter imagem HEIC:", error);
+                setModalInfo({
+                    open: true,
+                    title: "Erro ao converter imagem",
+                    message: "Não foi possível converter a imagem HEIC. Tente novamente com outro arquivo.",
+                    type: "error",
+                });
+            }
+        } else {
+            setImagem(file);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -181,7 +214,11 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
 
         if (imagem && newItemId) {
             try {
+                const imageData = new FormData();
+                imageData.append('image', imagem);
+                await sheets.insertImageWithFormData(newItemId, imageData);
                 await sheets.insertImage(newItemId, imagem);
+
             } catch (err) {
                 setModalInfo({
                     open: true,

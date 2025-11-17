@@ -17,12 +17,11 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CloseIcon from "@mui/icons-material/Close";
 
-// Importações de componentes (Verifique se os paths estão corretos)
 import FooterPerfil from "../components/layout/Footer";
 import HeaderPerfil from "../components/layout/Header";
 import api from "../services/axios";
 import CustomModal from "../components/mod/CustomModal";
-import SecuryCode from "../components/mod/SecuryCode";
+import PerfSecuryCode from "../components/mod/PerfSecuryCode";
 
 function AtualizarPerfil() {
   const styles = getStyles();
@@ -131,9 +130,7 @@ function AtualizarPerfil() {
   };
 
   const updateLocalUserAndState = (updatedData) => {
-    // Atualiza o estado local com os novos dados confirmados
     setForm({ nome: updatedData.name, email: updatedData.email });
-    // Redireciona para a página de perfil
     navigate("/perfil");
   };
 
@@ -143,22 +140,25 @@ function AtualizarPerfil() {
     const payload = { name: form.nome, email: form.email };
     try {
       const response = await api.putUpdateProfile(userId, payload);
-      const { message, user, data } = response.data; // Incluindo 'data' para compatibilidade com o retorno do backend
+      const { message, user, data } = response.data;
 
-      // Se a API exigir verificação, abre o modal de código
-      if (message.includes("Verificação de e-mail necessária") || data?.requiresEmailVerification) {
+      if (
+        message.includes("Verificação de e-mail necessária") ||
+        data?.requiresEmailVerification
+      ) {
         showSnackbar(message, "warning");
         setIsVerifyUpdateModalOpen(true);
       } else {
-        // Se a atualização foi direta (e-mail não mudou ou só mudou o nome)
         const updatedUser = user || data;
         if (updatedUser) {
-           updateLocalUserAndState({ name: updatedUser.name, email: updatedUser.email });
+          updateLocalUserAndState({
+            name: updatedUser.name,
+            email: updatedUser.email,
+          });
         } else {
-           // Fallback, embora a API devesse retornar o objeto user
-           updateLocalUserAndState(form);
+          updateLocalUserAndState(form);
         }
-       
+
         setModalInfo({ title: "Sucesso!", message, type: "success" });
         setModalOpen(true);
       }
@@ -191,7 +191,6 @@ function AtualizarPerfil() {
       confirmPassword: passwordForm.confirmarSenha,
     };
     try {
-      // Tenta atualizar a senha
       const response = await api.putUpdatePassword(userId, payload);
       const { message } = response.data;
 
@@ -211,7 +210,6 @@ function AtualizarPerfil() {
   const handleConfirmDelete = async () => {
     setLoading(true);
     try {
-      // Deleta o perfil
       const response = await api.deleteProfile(userId);
       showSnackbar(response.data.message, "success");
       setIsDeleteModalOpen(false);
@@ -228,15 +226,14 @@ function AtualizarPerfil() {
     }
   };
 
-  // 🔴 CORREÇÃO: Adicionado 'updatedUser' para receber os dados confirmados do modal SecuryCode.
-  // Você precisa garantir que o SecuryCode repasse este objeto.
   const handleVerificationResult = (success, message, updatedUser) => {
     if (success) {
-      // Prioriza os dados retornados e confirmados pelo backend.
       if (updatedUser && updatedUser.email) {
-        updateLocalUserAndState({ name: updatedUser.name, email: updatedUser.email });
+        updateLocalUserAndState({
+          name: updatedUser.name,
+          email: updatedUser.email,
+        });
       } else {
-        // Se o SecuryCode não repassar o objeto, usa o estado atual do formulário (que já é o novo e-mail)
         updateLocalUserAndState({ name: form.nome, email: form.email });
       }
 
@@ -248,7 +245,13 @@ function AtualizarPerfil() {
       setModalOpen(true);
       setIsVerifyUpdateModalOpen(false);
     } else {
-      showSnackbar(message || "Código de verificação incorreto.", "error");
+      setModalInfo({
+        title: "Erro na Verificação!",
+        message:
+          message || "O código de verificação está incorreto. Tente novamente.",
+        type: "error",
+      });
+      setModalOpen(true);
     }
   };
 
@@ -256,7 +259,6 @@ function AtualizarPerfil() {
     <Box sx={styles.pageLayout}>
       <HeaderPerfil />
       <Container component="main" maxWidth={false} sx={styles.container}>
-        {/* Snackbar para mensagens de erro/aviso */}
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
@@ -272,7 +274,6 @@ function AtualizarPerfil() {
           </Alert>
         </Snackbar>
 
-        {/* Modal Principal de Edição */}
         <Box sx={styles.modal}>
           <IconButton
             aria-label="close"
@@ -324,7 +325,11 @@ function AtualizarPerfil() {
                 sx={styles.modalButton}
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : "Editar Perfil"}
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "Editar Perfil"
+                )}
               </Button>
               <Button
                 type="button"
@@ -345,7 +350,6 @@ function AtualizarPerfil() {
       </Container>
       <FooterPerfil />
 
-      {/* Modal de Confirmação de Deleção (Sem Alteração) */}
       <Modal
         open={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -381,13 +385,16 @@ function AtualizarPerfil() {
               sx={styles.confirmModalButtonConfirm}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Confirmar"}
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Confirmar"
+              )}
             </Button>
           </Box>
         </Box>
       </Modal>
 
-      {/* Modal de Alteração de Senha (Sem Alteração) */}
       <Modal
         open={isPasswordModalOpen}
         onClose={() => {
@@ -481,13 +488,16 @@ function AtualizarPerfil() {
               sx={styles.modalButton}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Confirmar Alteração"}
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Confirmar Alteração"
+              )}
             </Button>
           </Box>
         </Box>
       </Modal>
 
-      {/* Modal de Verificação de E-mail (SecuryCode) */}
       <Modal
         open={isVerifyUpdateModalOpen}
         onClose={() => setIsVerifyUpdateModalOpen(false)}
@@ -495,7 +505,7 @@ function AtualizarPerfil() {
         aria-describedby="verify-update-modal-description"
       >
         <Box sx={styles.confirmModalWrapper}>
-          <SecuryCode
+          <PerfSecuryCode
             email={form.email}
             onResult={handleVerificationResult}
             onClose={() => setIsVerifyUpdateModalOpen(false)}
@@ -503,7 +513,6 @@ function AtualizarPerfil() {
         </Box>
       </Modal>
 
-      {/* Modal de Informação Customizado (Sem Alteração) */}
       <CustomModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
