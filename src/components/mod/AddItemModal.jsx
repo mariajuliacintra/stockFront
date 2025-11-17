@@ -139,12 +139,14 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
     if (!file) return;
 
     // --- Detecção aprimorada para HEIC/HEIF de iPhone ---
+    // Os MIME types mais comuns do iOS para HEIC/HEIF são 'image/heic' e 'image/heif' (ou variantes).
+    // Se o tipo MIME for desconhecido (ex: no Safari) ou se for um fallback, verificamos a extensão.
     const isHEIC =
-      file.type.includes("image/jpg") ||
-      file.type.includes("image/heic") ||
-      file.type.includes("image/heif") ||
+      file.type === "image/heic" ||
+      file.type === "image/heif" ||
+      file.type.includes("heic") || // Para cobrir variantes como image/heic-sequence
+      file.type.includes("heif") || // Para cobrir variantes como image/heif-sequence
       file.name.toLowerCase().endsWith(".heic") ||
-      file.type.includes(".jpg") ||
       file.name.toLowerCase().endsWith(".heif");
 
     if (isHEIC) {
@@ -154,19 +156,17 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
           blob: file,
           toType: "image/jpeg",
           quality: 0.9,
-          // Garante que o conversor reconheça a imagem
-          // mesmo que o tipo MIME esteja estranho.
-          mimeType: file.type || undefined,
         });
 
-        // A função heic2any retorna um array de Blobs se houver mais de um,
-        // por segurança pegamos o primeiro ou o próprio Blob se for único.
+        // ... (O resto da sua lógica de conversão está OK) ...
+
         const finalBlob = Array.isArray(convertedBlob)
           ? convertedBlob[0]
           : convertedBlob;
 
-        // Criamos um novo nome de arquivo com a extensão .jpg
-        const newFileName = file.name.replace(/\.(heic|heif)$/i, ".jpg");
+        // Se o arquivo original não tiver extensão, é bom garantir uma.
+        const baseName = file.name.split(".").slice(0, -1).join(".") || "image";
+        const newFileName = `${baseName}.jpg`;
 
         const convertedFile = new File([finalBlob], newFileName, {
           type: "image/jpeg",
@@ -175,14 +175,7 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
         setImagem(convertedFile);
         console.log("Conversão concluída. Arquivo:", convertedFile);
       } catch (error) {
-        console.error("Erro ao converter imagem HEIC/HEIF:", error);
-        setModalInfo({
-          open: true,
-          title: "Erro ao converter imagem",
-          message:
-            "Não foi possível converter a imagem HEIC/HEIF. Verifique o arquivo e tente novamente.",
-          type: "error",
-        });
+        // ... (Restante do bloco catch)
       }
     } else {
       // Processa arquivos normais (JPEG, PNG, etc.)
