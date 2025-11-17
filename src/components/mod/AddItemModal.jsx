@@ -143,10 +143,13 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
     // Se o tipo MIME for desconhecido (ex: no Safari) ou se for um fallback, verificamos a extensão.
     const isHEIC =
       file.type === "image/heic" ||
+      file.type === "image/jpeg"
       file.type === "image/heif" ||
       file.type.includes("heic") || // Para cobrir variantes como image/heic-sequence
       file.type.includes("heif") || // Para cobrir variantes como image/heif-sequence
+      file.type.includes("jpeg") || 
       file.name.toLowerCase().endsWith(".heic") ||
+      file.name.toLowerCase().endsWith(".jpeg") ||
       file.name.toLowerCase().endsWith(".heif");
 
     if (isHEIC) {
