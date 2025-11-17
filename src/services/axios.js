@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL =  import.meta.env.VITE_URLAPI;
+const BASE_URL = import.meta.env.VITE_URLAPI;
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -91,7 +91,7 @@ const sheets = {
   postRegister: (user) => api.post(`user/register`, user),
   securyCodeApi: (code, email) =>
     api.post(`user/verify-register`, { code, email }),
-    postVerifyUpdate: (data) => api.post(`user/verify-update`, data), // ESTE É O CORRETO PARA ATUALIZAÇÃO
+    postVerifyUpdate: (data) => api.post(`user/verify-update`, data), 
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
