@@ -28,7 +28,8 @@ api.interceptors.response.use(
       const isAuthError = status === 401 || status === 403;
       const isLoginOrVerify =
         config.url.includes("user/login") ||
-        config.url.includes("verify-register");
+        config.url.includes("verify-register") ||
+        config.url.includes("verify-update");
 
       if (isAuthError && !isLoginOrVerify) {
         localStorage.setItem("refresh_token", true);
@@ -90,8 +91,7 @@ const sheets = {
   postRegister: (user) => api.post(`user/register`, user),
   securyCodeApi: (code, email) =>
     api.post(`user/verify-register`, { code, email }),
-  postVerifyRecoveryPassword: (email) =>
-    api.post("user/verify-recovery-password", email),
+    postVerifyUpdate: (data) => api.post(`user/verify-update`, data), 
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postRecoveryPassword: (data) => api.post("user/recovery-password", data),
