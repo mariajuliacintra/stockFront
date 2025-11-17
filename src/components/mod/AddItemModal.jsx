@@ -140,9 +140,11 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
 
     // --- Detecção aprimorada para HEIC/HEIF de iPhone ---
     const isHEIC =
+      file.type.includes("image/jpg") ||
       file.type.includes("image/heic") ||
       file.type.includes("image/heif") ||
       file.name.toLowerCase().endsWith(".heic") ||
+      file.type.includes(".jpg") ||
       file.name.toLowerCase().endsWith(".heif");
 
     if (isHEIC) {
