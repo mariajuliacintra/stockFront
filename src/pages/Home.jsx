@@ -12,7 +12,7 @@ function Home() {
 
   const downloadApk = () => {
     window.location.href =
-      "https://expo.dev/accounts/mariafernandacintra/projects/senai-estoque-v1/builds/01fc6d25-9768-4cf7-912b-2332226834f0";
+      "https://expo.dev/accounts/mariafernandacintra/projects/senai-estoque-v1/builds/47c2ea8e-906f-4ff1-bbd1-3039c6b969cd";
   };
 
   return (
