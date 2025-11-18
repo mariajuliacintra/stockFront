@@ -26,8 +26,27 @@ const ROLES = [
     { value: 'manager', label: 'Admin' },
 ];
 
+const getModalStyles = () => ({
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: { xs: '80%', sm: 400 },
+    maxWidth: 400,
+    bgcolor: 'background.paper',
+    borderRadius: '15px', 
+    boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)', 
+    p: { xs: 3, sm: 4 },
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1, 
+    maxHeight: { xs: '90vh', sm: 'auto' }, 
+    overflowY: 'auto',
+});
+
+
 function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
-    const registerFieldStyles = getRegisterFieldStyles();
+    const fieldStyles = getRegisterFieldStyles();
     const PRIMARY_RED = "rgba(255, 0, 0, 1)"; 
     
     const [name, setName] = useState('');
@@ -107,174 +126,158 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
             aria-labelledby="create-user-modal-title"
             aria-describedby="create-user-modal-description"
         >
-            <Box sx={modalStyles}>
-                {/* ALTERAÇÃO 1: CENTRALIZAR O TÍTULO */}
+            <Box sx={getModalStyles()}>
                 <Typography id="create-user-modal-title" variant="h6" component="h2" mb={2} textAlign="center" fontWeight={600}>
                     Criar Novo Usuário
                 </Typography>
                 
-                {/* CAMPO NOME */}
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    label="Nome"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    sx={registerFieldStyles.textField}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <PersonOutline sx={{ color: "gray" }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+                <Box>
+                    {/* CAMPO NOME */}
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        label="Nome"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        sx={fieldStyles.textField}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <PersonOutline sx={{ color: "gray" }} />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
 
-                {/* CAMPO E-MAIL */}
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    label="E-mail"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    sx={registerFieldStyles.textField}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Email sx={{ color: "gray" }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+                    {/* CAMPO E-MAIL */}
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        label="E-mail"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        sx={fieldStyles.textField}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Email sx={{ color: "gray" }} />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
 
-                {/* CAMPO SENHA */}
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    label="Senha"
-                    type={mostrarSenha ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    sx={registerFieldStyles.textField}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Lock sx={{ color: "gray" }} />
-                            </InputAdornment>
-                        ),
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() => setMostrarSenha((prev) => !prev)}
-                                    edge="end"
-                                    sx={{ color: "gray" }}
-                                >
-                                    {mostrarSenha ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+                    {/* CAMPO SENHA */}
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        label="Senha"
+                        type={mostrarSenha ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        sx={fieldStyles.textField}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Lock sx={{ color: "gray" }} />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setMostrarSenha((prev) => !prev)}
+                                        edge="end"
+                                        sx={{ color: "gray" }}
+                                    >
+                                        {mostrarSenha ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
 
-                {/* CAMPO CONFIRMAR SENHA */}
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    label="Confirmar Senha"
-                    type={mostrarConfirmarSenha ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    sx={registerFieldStyles.textField}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Lock sx={{ color: "gray" }} />
-                            </InputAdornment>
-                        ),
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() => setMostrarConfirmarSenha((prev) => !prev)}
-                                    edge="end"
-                                    sx={{ color: "gray" }}
-                                >
-                                    {mostrarConfirmarSenha ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-                
-                {/* CAMPO CARGO (SELECT) - ESTILIZAÇÃO MELHORADA */}
-                <TextField
-                    select
-                    label="Cargo"
-                    fullWidth
-                    margin="normal"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    required 
-                    sx={{
-                        ...registerFieldStyles.textField,
-                    }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <WorkOutline sx={{ color: "gray" }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                    SelectProps={{
-                        MenuProps: {
-                            PaperProps: {
-                                sx: {
-                                    borderRadius: '8px',
+                    {/* CAMPO CONFIRMAR SENHA */}
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        label="Confirmar Senha"
+                        type={mostrarConfirmarSenha ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        sx={fieldStyles.textField}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Lock sx={{ color: "gray" }} />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setMostrarConfirmarSenha((prev) => !prev)}
+                                        edge="end"
+                                        sx={{ color: "gray" }}
+                                    >
+                                        {mostrarConfirmarSenha ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    
+                    {/* CAMPO CARGO (SELECT) */}
+                    <TextField
+                        select
+                        label="Cargo"
+                        fullWidth
+                        margin="normal"
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                        required 
+                        sx={fieldStyles.textField}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <WorkOutline sx={{ color: "gray" }} />
+                                </InputAdornment>
+                            ),
+                        }}
+                        SelectProps={{
+                            MenuProps: {
+                                PaperProps: {
+                                    sx: {
+                                        borderRadius: '8px',
+                                    }
+                                }
+                            },
+                            sx: {
+                                "& .MuiSelect-icon": {
+                                    color: "gray",
+                                },
+                                "&.Mui-focused .MuiSelect-icon": {
+                                    color: PRIMARY_RED,
                                 }
                             }
-                        },
-                        sx: {
-                            "& .MuiSelect-icon": {
-                                color: "gray",
-                            },
-                            "&.Mui-focused .MuiSelect-icon": {
-                                color: PRIMARY_RED,
-                            }
-                        }
-                    }}
-                >
-                    {ROLES.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
-
-                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        }}
+                    >
+                        {ROLES.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Box>
+                
+                <Box sx={fieldStyles.buttonBox}>
                     {/* BOTÃO CANCELAR */}
                     <Button 
                         onClick={handleClose} 
                         color="error" 
                         variant="outlined"
-                        sx={{
-                            ...registerFieldStyles.buttonToLogin,
-                            border: `1px solid ${PRIMARY_RED}`,
-                            color: PRIMARY_RED,
-                            backgroundColor: 'transparent',
-                            borderRadius: '8px', 
-                            height: 30, 
-                            fontWeight: 600,
-                            fontSize: 14,
-                            padding: '0 16px',
-                            textTransform: 'none',
-                            '&:hover': {
-                                backgroundColor: 'rgba(255, 0, 0, 0.04)',
-                                border: `1px solid ${PRIMARY_RED}`,
-                            }
-                        }}
+                        sx={fieldStyles.cancelButton}
                     >
                         Cancelar
                     </Button>
@@ -282,14 +285,7 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
                     <Button
                         onClick={handleCreateUser}
                         variant="contained"
-                        sx={{
-                            ...registerFieldStyles.buttonCadastro, 
-                            backgroundColor: PRIMARY_RED,
-                            width: 'auto', 
-                            padding: '0 16px', 
-                            mt: 0,
-                            height: 30, 
-                        }}
+                        sx={fieldStyles.saveButton}
                         disabled={loading || !name || !email || !password || !confirmPassword || !role} 
                     >
                         {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : 'Criar Usuário'}
@@ -318,36 +314,41 @@ function CreateUserModal({ open, onClose, onSuccess, onAlert }) {
     );
 }
 
-const modalStyles = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    borderRadius: '15px',
-    boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
-    p: 4,
-    display: 'flex',
-    flexDirection: 'column',
-};
-
 function getRegisterFieldStyles() {
     const PRIMARY_RED = "rgba(255, 0, 0, 1)";
     const FOCUS_RED_HALF = "rgba(255, 0, 0, 0.5)";
+    
+    const desktopHeight = 30; 
+    const desktopFontSize = 14;
+    
+    const mobileHeight = 40; 
+    const mobileFontSize = 13;
+
+
+    const baseButtonCadastro = {
+        "&.MuiButton-root": {
+            border: "none",
+            boxShadow: "none",
+            "&:hover": { backgroundColor: "rgba(200, 0, 0, 1)" },
+        },
+        color: "white",
+        backgroundColor: PRIMARY_RED,
+        height: desktopHeight, 
+        fontWeight: 600,
+        fontSize: desktopFontSize,
+        borderRadius: 8,
+        textTransform: "none",
+    };
+
 
     return {
         textField: {
-            mb: 1,
+            mb: { xs: 1, sm: 1 }, 
             "& .MuiOutlinedInput-root": {
                 borderRadius: "8px",
                 backgroundColor: "#f5f5f5",
-                "& fieldset": {
-                    borderColor: "transparent",
-                },
-                "&:hover fieldset": {
-                    borderColor: "transparent",
-                },
+                "& fieldset": { borderColor: "transparent" },
+                "&:hover fieldset": { borderColor: "transparent" },
                 "&.Mui-focused fieldset": {
                     borderColor: FOCUS_RED_HALF,
                     borderWidth: "1px",
@@ -366,30 +367,45 @@ function getRegisterFieldStyles() {
                 },
             },
         },
-        buttonCadastro: {
-            "&.MuiButton-root": {
-                border: "none",
-                boxShadow: "none",
-                "&:hover": {
-                    backgroundColor: "rgba(200, 0, 0, 1)",
-                },
-            },
-            color: "white",
-            backgroundColor: PRIMARY_RED,
-            height: 30,
-            fontWeight: 600,
-            fontSize: 14,
-            borderRadius: 8,
-            textTransform: "none",
+        
+        buttonCadastro: baseButtonCadastro,
+        buttonBox: {
+            display: 'flex', 
+            justifyContent: { xs: 'space-between', sm: 'flex-end' }, 
+            gap: { xs: 1, sm: 2 }, 
+            mt: 3, 
+            width: '100%',
         },
-        buttonToLogin: {
+        
+        saveButton: {
+            ...baseButtonCadastro, 
+            height: { xs: mobileHeight, sm: desktopHeight },
+            fontSize: { xs: mobileFontSize, sm: desktopFontSize },
+            // Ocupa 50% no mobile
+            width: { xs: 'calc(50% - 4px)', sm: 'auto' }, 
+            padding: { xs: '0 8px', sm: '0 16px' },
+            mt: 0, 
+        },
+        
+        cancelButton: {
+            height: { xs: mobileHeight, sm: desktopHeight },
+            fontSize: { xs: mobileFontSize, sm: desktopFontSize },
+            width: { xs: 'calc(50% - 4px)', sm: 'auto' }, 
+            mt: 0, 
+            
+            border: `1px solid ${PRIMARY_RED}`,
             color: PRIMARY_RED,
-            backgroundColor: "transparent",
+            backgroundColor: 'transparent',
             fontWeight: 600,
-            fontSize: 14,
-            textDecoration: "none",
-            textTransform: "none",
-        }
+            borderRadius: '8px', 
+            textTransform: 'none',
+            padding: { xs: '0 8px', sm: '0 16px' },
+
+            '&:hover': {
+                backgroundColor: 'rgba(255, 0, 0, 0.04)',
+                border: `1px solid ${PRIMARY_RED}`,
+            }
+        },
     };
 }
 

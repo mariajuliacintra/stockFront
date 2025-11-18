@@ -17,48 +17,16 @@ import {
 import sheets from '../../services/axios';
 
 
-const updateLocalStorageRole = (updatedUser) => {
-    try {
-        const currentUserString = localStorage.getItem('user');
-        if (!currentUserString) return;
-
-        const currentUser = JSON.parse(currentUserString);
-
-        if (currentUser.idUser === updatedUser.idUser) {
-            const updatedLocalStorageUser = { 
-                ...currentUser, 
-                role: updatedUser.role 
-            };
-            localStorage.setItem('user', JSON.stringify(updatedLocalStorageUser));
-            
-            window.dispatchEvent(new Event('storage'));
-        }
-    } catch (e) {
-        console.error("Erro ao sincronizar a role no localStorage:", e);
-    }
-};
-
-
-
-const modalStyles = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    borderRadius: '15px', 
-    boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)', 
-    p: 4,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 1, 
-};
+// --- [ 1. COMPONENTE PRINCIPAL ] ---
 
 const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
+    
     const [editedUser, setEditedUser] = useState(user);
     const [loading, setLoading] = useState(false);
-
+    
+    // 🎯 Chama as funções de estilo na renderização
+    const styleDefinitions = getModalStyles(); 
+    
     useEffect(() => {   
         setEditedUser(user);
     }, [user]);
@@ -95,6 +63,7 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
                     role: editedUser.role,
                 };
                 onAlert(response.data.message || 'Usuário atualizado com sucesso!', 'success'); 
+                
                 if (roleWasChanged) {
                     setTimeout(() => {
                         onAlert(
@@ -104,7 +73,7 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
                     }, 2000);
                 }
                 
-                updateLocalStorageRole(updatedUserData); 
+                // updateLocalStorageRole(updatedUserData); // Função removida
                 
                 onSuccess();
                 onClose();
@@ -124,9 +93,10 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
 
     return (
         <Modal open={open} onClose={onClose}>
-            <Box sx={modalStyles}>
-                {/* ALTERAÇÃO APLICADA: Centralizando o Título */}
-                <Typography variant="h6" component="h2" sx={{ textAlign: 'center', mb: 2 }}>
+            {/* Usa a função de estilo responsivo */}
+            <Box sx={styleDefinitions.modalContainer}> 
+                
+                <Typography variant="h6" component="h2" sx={styleDefinitions.titleStyle}>
                     Editar Usuário
                 </Typography>
 
@@ -138,7 +108,7 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
                     onChange={handleChange}
                     fullWidth
                     margin="normal"
-                    sx={getRegisterFieldStyles().textField}
+                    sx={styleDefinitions.textField}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -156,7 +126,7 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
                     fullWidth
                     disabled
                     margin="normal"
-                    sx={getRegisterFieldStyles().textField}
+                    sx={styleDefinitions.textField}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -175,7 +145,7 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
                     onChange={handleChange}
                     fullWidth
                     margin="normal"
-                    sx={getRegisterFieldStyles().textField}
+                    sx={styleDefinitions.textField}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -188,38 +158,25 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
                     <MenuItem value="user">Comum</MenuItem>
                 </TextField>
                 
-                {/* Box de Botões */}
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+                {/* Box de Botões - Responsivo */}
+                <Box sx={styleDefinitions.buttonBox}>
                     
+                    {/* BOTÃO CANCELAR */}
                     <Button
                         onClick={onClose}
                         variant="outlined"
                         disabled={loading}
-                        sx={{
-                            ...getRegisterFieldStyles().buttonToLogin,
-                            border: '1px solid rgba(255, 0, 0, 1)',
-                            color: 'rgba(255, 0, 0, 1)',
-                            backgroundColor: 'transparent',
-                            borderRadius: '8px', 
-                            height: 30, 
-                            fontWeight: 600,
-                            fontSize: 14,
-                            padding: '0 16px',
-                            textTransform: 'none',
-                            '&:hover': {
-                                backgroundColor: 'rgba(255, 0, 0, 0.04)',
-                                border: '1px solid rgba(255, 0, 0, 1)',
-                            }
-                        }}
+                        sx={styleDefinitions.cancelButton}
                     >
                         Cancelar
                     </Button>
                     
+                    {/* Botão Salvar Alterações */}
                     <Button
                         onClick={handleSave}
                         variant="contained"
                         disabled={loading}
-                        sx={{...getRegisterFieldStyles().buttonCadastro, width: 'auto', padding: '0 16px', mt: 0}}
+                        sx={styleDefinitions.saveButton}
                     >
                         {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : 'Salvar Alterações'}
                     </Button>
@@ -230,19 +187,66 @@ const EditUserModal = ({ open, onClose, user, onSuccess, onAlert }) => {
     );
 };
 
-function getRegisterFieldStyles() {
+export default EditUserModal;
+
+// --- [ 2. FUNÇÕES DE ESTILIZAÇÃO ] ---
+function getModalStyles() {
+    const senaiRed = 'rgba(255, 0, 0, 1)';
+    const desktopHeight = 30; 
+    const desktopFontSize = 14;
+    const mobileHeight = 40; 
+    const mobileFontSize = 13;
+
+    const baseButtonCadastro = {
+        "&.MuiButton-root": {
+            border: "none",
+            boxShadow: "none",
+            "&:hover": { backgroundColor: "rgba(200, 0, 0, 1)" },
+        },
+        color: "white",
+        backgroundColor: senaiRed,
+        height: desktopHeight, 
+        fontWeight: 600,
+        fontSize: desktopFontSize,
+        borderRadius: 8,
+        textTransform: "none",
+    };
+
+
     return {
+        // 1. Estilo do Contêiner do Modal
+        modalContainer: {
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: { xs: '80%', sm: 400 },
+            maxWidth: 400,
+            bgcolor: 'background.paper',
+            borderRadius: '15px', 
+            boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)', 
+            p: { xs: 3, sm: 4 },
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1, 
+            maxHeight: { xs: '90vh', sm: 'auto' }, 
+            overflowY: 'auto',
+        },
+        
+        // 2. Estilo do Título
+        titleStyle: {
+            textAlign: 'center', 
+            mb: 2,
+            fontWeight: 600
+        },
+        
+        // 3. Estilo dos Campos de Texto (TextField)
         textField: {
-            mb: 1,
             "& .MuiOutlinedInput-root": {
                 borderRadius: "8px",
                 backgroundColor: "#f5f5f5",
-                "& fieldset": {
-                    borderColor: "transparent",
-                },
-                "&:hover fieldset": {
-                    borderColor: "transparent",
-                },
+                "& fieldset": { borderColor: "transparent" },
+                "&:hover fieldset": { borderColor: "transparent" },
                 "&.Mui-focused fieldset": {
                     borderColor: "rgba(255, 0, 0, 0.5)",
                     borderWidth: "1px",
@@ -256,36 +260,47 @@ function getRegisterFieldStyles() {
             "& .MuiInputLabel-root": {
                 fontSize: "14px",
                 color: "gray",
-                "&.Mui-focused": {
-                    color: "rgba(255, 0, 0, 1)",
-                },
+                "&.Mui-focused": { color: senaiRed },
             },
         },
-        buttonCadastro: {
-            "&.MuiButton-root": {
-                border: "none",
-                boxShadow: "none",
-                "&:hover": {
-                    backgroundColor: "rgba(200, 0, 0, 1)",
-                },
-            },
-            color: "white",
-            backgroundColor: "rgba(255, 0, 0, 1)",
-            height: 30,
-            fontWeight: 600,
-            fontSize: 14,
-            borderRadius: 8,
-            textTransform: "none",
+        
+        // 4. Estilo do Box de Botões
+        buttonBox: {
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            gap: { xs: 1, sm: 2 }, 
+            mt: 3, 
+            width: '100%',
         },
-        buttonToLogin: {
-            color: "rgba(255, 0, 0, 1)",
-            backgroundColor: "transparent",
+        
+        // 5. Estilo Botão Salvar (Primário)
+        saveButton: {
+            ...baseButtonCadastro, 
+            height: { xs: mobileHeight, sm: desktopHeight },
+            fontSize: { xs: mobileFontSize, sm: desktopFontSize },
+            width: { xs: 'calc(50% - 4px)', sm: 'auto' }, 
+            mt: 0, 
+        },
+        
+        // 6. Estilo Botão Cancelar (Secundário)
+        cancelButton: {
+            height: { xs: mobileHeight, sm: desktopHeight },
+            fontSize: { xs: mobileFontSize, sm: desktopFontSize },
+            width: { xs: 'calc(50% - 4px)', sm: 'auto' }, 
+            mt: 0, 
+            
+            border: `1px solid ${senaiRed}`,
+            color: senaiRed,
+            backgroundColor: 'transparent',
             fontWeight: 600,
-            fontSize: 14,
-            textDecoration: "none",
-            textTransform: "none",
-        }
+            borderRadius: 8, 
+            textTransform: 'none',
+            padding: { xs: '0 8px', sm: '0 16px' },
+
+            '&:hover': {
+                backgroundColor: 'rgba(255, 0, 0, 0.04)',
+                border: `1px solid ${senaiRed}`,
+            }
+        },
     };
 }
-
-export default EditUserModal;

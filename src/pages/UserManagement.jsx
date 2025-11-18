@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import sheets from "../services/axios";
 
@@ -178,12 +178,21 @@ function UserManagement() {
 
         <Box sx={styles.cardContainer}>
           <Box sx={styles.header}>
-            <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
+            {/* 🎯 Ajuste no título para garantir a responsividade da fonte */}
+            <Typography 
+                variant="h6" 
+                component="h2" 
+                sx={{ 
+                    fontWeight: 600, 
+                    fontSize: { xs: '1.2rem', sm: '1.5rem' } 
+                }}
+            >
               Gerenciamento de Usuários
             </Typography>
 
+            {/* 🎯 Botão Adicionar ajustado */}
             <IconButton onClick={handleOpenCreateModal} sx={styles.addButton}>
-              <AddIcon sx={{ fontSize: 24 }} />
+              <AddIcon sx={styles.addIconStyle} /> {/* Usa o novo estilo do ícone */}
             </IconButton>
           </Box>
           <Divider sx={{ mb: 2, borderColor: "#ccc" }} />
@@ -309,27 +318,33 @@ function getStyles() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "flex-start",
-      padding: "20px",
+      // Reduz o padding externo em mobile
+      padding: { xs: "10px", sm: "20px" }, 
       pt: { xs: 4, md: 6 },
       pb: 8,
     },
     cardContainer: {
       borderRadius: "12px",
       boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
-      width: "100%",
+      // Ajusta a largura para 95% no mobile
+      width: { xs: "90%", sm: "100%" }, 
       maxWidth: "480px",
-      padding: "20px",
+      // Reduz o padding interno em mobile
+      padding: { xs: "15px", sm: "20px" }, 
       backgroundColor: "#FFFFFF",
     },
     header: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      mb: 2,
+      // Reduz a margem inferior em mobile
+      mb: { xs: 1.5, sm: 2 }, 
     },
+    // Estilo para o IconButton de adição
     addButton: {
       color: senaiRed,
-      p: 1,
+      // Padding reduzido no mobile
+      p: { xs: 0.8, sm: 1 }, 
       border: `2px solid ${senaiRed}`,
       borderRadius: "50%",
       transition: "all 0.3s",
@@ -337,6 +352,10 @@ function getStyles() {
         backgroundColor: senaiRed,
         color: "#fff",
       },
+    },
+    // Estilo para o ÍCONE dentro do IconButton de adição
+    addIconStyle: {
+        fontSize: { xs: 20, sm: 24 }, // Reduz o tamanho do ícone
     },
     loadingBox: {
       display: "flex",
@@ -354,7 +373,8 @@ function getStyles() {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      p: 1.5,
+      // Reduz o padding interno no mobile
+      p: { xs: 1, sm: 1.5 }, 
       mt: 1.5,
       borderRadius: "8px",
       border: "1px solid #f0f0f0",
@@ -388,16 +408,17 @@ function getStyles() {
       flexShrink: 0,
       ml: 1,
     },
+    // Reduz o padding dos botões de ação no mobile
     editButton: {
       color: primaryBlue,
-      p: 0.5,
+      p: { xs: 0.3, sm: 0.5 }, 
       "&:hover": {
         backgroundColor: `${primaryBlue}10`,
       },
     },
     deleteButton: {
       color: errorRed,
-      p: 0.5,
+      p: { xs: 0.2, sm: 0.5 }, 
       "&:hover": {
         backgroundColor: `${errorRed}10`,
       },

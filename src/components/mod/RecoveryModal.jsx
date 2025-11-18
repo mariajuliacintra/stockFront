@@ -13,23 +13,6 @@ import api from "../../services/axios"
 import CustomModal from "../mod/CustomModal"
 
 
-// Estilo para o contêiner do modal
-const modalContainerStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90%', // Responsividade para telas menores
-  maxWidth: 400, // Largura máxima para telas maiores
-  bgcolor: 'white',
-  borderRadius: '15px', // Bordas arredondadas
-  boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)', // Sombra suave
-  p: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-};
-
 const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState({ password: "", confirmPassword: "" });
@@ -39,54 +22,53 @@ const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
 
   const handleValidateCode = async () => {
     try {
-      await api.postValidateRecoveryCode({ email, code });
+      await api.postValidateRecoveryCode({ email, code }); 
       setModalInfo({
-        open: true, // Adicionado para abrir o CustomModal
+        open: true,
         title: "Sucesso!",
         message: "Código validado. Agora digite sua nova senha.",
         isSuccess: true,
         type: "success",
-        onClose: () => { // Adicionado o onClose para fechar o CustomModal
-            setModalInfo({ ...modalInfo, open: false });
-            setStep(2);
+        onClose: () => {
+          setModalInfo({ ...modalInfo, open: false });
+          setStep(2);
         }
       });
     } catch (error) {
       setModalInfo({
-        open: true, // Adicionado para abrir o CustomModal
+        open: true,
         title: "Erro!",
         message: error.response?.data?.error || "Código inválido.",
         isSuccess: false,
         type: "error",
-        onClose: () => setModalInfo({ ...modalInfo, open: false }) // Adicionado o onClose para fechar o CustomModal
+        onClose: () => setModalInfo({ ...modalInfo, open: false })
       });
     }
   };
 
   const handleResetPassword = async () => {
     try {
-      await api.postRecoveryPassword({ email, password: newPassword.password, confirmPassword: newPassword.confirmPassword });
+      await api.postVerifyRecoveryPassword({ email, password: newPassword.password, confirmPassword: newPassword.confirmPassword }); 
       setModalInfo({
-        open: true, 
+        open: true,
         title: "Sucesso!",
         message: "Senha alterada com sucesso.",
         isSuccess: true,
         type: "success",
         onClose: () => {
-            setModalInfo({ ...modalInfo, open: false });
-            onClose();
-            window.location.href = '/login';
+          setModalInfo({ ...modalInfo, open: false });
+          onClose();
+          window.location.href = '/login';
         }
       });
-      // onClose(); // Removido daqui, pois será chamado no onClose do CustomModal
     } catch (error) {
       setModalInfo({
-        open: true, // Adicionado para abrir o CustomModal
+        open: true,
         title: "Erro!",
         message: error.response?.data?.error || "Erro ao redefinir senha.",
         isSuccess: false,
         type: "error",
-        onClose: () => setModalInfo({ ...modalInfo, open: false }) // Adicionado o onClose para fechar o CustomModal
+        onClose: () => setModalInfo({ ...modalInfo, open: false })
       });
     }
   };
@@ -100,8 +82,32 @@ const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
         aria-describedby="modal-modal-description"
         sx={{ backdropFilter: 'blur(3px)', backgroundColor: 'rgba(0,0,0,0.4)' }}
       >
-        <Box sx={modalContainerStyle}>
-          {/* Este título será o título principal do modal de recuperação, não o do alerta */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            
+            // Definição para Desktop (padrão)
+            width: 400, 
+            maxWidth: 400, 
+            p: 4, 
+            
+            bgcolor: 'white',
+            borderRadius: '15px', 
+            boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)', 
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            
+            // 🎯 MEDIA QUERY TRADICIONAL PARA MOBILE (sobrescreve o padrão)
+            '@media (max-width: 600px)': {
+              width: '80%', // Força 80% da largura da tela
+              p: 3,         // Reduz o padding para 24px
+            },
+          }}
+        >
           <Typography
             id="modal-modal-title"
             variant="h6"
@@ -124,7 +130,7 @@ const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
             <Box sx={{ mt: 2, width: '100%' }}>
               <TextField
                 fullWidth
-                label="Código de Verificação"
+                placeholder="Código de Verificação"
                 variant="outlined"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
@@ -134,6 +140,23 @@ const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
                     borderRadius: '8px',
                     backgroundColor: '#f5f5f5',
                   },
+                  '& .MuiInputLabel-root': {
+                    display: 'none', 
+                  },
+                  '& .MuiInputBase-input': {
+                    '@media (max-width: 600px)': {
+                        padding: '10px 14px', 
+                    },
+                    textAlign: 'center', 
+                    fontSize: '1rem', 
+                    fontWeight: 'bold',
+                    letterSpacing: '3px',
+                  },
+                  '& .MuiInputBase-input::placeholder': {
+                      textAlign: 'center',
+                      color: 'rgba(0, 0, 0, 0.4)',
+                      opacity: 1,
+                  }
                 }}
               />
               <Button
@@ -180,6 +203,11 @@ const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
                     borderRadius: '8px',
                     backgroundColor: '#f5f5f5',
                   },
+                  '& .MuiInputBase-input': {
+                      '@media (max-width: 600px)': {
+                          padding: '10px 14px', 
+                      },
+                  },
                 }}
                 InputProps={{
                   endAdornment: (
@@ -209,6 +237,11 @@ const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '8px',
                     backgroundColor: '#f5f5f5',
+                  },
+                  '& .MuiInputBase-input': {
+                      '@media (max-width: 600px)': {
+                          padding: '10px 14px', 
+                      },
                   },
                 }}
                 InputProps={{
@@ -252,7 +285,6 @@ const RecoveryModal = ({ open, onClose, email, modalInfo, setModalInfo }) => {
         </Box>
       </Modal>
 
-      {/* Usando o CustomModal para exibir as mensagens de alerta */}
       <CustomModal
         open={modalInfo.open}
         onClose={modalInfo.onClose}

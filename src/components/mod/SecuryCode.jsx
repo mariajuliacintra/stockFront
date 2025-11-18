@@ -31,10 +31,20 @@ export default function SecuryCode({ email, onResult, onClose }) {
     return (
         <Box
             sx={{
-                width: 400,
+                // CORREÇÃO: Largura responsiva para o modal
+                width: {
+                    xs: '90%', // Usa 90% da tela em mobile
+                    sm: 400,  // Mantém 400px em desktop
+                },
+                margin: '0 auto', // Centraliza o modal horizontalmente
+                
                 bgcolor: "white",
                 borderRadius: '15px',
-                p: 4,
+                // Reduz o padding vertical em mobile
+                p: {
+                    xs: 3, 
+                    sm: 4, 
+                },
                 position: "relative",
                 textAlign: "center",
                 boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)", 
@@ -59,28 +69,30 @@ export default function SecuryCode({ email, onResult, onClose }) {
                 Verificação de Código
             </Typography>
             
-            <Typography variant="body2" sx={{ mb: 3, color: 'gray' }}>
+            <Typography variant="body2" sx={{ mb: {xs: 2, sm: 3}, color: 'gray' }}>
                 Digite o código de 6 dígitos enviado para: <strong>{email}</strong>
             </Typography>
 
-            {/* CAMPO DO CÓDIGO - Estilizado com getRegisterFieldStyles */}
+            {/* CAMPO DO CÓDIGO */}
             <TextField
                 placeholder="Código de 6 dígitos"
                 fullWidth
                 value={code}
-                onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, '').substring(0, 6))} // Limita a 6 dígitos numéricos
+                onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, '').substring(0, 6))}
                 sx={registerFieldStyles.textField}
-                inputProps={{ style: { textAlign: 'center', letterSpacing: '3px', marginLeft:"-30px"} }}
+                // CORREÇÃO: Removido o marginLeft negativo. A centralização é feita apenas no textAlign
+                inputProps={{ style: { textAlign: 'center', letterSpacing: '3px'} }}
                 InputProps={{
                     startAdornment: (
                         <Box sx={{display: 'flex', alignItems: 'center' }}>
-                            <Lock sx={{ color: "gray", mr: 1 }} />
+                            {/* Ajustado o margin do ícone para não interferir na centralização do texto */}
+                            <Lock sx={{ color: "gray", mr: {xs: 0, sm: 1} }} /> 
                         </Box>
                     ),
                 }}
             />
             
-            {/* BOTÃO CONFIRMAR - Estilizado com buttonCadastro */}
+            {/* BOTÃO CONFIRMAR */}
             <Button
                 variant="contained"
                 fullWidth

@@ -107,25 +107,29 @@ function Transactions() {
                     <Typography variant="body1" sx={styles.transactionTitle}>
                       Pedido {index + 1}
                     </Typography>
-                    <Typography variant="body2">
-                      <span style={{ fontWeight: "bold" }}>Nome do Item:</span>{" "}
-                      {transaction.itemName}
-                    </Typography>
-                    <Typography variant="body2">
-                      <span style={{ fontWeight: "bold" }}>Tipo da Ação:</span>{" "}
-                      {actionTranslations[transaction.actionDescription] ||
-                        transaction.actionDescription}
-                    </Typography>
-                    <Typography variant="body2">
-                      <span style={{ fontWeight: "bold" }}>Quantidade:</span>{" "}
-                      {transaction.quantityChange}
-                    </Typography>
-                    <Typography variant="body2">
-                      <span style={{ fontWeight: "bold" }}>
-                        Data do Pedido:
-                      </span>{" "}
-                      {formattedDate}
-                    </Typography>
+                    
+                    {/* Linhas de Detalhes - Usando Box para melhor espaçamento vertical */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <Typography variant="body2">
+                            <span style={{ fontWeight: "bold" }}>Nome do Item:</span>{" "}
+                            {transaction.itemName}
+                        </Typography>
+                        <Typography variant="body2">
+                            <span style={{ fontWeight: "bold" }}>Tipo da Ação:</span>{" "}
+                            {actionTranslations[transaction.actionDescription] ||
+                            transaction.actionDescription}
+                        </Typography>
+                        <Typography variant="body2">
+                            <span style={{ fontWeight: "bold" }}>Quantidade:</span>{" "}
+                            {transaction.quantityChange}
+                        </Typography>
+                        <Typography variant="body2">
+                            <span style={{ fontWeight: "bold" }}>
+                                Data do Pedido:
+                            </span>{" "}
+                            {formattedDate}
+                        </Typography>
+                    </Box>
                   </Box>
                 );
               })}
@@ -170,12 +174,14 @@ function getStyles() {
       backgroundColor: "white",
       borderRadius: "15px",
       boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
-      width: "100%",
-      maxWidth: "400px",
+      // Responsividade de largura
+      width: { xs: "90%", sm: "100%" }, 
+      maxWidth: "450px", // Aumentado para desktop/tablet
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      padding: "20px",
+      // Padding ajustado para mobile
+      padding: { xs: "15px", sm: "20px" }, 
       position: "relative",
     },
     header: {
@@ -188,26 +194,31 @@ function getStyles() {
     title: {
       fontWeight: "bold",
       color: "#333",
+      fontSize: { xs: "1.4rem", sm: "1.5rem" }, // Fonte responsiva
     },
     transactionsList: {
       width: "100%",
-      maxHeight: "60vh",
+      // Altura máxima ajustada
+      maxHeight: { xs: "70vh", sm: "60vh" }, 
       overflowY: "auto",
     },
     transactionItem: {
       border: "1px solid #ddd",
       borderRadius: "8px",
-      padding: "15px",
-      marginBottom: "15px",
+      // Padding reduzido para mobile
+      padding: { xs: "10px", sm: "15px" }, 
+      // Espaçamento entre itens reduzido
+      marginBottom: "10px", 
       "&:not(:last-child)": {
         borderBottom: "1px solid #eee",
-        marginBottom: "15px",
+        marginBottom: "10px",
       },
     },
     transactionTitle: {
       fontWeight: "bold",
       marginBottom: "5px",
-      color: "#333",
+      color: "rgba(177, 16, 16, 1)", // Destaque em vermelho
+      fontSize: { xs: "1rem", sm: "1.1rem" },
     },
     loadingBox: {
       display: "flex",

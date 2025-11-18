@@ -94,7 +94,7 @@ const sheets = {
     postVerifyUpdate: (data) => api.post(`user/verify-update`, data), 
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
-  postRecoveryPassword: (data) => api.post("user/recovery-password", data),
+  postVerifyRecoveryPassword: (data) => api.post("user/verify-recovery-password", data),
   getItens: (config) => api.get(`items/`,config),
   getItensID: (id_item) => api.get(`item/${id_item}/details`, id_item),
   getLocations: () => api.get("location"),
