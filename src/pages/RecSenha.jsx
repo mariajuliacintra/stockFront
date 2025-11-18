@@ -42,7 +42,7 @@ function RecSenha() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (loading) return; // impede cliques múltiplos
+    if (loading) return;
 
     setLoading(true);
     try {

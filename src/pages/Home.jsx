@@ -43,7 +43,9 @@ function Home() {
               variant="contained"
               startIcon={<DownloadIcon />}
             >
-              APK
+              <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                APK
+              </Box>
             </Button>
           </Box>
         </Box>
@@ -67,9 +69,6 @@ function Home() {
 }
 
 function getStyles() {
-  // Variável para a Media Query de celular (max-width: 600px)
-  const mobile = '@media (max-width: 600px)';
-
   return {
     pageContainer: {
       display: "flex",
@@ -87,7 +86,6 @@ function getStyles() {
       justifyContent: "space-between",
       minHeight: "100vh",
       width: "100%",
-
       paddingLeft: '0 !important',
       paddingRight: '0 !important',
     },
@@ -99,23 +97,26 @@ function getStyles() {
       alignItems: "center",
       justifyContent: "space-between",
       borderBottom: "7px solid white",
+      
+      paddingX: {
+        xs: '1px',
+        sm: '30px', 
+      }
     },
     logo: {
       height: "35px",
       border: "4.5px solid white",
       borderRadius: 15,
-      marginLeft: 30, // Desktop padrão
-      [mobile]: {
-        marginLeft: 10, // Menor margem em mobile
-      },
+      marginLeft: 0, 
+      paddingLeft: 0, 
     },
     buttonsContainer: {
       display: "flex",
       alignItems: "center",
-      ml: { xs: 0, sm: "auto" },
-      mr: { xs: 1, sm: 5 },
+      ml: { xs: 0, sm: "auto" }, 
+      mr: { xs: 0, sm: 5 }, 
     },
-    // --- Estilos de Botão com Media Query para Mobile ---
+    
     buttonToCadastro: {
       "&.MuiButton-root": {
         border: "2.5px solid white",
@@ -126,20 +127,17 @@ function getStyles() {
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: 100, // Desktop padrão
       height: 35,
       fontWeight: 600,
-      fontSize: 13, // Desktop padrão
       borderRadius: 15,
       textTransform: "none",
-      ml: 2, // Desktop padrão
       
-      [mobile]: {
-        width: 80, // Ajusta a largura para mobile
-        fontSize: 10, // Ajusta a fonte para mobile
-        ml: 0.5, // Reduz a margem entre botões
-      },
+      width: { sm: 100 },
+      fontSize: { xs: 10, sm: 13 },
+      padding: { xs: '0 5px', sm: null },
+      ml: { xs: 0.2, sm: 2 }, 
     },
+
     buttonToLogin: {
       "&.MuiButton-root": {
         border: "2.5px solid white",
@@ -150,20 +148,17 @@ function getStyles() {
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: 80,
       height: 35,
       fontWeight: 600,
-      fontSize: 13,
       borderRadius: 15,
       textTransform: "none",
-      ml: 3,
-      
-      [mobile]: {
-        width: 55, // Ajusta a largura para mobile
-        fontSize: 10, // Ajusta a fonte para mobile
-        ml: 0.5, // Reduz a margem entre botões
-      },
+
+      width: { sm: 80 },
+      fontSize: { xs: 10, sm: 13 },
+      padding: { xs: '0 5px', sm: null },
+      ml: { xs: 0.2, sm: 3 }, 
     },
+
     buttonToApk: {
       "&.MuiButton-root": {
         border: "2.5px solid white",
@@ -171,46 +166,47 @@ function getStyles() {
           border: "none",
           backgroundColor: "rgba(255, 0, 0, 0.55)",
         },
+        "& .MuiButton-startIcon": {
+          marginRight: { xs: 0, sm: '8px' },
+          marginLeft: { xs: 0, sm: '-4px' },
+        },
       },
       color: "white",
       backgroundColor: "rgba(255, 0, 0, 1)",
-      width: 80,
       height: 35,
       fontWeight: 600,
-      fontSize: 13,
       borderRadius: 15,
       textTransform: "none",
-      ml: 3,
+
+      width: { 
+        xs: 35, 
+        sm: 80 
+      }, 
+      fontSize: { xs: 0, sm: 13 }, 
       
-      [mobile]: {
-        width: 55, // Ajusta a largura para mobile
-        fontSize: 10, // Ajusta a fonte para mobile
-        ml: 0.5, // Reduz a margem entre botões
+
+      padding: {
+        xs: '6px 6px',
+        sm: null, 
       },
+      ml: { xs: 0.2, sm: 3 }, 
     },
+    
     body: {
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
       flex: 1,
       textAlign: "left",
-      paddingLeft: "80px", // Desktop padrão
       marginRight: "auto",
-      
-      [mobile]: {
-        paddingLeft: "20px", // Reduz o padding esquerdo em mobile
-      },
+      paddingLeft: { xs: "20px", sm: "80px" },
     },
     bodyText: {
       color: "white",
-      fontSize: 70, // Desktop padrão
       fontWeight: "bold",
-      
-      [mobile]: {
-        fontSize: 30, // Reduz o tamanho da fonte para mobile
-      },
+      fontSize: { xs: 30, sm: 70 },
     },
-    // --- Footer ---
+    
     footer: {
       backgroundColor: "rgba(177, 16, 16, 1)",
       width: "100%",
@@ -226,5 +222,6 @@ function getStyles() {
     },
   };
 }
+
 
 export default Home;
