@@ -91,11 +91,11 @@ const sheets = {
   postRegister: (user) => api.post(`user/register`, user),
   securyCodeApi: (code, email) =>
     api.post(`user/verify-register`, { code, email }),
-    postVerifyUpdate: (data) => api.post(`user/verify-update`, data), 
+  postVerifyUpdate: (data) => api.post(`user/verify-update`, data),
   postValidateRecoveryCode: (data) =>
     api.post("user/validate-recovery-code", data),
   postVerifyRecoveryPassword: (data) => api.post("user/verify-recovery-password", data),
-  getItens: (config) => api.get(`items/`,config),
+  getItens: (config) => api.get(`items/`, config),
   getItensID: (id_item) => api.get(`item/${id_item}/details`, id_item),
   getLocations: () => api.get("location"),
   getTransactionsByUser: (userId) => api.get(`transactions/user/${userId}`),
@@ -111,13 +111,12 @@ const sheets = {
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
   deleteUser: (id) => api.delete(`user/${id}`),
-  postImage: (id_item, formData) => {
-    return api.post(`item/image/${id_item}`, formData, {
-         headers: {
-             'Content-Type': 'multipart/form-data',
-         },
-    });
-},
+  postImage: (itemId, file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    return api.post(`item/image/${itemId}`, formData);
+  },
   createCategory: (data) => api.post("category", data),
   createLocation: (data) => api.post("location", data),
   getCategories: () => api.get("category"),
