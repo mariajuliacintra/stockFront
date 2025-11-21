@@ -12,6 +12,7 @@ import {
   Alert,
   Grid,
   Button,
+  CircularProgress,
 } from '@mui/material';
 import {
   Description as PdfIcon,
@@ -63,6 +64,7 @@ function ReportManagement() {
     invalidRows: [] 
   });
   const [isImportModalOpen, setIsImportModalOpen] = useState(false); 
+  const [downloading, setDownloading] = useState(null); // ex: 'general_excel'
 
   const styles = getStyles();
 
@@ -90,48 +92,44 @@ function ReportManagement() {
     return true;
   };
 
-  const handleDownload = async (reportType, format, reportTitle) => {
-    handleAlert(`Preparando o download de "${reportTitle}"...`, 'info');
+    const handleDownload = async (reportType, format, reportTitle) => {
+        const key = `${reportType}_${format}`;
+        setDownloading(key);
+        handleAlert(`Preparando o download de "${reportTitle}"...`, 'info');
 
-    try {
-        const response = await sheets.downloadReport(reportType, format);
+        try {
+            const response = await sheets.downloadReport(reportType, format);
 
-        const contentDisposition = response.headers['content-disposition'];
-        let filename = `${reportType}_report.${format === 'excel' ? 'xlsx' : 'pdf'}`;
-        
-        if (contentDisposition) {
-            const matches = /filename="?(.+)"?/.exec(contentDisposition);
-            if (matches && matches[1]) {
-                filename = decodeURIComponent(matches[1]);
-            }
-        }
-        
-        const blob = new Blob([response.data], { 
-            type: response.headers['content-type'] 
-        });
+            const contentDisposition = response.headers['content-disposition'];
+            let filename = `${reportType}_report.${format === 'excel' ? 'xlsx' : 'pdf'}`;
 
-        const url = window.URL.createObjectURL(blob);
+            if (contentDisposition) {
+                const matches = /filename= ?"?(.+?)"?(;|$)/.exec(contentDisposition);
+                if (matches && matches[1]) filename = decodeURIComponent(matches[1]);
+            }
 
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', filename); 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        window.URL.revokeObjectURL(url);
-        
-        handleAlert(`Download de "${filename}" concluído!`, 'success');
+            const blob = new Blob([response.data], { type: response.headers['content-type'] });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
 
-    } catch (error) {
-        if (error.response && error.response.status === 404) {
-             handleAlert('Erro: Endpoint não encontrado (404). Verifique as rotas da API.', 'error');
-        } else {
-             handleAlert('Erro ao baixar relatório.');
-        }
-        console.error('Erro detalhado:', error);
-    }
-  };
+            handleAlert(`Download de "${filename}" concluído!`, 'success');
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                handleAlert('Erro: Endpoint não encontrado (404). Verifique as rotas da API.', 'error');
+            } else {
+                handleAlert('Erro ao baixar relatório.');
+            }
+            console.error('Erro detalhado:', error);
+        } finally {
+            setDownloading(null);
+        }
+    };
     
   const handleImport = async (event) => {
     const file = event.target.files[0];
@@ -196,18 +194,19 @@ function ReportManagement() {
               </Typography>
             </Box>
 
-            <Box sx={styles.importActions}>
-                <Button
-                    variant="contained"
-                    startIcon={<ExcelIcon />}
-                    href="/excelBase.xlsx" 
-                    download="excelBase.xlsx"
-                    sx={styles.templateButton} 
-                >
-                    Baixar Modelo
-                </Button>
+ 
+                        <Box sx={styles.importActions}>
+                                <Button
+                                     variant="contained"
+                                     startIcon={<ExcelIcon />}
+                                     href="/excelBase.xlsx" 
+                                     download="excelBase.xlsx"
+                                     sx={styles.templateButton} 
+                                >
+                                        Baixar Modelo
+                                </Button>
 
-                <input
+                                <input
                     type="file"
                     ref={fileInputRef}
                     onChange={handleImport}
@@ -244,21 +243,31 @@ function ReportManagement() {
                     </Box>
                   </Box>
                   <Box sx={styles.actionButtons}>
-                    <Button
-                      variant="contained" 
-                      startIcon={<ExcelIcon />}
-                      onClick={() => handleDownload(report.type, 'excel', report.title)} 
-                      sx={styles.excelButton}
-                    >
-                      Excel
+                            <Button
+                                variant="contained" 
+                                startIcon={<ExcelIcon />}
+                                onClick={() => handleDownload(report.type, 'excel', report.title)} 
+                                sx={styles.excelButton}
+                                disabled={downloading && downloading.startsWith(report.type)}
+                            >
+                      {downloading === `${report.type}_excel` ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        "Excel"
+                      )}
                     </Button>
-                    <Button
-                      variant="contained"
-                      startIcon={<PdfIcon />}
-                      onClick={() => handleDownload(report.type, 'pdf', report.title)} 
-                      sx={styles.pdfButton}
-                    >
-                      PDF
+                        <Button
+                            variant="contained"
+                            startIcon={<PdfIcon />}
+                            onClick={() => handleDownload(report.type, 'pdf', report.title)} 
+                            sx={styles.pdfButton}
+                            disabled={downloading && downloading.startsWith(report.type)}
+                        >
+                      {downloading === `${report.type}_pdf` ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        "PDF"
+                      )}
                     </Button>
                 </Box>
               </Paper>
@@ -316,6 +325,7 @@ function getStyles() {
         flexWrap: 'wrap',
         mt: { xs: 2, sm: 0 },
     },
+        
     templateButton: { 
         backgroundColor: '#217346',
         color: '#fff',
