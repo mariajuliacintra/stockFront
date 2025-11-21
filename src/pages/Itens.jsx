@@ -15,6 +15,8 @@ import {
   Checkbox,
   Pagination,
   CircularProgress,
+  Chip,
+  Stack,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import HeaderPrincipal from "../components/layout/HeaderPrincipal";
@@ -275,6 +277,24 @@ function Itens() {
             }}
           />
         </Box>
+        {/* Chips para categorias selecionadas */}
+        {selectedCategories && selectedCategories.length > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, gap: 1, flexWrap: 'wrap', px: { xs: 2, sm: 0 } }}>
+            {selectedCategories.map((cat) => (
+              <Chip
+                key={cat.idCategory}
+                label={cat.categoryValue || cat.category || cat.value}
+                onDelete={() => handleSelectCategory(cat)}
+                color="error"
+                variant="outlined"
+                sx={{ borderColor: '#A31515', color: '#A31515', fontWeight: 600 }}
+              />
+            ))}
+            <Button onClick={() => { setSelectedCategories([]); handleFilter(1); }} sx={{ ml: 1 }}>
+              Limpar
+            </Button>
+          </Box>
+        )}
         {/* Drawer lateral para categorias */}
         <Drawer
           anchor="left"
@@ -454,6 +474,11 @@ const styles = {
     overflow: "visible",
     padding: "18px",
     backgroundColor: "#fff",
+    transition: 'transform .22s ease, box-shadow .22s ease',
+    '&:hover': {
+      transform: 'translateY(-6px)',
+      boxShadow: '0 14px 30px rgba(0,0,0,0.18)'
+    },
   },
 
   cardTitleCentered: {
