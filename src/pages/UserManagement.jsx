@@ -14,6 +14,7 @@ import {
   Alert,
   Pagination,
 } from "@mui/material";
+import { Skeleton, Tooltip } from "@mui/material";
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -199,8 +200,12 @@ function UserManagement() {
           {/* Conteúdo Principal */}
           {loading ? (
             <Box sx={styles.loadingBox}>
-              <CircularProgress color="error" />
-              <Typography sx={{ mt: 2 }}>Carregando...</Typography>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Paper key={`user-skel-${i}`} sx={{ p: 1.2, mb: 1 }}>
+                  <Skeleton width="40%" />
+                  <Skeleton width="60%" />
+                </Paper>
+              ))}
             </Box>
           ) : users.length === 0 ? (
             <Typography sx={styles.noUsersText}>
@@ -228,21 +233,25 @@ function UserManagement() {
                   </Box>
 
                   <Box sx={styles.actionIcons}>
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => handleOpenEditModal(user)}
-                      sx={styles.editButton}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
+                    <Tooltip title="Editar usuário">
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => handleOpenEditModal(user)}
+                        sx={styles.editButton}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
 
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => handleOpenDeleteModal(user)}
-                      sx={styles.deleteButton}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
+                    <Tooltip title="Excluir usuário">
+                      <IconButton
+                        aria-label="delete"
+                        onClick={() => handleOpenDeleteModal(user)}
+                        sx={styles.deleteButton}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   </Box>
                 </Paper>
               ))}

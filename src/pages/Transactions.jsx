@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, CircularProgress, Container } from "@mui/material";
+import { Box, Typography, CircularProgress, Container, Skeleton, Paper } from "@mui/material";
 import CustomModal from "../components/mod/CustomModal";
 import Header from "../components/layout/HeaderPerfil";
 import Footer from "../components/layout/Footer";
@@ -87,7 +87,12 @@ function Transactions() {
           </Box>
           {loading ? (
             <Box sx={styles.loadingBox}>
-              <CircularProgress />
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Paper key={`skele-${i}`} sx={{ width: '100%', p: 2, mb: 2 }}>
+                  <Skeleton width="40%" />
+                  <Skeleton width="80%" />
+                </Paper>
+              ))}
             </Box>
           ) : transactions.length === 0 ? (
             <Box sx={styles.noTransactionsBox}>
@@ -103,34 +108,27 @@ function Transactions() {
                 ).toLocaleDateString();
 
                 return (
-                  <Box key={index} sx={styles.transactionItem}>
+                  <Paper key={index} sx={styles.transactionItem} elevation={1}>
                     <Typography variant="body1" sx={styles.transactionTitle}>
                       Pedido {index + 1}
                     </Typography>
-                    
-                    {/* Linhas de Detalhes - Usando Box para melhor espaçamento vertical */}
+
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <Typography variant="body2">
-                            <span style={{ fontWeight: "bold" }}>Nome do Item:</span>{" "}
-                            {transaction.itemName}
-                        </Typography>
-                        <Typography variant="body2">
-                            <span style={{ fontWeight: "bold" }}>Tipo da Ação:</span>{" "}
-                            {actionTranslations[transaction.actionDescription] ||
-                            transaction.actionDescription}
-                        </Typography>
-                        <Typography variant="body2">
-                            <span style={{ fontWeight: "bold" }}>Quantidade:</span>{" "}
-                            {transaction.quantityChange}
-                        </Typography>
-                        <Typography variant="body2">
-                            <span style={{ fontWeight: "bold" }}>
-                                Data do Pedido:
-                            </span>{" "}
-                            {formattedDate}
-                        </Typography>
+                      <Typography variant="body2">
+                        <strong>Nome do Item:</strong> {transaction.itemName}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Tipo da Ação:</strong>{' '}
+                        {actionTranslations[transaction.actionDescription] || transaction.actionDescription}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Quantidade:</strong> {transaction.quantityChange}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Data do Pedido:</strong> {formattedDate}
+                      </Typography>
                     </Box>
-                  </Box>
+                  </Paper>
                 );
               })}
             </Box>
