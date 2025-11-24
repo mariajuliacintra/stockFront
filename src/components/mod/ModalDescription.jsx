@@ -106,7 +106,6 @@ export default function ModalDescription({
         onError?.("Selecione um arquivo de imagem primeiro.");
         return;
       }
-      console.log(itemDetails, selectedFile);
 
       setIsUploading(true);
       try {
@@ -291,7 +290,7 @@ export default function ModalDescription({
                     // Limita o tamanho máximo da imagem no mobile para caber
                     style={{ 
                         maxWidth: "100%", 
-                        maxHeight: "250px", 
+                        maxHeight: "200px", 
                         width: "auto", 
                         height: "auto", 
                         borderRadius: "12px", 
