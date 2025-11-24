@@ -190,7 +190,9 @@ export default function AddItemModal({ open, onClose, idUser, onSuccess }) {
 
     if (imagem && newItemId) {
       try {
-        await sheets.postImage(newItemId, imagem);
+        const formData = new FormData();
+        formData.append("image", imagem); 
+        await sheets.postImage(newItemId, formData);
       } catch (err) {
         setModalInfo({
           open: true,
