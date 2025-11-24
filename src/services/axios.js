@@ -111,9 +111,7 @@ const sheets = {
   createUser: (userData) => api.post("user/create", userData),
   registerUserByManager: (user) => api.post(`user/register/manager`, user),
   deleteUser: (id) => api.delete(`user/${id}`),
-  postImage: (itemId, file) => {
-    const formData = new FormData();
-    formData.append("image", file);
+  postImage: (itemId, formData) => {
 
     return api.post(`item/image/${itemId}`, formData);
   },

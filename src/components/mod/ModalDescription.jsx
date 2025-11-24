@@ -106,9 +106,9 @@ export default function ModalDescription({
         onError?.("Selecione um arquivo de imagem primeiro.");
         return;
       }
+      console.log(itemDetails, selectedFile);
 
       setIsUploading(true);
-
       try {
         const formData = new FormData();
         formData.append("image", selectedFile); 
@@ -131,7 +131,7 @@ export default function ModalDescription({
           } else if (status === 413) {
               errorMessage = "Erro 413: Arquivo muito grande. O servidor rejeitou o envio.";
           } else if (err.response?.data?.error) {
-                errorMessage = `Erro da API: ${err.response.data.error}`;
+                errorMessage = `Erro: ${err.response.data.error}`;
           }
         onError?.(errorMessage); 
       } finally {
